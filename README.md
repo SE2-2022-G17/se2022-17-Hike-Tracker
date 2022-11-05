@@ -8,8 +8,4 @@
 - npm install
 - npm start
 
-### Users:
-- admin (password = admin)
-- officer (password = officer)
-- user (password = user)
 
