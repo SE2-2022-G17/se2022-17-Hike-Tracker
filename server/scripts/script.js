@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Hike = require("../models/Hike")
 const Difficulty = require("../models/Difficulty")
 
-mongoose.connect("mongodb://localhost:27017/hike_tracker")
+mongoose.connect("mongodb://localhost/hike_tracker")
 
 
 run()

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Hike = require("./models/Hike")
 
-mongoose.connect("mongodb://localhost:27017/hike_tracker")
+mongoose.connect("mongodb://localhost/hike_tracker")
 
 exports.getVistorHikes = async (
     difficulty,
