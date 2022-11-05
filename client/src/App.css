@@ -43,3 +43,13 @@
   bottom: 0;
   max-width: 75%;
 }
+
+.two-options-filter{
+  width: 30%;
+  width: 100%;
+}
+
+.difficulty-picker{
+  padding: 1rem 0rem;
+  width: 100%;
+}

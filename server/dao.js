@@ -17,11 +17,13 @@ exports.getVistorHikes = async (
 
     try {
         const hikes = await Hike.find()
+            .select({ "__v": 0 })
             .filterByDifficulty(difficulty)
             .filterBy("length", minLength, maxLength)
             .filterBy("ascent", minAscent, maxAscent)
             .filterBy("expectedTime", minTime, maxTime)
             .filterByDistance(longitude, latitude, 1)
+
         return hikes
 
     } catch (e) {

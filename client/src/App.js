@@ -1,16 +1,25 @@
-import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React from 'react';
+import VisitorHikes from './components/VisitorHikes';
+
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+} from "react-router-dom";
+
 
 function App() {
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Link to="visitor/hikes">Hikes</Link>} />
+        <Route path="visitor/hikes" element={<VisitorHikes />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
