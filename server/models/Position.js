@@ -18,9 +18,18 @@ positionSchema.query.filterByDistance = async function (longitude, latitude, max
         return []
     }
 
-    return this
-        .find({ "location.coordinates": { "$nearSphere": { "$geometry": { type: "Point", coordinates: [longitude, latitude] }, "$maxDistance": 1 } } })
+    const positions = await this
+        .find({
+            "location.coordinates": {
+                "$nearSphere": {
+                    "$geometry": { type: "Point", coordinates: [longitude, latitude] },
+                    "$maxDistance": maxDist * 1000 
+                }
+            }
+        })
         .select({ "__v": 0, _id: 1, location: 0 })
+
+    return positions.map((position) => position._id)
 
 }
 

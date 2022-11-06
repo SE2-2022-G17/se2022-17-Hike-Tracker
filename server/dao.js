@@ -18,15 +18,9 @@ exports.getVistorHikes = async (
 ) => {
 
     try {
-        let nearPositions = []
-        if (longitude !== undefined && latitude !== undefined) {
-            const positions = await Position
-                .find({ "location.coordinates": { "$nearSphere": { "$geometry": { type: "Point", coordinates: [longitude, latitude] }, "$maxDistance": 1 } } })
-                .select({ "__v": 0, _id: 1, location: 0 })
-            nearPositions = positions.map((position) => position._id)
-        }
-
-        console.log(nearPositions)
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
 
         const hikes = await Hike.find()
             .select({ "__v": 0, "referencePoints": 0 })
@@ -34,7 +28,7 @@ exports.getVistorHikes = async (
             .filterBy("length", minLength, maxLength)
             .filterBy("ascent", minAscent, maxAscent)
             .filterBy("expectedTime", minTime, maxTime)
-            .where('startPoint').in(nearPositions)
+            .filterByPositions(longitude, latitude, nearPositions)
             .populate('startPoint')
             .populate('endPoint')
 

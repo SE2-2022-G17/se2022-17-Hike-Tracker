@@ -60,6 +60,13 @@ hikeSchema.query.filterBy = function (filter, min, max) {
     }
 }
 
+hikeSchema.query.filterByPositions = function (longitude, latitude, positionRefs) {
+    if (longitude === undefined || latitude === undefined) {
+        return this
+    }
+
+    return this.where('startPoint').in(positionRefs)
+}
 
 // create a model for hike schema
 // it will create a Hike collection in the mongo database
