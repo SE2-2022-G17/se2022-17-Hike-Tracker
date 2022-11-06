@@ -21,7 +21,38 @@ function VisitorHikes() {
 
     const getVisitorHikes = async (ev) => {
         ev.preventDefault();
-        const retrivedHikes = await API.getVistorHikes();
+
+        // start validation
+        if (minLength !== undefined && !Number.isSafeInteger(Number(minLength))) {
+            return
+        }
+        if (maxLength !== undefined && !Number.isSafeInteger(Number(maxLength))) {
+            return
+        }
+        if (minAscent !== undefined && !Number.isSafeInteger(Number(minAscent))) {
+            return
+        }
+        if (maxAscent !== undefined && !Number.isSafeInteger(Number(maxAscent))) {
+            return
+        }
+        if (minTime !== undefined && Number.isNaN(Number(minTime))) {
+            return
+        }
+        if (maxTime !== undefined && Number.isNaN(Number(maxTime))) {
+            return
+        }
+
+        const retrivedHikes = await API.getVistorHikes(
+            difficulty,
+            minLength,
+            maxLength,
+            minAscent,
+            maxAscent,
+            minTime,
+            maxTime,
+            longitude,
+            latitude
+        );
         setHikes(retrivedHikes);
     }
 
@@ -114,6 +145,7 @@ function CoordinatesPicker(props) {
                         <Form.Control
                             type="text"
                             onChange={(ev) => setLongitude(ev.target.value)}
+                            disabled={true}
                         />
                     </Form.Group>
                 </Form>
@@ -125,6 +157,7 @@ function CoordinatesPicker(props) {
                         <Form.Control
                             type="text"
                             onChange={(ev) => setLatitude(ev.target.value)}
+                            disabled={true}
                         />
                     </Form.Group>
                 </Form>
