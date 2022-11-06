@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Hike = require("../models/Hike")
+const Position = require("../models/Position")
 const Difficulty = require("../models/Difficulty")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
@@ -11,6 +12,7 @@ run()
 async function clear() {
     try {
         await Hike.deleteMany()
+        await Position.deleteMany()
     } catch (e) {
         console.log(e.message)
     }
@@ -30,15 +32,22 @@ async function run() {
         let difficultyIndex = generateRandomIntegerInRange(0, 2)
         let description = "description" + i
 
-
         try {
+            const startPosition = await Position.create({
+                "location.coordinates": startPoint
+            })
+
+            const endPosition = await Position.create({
+                "location.coordinates": endPoint
+            })
+
             const hike = await Hike.create({
                 title: title,
                 length: length,
                 expectedTime: expectedTime,
                 ascent: ascent,
-                startPoint: { coordinates: startPoint },
-                endPoint: { coordinates: endPoint },
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
                 difficulty: Difficulty[difficulties[difficultyIndex]],
                 description: description
             })
@@ -52,8 +61,8 @@ async function run() {
 }
 
 function generateRandomPoint() {
-    const longitude = generateRandomDecimalInRangeFormatted(-180, 180, 15)
-    const latitude = generateRandomDecimalInRangeFormatted(-90, 90, 15)
+    const longitude = generateRandomDecimalInRangeFormatted(-179, 179, 15)
+    const latitude = generateRandomDecimalInRangeFormatted(-89, 89, 15)
 
     return [longitude, latitude]
 }

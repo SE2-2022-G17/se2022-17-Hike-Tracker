@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
+
 
 const Difficulty = require("./Difficulty")
 
@@ -27,28 +29,9 @@ const hikeSchema = new mongoose.Schema({
         enum: Difficulty,
         required: true
     },
-    startPoint: {
-        type: {
-            type: String,
-            enum: ['Point'],
-        },
-        coordinates: {
-            type: [Number], // an array representing longitude, latitude and elevation
-            index: { type: '2dsphere' },
-        }
-        // we can add another field here 
-    },
-    endPoint: {
-        type: {
-            type: String,
-            enum: ['Point'],
-        },
-        coordinates: {
-            type: [Number], // an array representing longitude, latitude and elevation
-            index: { type: '2dsphere' },
-        }
-    },
-    referencePoints: [String], //TODO: change this
+    startPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
+    endPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
+    referencePoints: [mongoose.ObjectId], //TODO: change this
     description: String
 })
 
@@ -77,18 +60,6 @@ hikeSchema.query.filterBy = function (filter, min, max) {
     }
 }
 
-hikeSchema.query.filterByDistance = async function (longitude, latitude, maxDist) {
-    if (longitude === undefined || latitude === undefined) {
-        return this
-    }
-
-    //https://mongoosejs.com/docs/api.html#query_Query-near
-    return this.where('startPoint.coordinates').near({
-        center: [longitude, latitude],
-        maxDistance: maxDist,
-        spherical: true //this is important
-    })
-}
 
 // create a model for hike schema
 // it will create a Hike collection in the mongo database
