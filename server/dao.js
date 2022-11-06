@@ -17,7 +17,7 @@ exports.getVistorHikes = async (
 
     try {
         const hikes = await Hike.find()
-            .select({ "__v": 0 })
+            .select({ "__v": 0, "startPoint": 0, "endPoint": 0, "referencePoints": 0 })
             .filterByDifficulty(difficulty)
             .filterBy("length", minLength, maxLength)
             .filterBy("ascent", minAscent, maxAscent)
