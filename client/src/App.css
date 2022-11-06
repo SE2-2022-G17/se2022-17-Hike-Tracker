@@ -32,24 +32,40 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-.authors{
+.authors {
   font-size: small;
   position: absolute;
   bottom: 0;
   max-width: 75%;
 }
 
-.two-options-filter{
+.two-options-filter {
   width: 30%;
   width: 100%;
 }
 
-.difficulty-picker{
+.difficulty-picker {
   padding: 1rem 0rem;
   width: 100%;
+}
+
+.hike-card {
+  margin: 1rem 0rem;
+  width: 64rem;
+}
+
+.hike-detail {
+  display: flex;
+  align-items: center;
+}
+
+.hike-feature{
+  padding-left: 3%;
+  margin: 0;
 }

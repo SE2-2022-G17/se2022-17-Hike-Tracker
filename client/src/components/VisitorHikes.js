@@ -4,13 +4,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import API from '../API';
 import Difficulty from '../constants/Difficulty';
+import HikeCard from './HikeCard';
 
-class Hike {
-    constructor(title, description) {
-      this.title = title;
-      this.description = description;
-    }
-  }
 
 function VisitorHikes() {
     const [difficulty, setDifficulty] = useState(undefined);
@@ -22,7 +17,7 @@ function VisitorHikes() {
     const [maxTime, setMaxTime] = useState(undefined);
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
-    const [hikes, setHikes] = useState();
+    const [hikes, setHikes] = useState([]);
 
     const getVisitorHikes = async (ev) => {
         ev.preventDefault();
@@ -44,7 +39,7 @@ function VisitorHikes() {
                 </Container>
             </Col>
             <Col xs={9}>
-                <p>{JSON.stringify(hikes)}</p>
+                <HikesList hikes={hikes} />
             </Col>
         </Row>
     );
@@ -135,6 +130,19 @@ function CoordinatesPicker(props) {
                 </Form>
             </Col>
         </Row>
+    );
+}
+
+function HikesList(props) {
+
+    return (
+        <Container fluid>
+            {props.hikes.map((hike, index) => {
+                return (
+                    <HikeCard key={hike._id} hike={hike} />
+                );
+            })}
+        </Container>
     );
 }
 
