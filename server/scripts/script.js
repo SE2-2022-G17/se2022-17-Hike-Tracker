@@ -61,6 +61,7 @@ async function run() {
             console.log(e.message)
         }
     }
+    mongoose.disconnect()
     return
 }
 
