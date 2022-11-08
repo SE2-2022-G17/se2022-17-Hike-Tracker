@@ -8,6 +8,8 @@ async function getVistorHikes(
     maxAscent,
     minTime,
     maxTime,
+    city,
+    province,
     longitude,
     latitude
 ) {
@@ -29,6 +31,10 @@ async function getVistorHikes(
         parametes.push("minTime=" + minTime)
     if (maxTime !== undefined && maxTime.trim().length !== 0)
         parametes.push("maxTime=" + maxTime)
+    if (city !== undefined && city.trim().length !== 0)
+        parametes.push("city=" + city)
+    if (province !== undefined && province.trim().length !== 0)
+        parametes.push("province=" + province)
     if (longitude !== undefined)
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined)

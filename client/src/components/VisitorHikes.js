@@ -15,6 +15,8 @@ function VisitorHikes() {
     const [maxAscent, setMaxAscent] = useState(undefined);
     const [minTime, setMinTime] = useState(undefined);
     const [maxTime, setMaxTime] = useState(undefined);
+    const [city, setCity] = useState(undefined)
+    const [province, setProvince] = useState(undefined)
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
@@ -50,6 +52,8 @@ function VisitorHikes() {
             maxAscent,
             minTime,
             maxTime,
+            city,
+            province,
             longitude,
             latitude
         );
@@ -65,6 +69,8 @@ function VisitorHikes() {
                     <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />
                     <MinMaxPicker filter="ascent" setMinFilter={setMinAscent} setMaxFilter={setMaxAscent} />
                     <MinMaxPicker filter="time" setMinFilter={setMinTime} setMaxFilter={setMaxTime} />
+                    <TextField filter="City" setFilter={setCity} />
+                    <TextField filter="Province" setFilter={setProvince} />
                     <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
                     <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
                 </Container>
@@ -170,12 +176,33 @@ function HikesList(props) {
 
     return (
         <Container fluid>
+            {props.hikes.length === 0 ? <h3>No hikes available</h3> : undefined}
             {props.hikes.map((hike, index) => {
                 return (
                     <HikeCard key={hike._id} hike={hike} />
                 );
             })}
         </Container>
+    );
+}
+
+function TextField(props) {
+    const { filter, setFilter } = props;
+
+    return (
+        <Row className='basic-filter'>
+            <Col>
+                <Form>
+                    <Form.Group className="mb-3">
+                        <Form.Label>{filter + ": "}</Form.Label>
+                        <Form.Control
+                            type="text"
+                            onChange={(ev) => setFilter(ev.target.value)}
+                        />
+                    </Form.Group>
+                </Form>
+            </Col>
+        </Row>
     );
 }
 

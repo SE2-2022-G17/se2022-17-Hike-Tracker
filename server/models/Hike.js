@@ -32,6 +32,8 @@ const hikeSchema = new mongoose.Schema({
     startPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
     endPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
     referencePoints: [mongoose.ObjectId], //TODO: change this
+    city: String,
+    province: String,
     description: String
 })
 
@@ -67,6 +69,24 @@ hikeSchema.query.filterByPositions = function (longitude, latitude, positionRefs
 
     return this.where('startPoint').in(positionRefs)
 }
+
+hikeSchema.query.filterByCityAndProvince = function (city, province) {
+    if (city === undefined && province === undefined) {
+        return this
+    }
+
+    if (city === undefined && province !== undefined) {
+        return this.where({ province: province }) // regex for case insensitive
+    }
+
+    if (city !== undefined && province === undefined) {
+        return this.where({ city: city })
+    }
+
+    return this.where({ city: city })
+        .where({ province: province })
+}
+
 
 // create a model for hike schema
 // it will create a Hike collection in the mongo database

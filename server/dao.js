@@ -13,6 +13,8 @@ exports.getVistorHikes = async (
     maxAscent,
     minTime,
     maxTime,
+    city,
+    province,
     longitude,
     latitude
 ) => {
@@ -28,8 +30,9 @@ exports.getVistorHikes = async (
             .filterBy("length", minLength, maxLength)
             .filterBy("ascent", minAscent, maxAscent)
             .filterBy("expectedTime", minTime, maxTime)
+            .filterByCityAndProvince(city, province)
             .filterByPositions(longitude, latitude, nearPositions)
-            .populate('startPoint')
+            .populate('startPoint') // populate is basically a join
             .populate('endPoint')
 
 

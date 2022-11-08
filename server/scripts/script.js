@@ -31,6 +31,8 @@ async function run() {
         let ascent = generateRandomIntegerInRange(-420, 8848) // Dead Sea and Mount Everest 
         let difficultyIndex = generateRandomIntegerInRange(0, 2)
         let description = "description" + i
+        let city = "city" + i 
+        let province = "PR" + i % 3 // just to have some province associate to the same cities
 
         try {
             const startPosition = await Position.create({
@@ -49,6 +51,8 @@ async function run() {
                 startPoint: startPosition._id,
                 endPoint: endPosition._id,
                 difficulty: Difficulty[difficulties[difficultyIndex]],
+                city: city,
+                province: province,
                 description: description
             })
             await hike.save()
