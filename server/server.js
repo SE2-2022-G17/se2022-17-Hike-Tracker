@@ -23,6 +23,8 @@ app.get('/visitor/hikes', (req, res) => {
     let maxAscent = req.query.maxAscent
     let minTime = req.query.minTime
     let maxTime = req.query.maxTime
+    let city = req.query.city
+    let province = req.query.province
     let longitude = req.query.longitude
     let latitude = req.query.latitude
      
@@ -34,6 +36,8 @@ app.get('/visitor/hikes', (req, res) => {
         maxAscent = maxAscent,
         minTime = minTime,
         maxTime = maxTime,
+        city = city,
+        province = province,
         longitude = longitude, 
         latitude = latitude
     )
