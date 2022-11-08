@@ -28,7 +28,7 @@ app.get('/visitor/hikes', (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
      
-    dao.getVistorHikes(
+    dao.getVisitorHikes(
         difficulty = difficulty,
         minLength = minLength,
         maxLength = maxLength,

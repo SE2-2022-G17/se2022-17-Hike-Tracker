@@ -1,6 +1,6 @@
 const url = 'http://localhost:3000';
 
-async function getVistorHikes(
+async function getVisitorHikes(
     difficulty,
     minLength,
     maxLength,
@@ -35,9 +35,9 @@ async function getVistorHikes(
         parametes.push("city=" + city)
     if (province !== undefined && province.trim().length !== 0)
         parametes.push("province=" + province)
-    if (longitude !== undefined)
+    if (longitude !== undefined && longitude.trim().length !== 0)
         parametes.push("longitude=" + longitude)
-    if (latitude !== undefined)
+    if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
     
     query += parametes.join("&")
@@ -47,6 +47,6 @@ async function getVistorHikes(
     return hikes
 }
 
-const API = { getVistorHikes };
+const API = { getVisitorHikes };
 
 export default API;

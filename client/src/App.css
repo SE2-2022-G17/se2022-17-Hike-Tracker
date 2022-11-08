@@ -73,3 +73,11 @@
 .basic-filter{
   width: 50%;
 }
+
+.coordinates{
+  color: gray;
+}
+
+.hike-row {
+  padding: 1rem 0rem;
+}
