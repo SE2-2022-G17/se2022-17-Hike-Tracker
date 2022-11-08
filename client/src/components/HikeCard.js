@@ -27,6 +27,9 @@ function HikeCard(props) {
                     <Col>
                         {hike.difficulty}
                     </Col>
+                    <Col>
+                        {hike.city + ", " + hike.province}
+                    </Col>
                 </Row>
             </Card.Body>
         </Card>

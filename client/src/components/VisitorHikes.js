@@ -176,6 +176,7 @@ function HikesList(props) {
 
     return (
         <Container fluid>
+            {props.hikes.length === 0 ? <h3>No hikes available</h3> : undefined}
             {props.hikes.map((hike, index) => {
                 return (
                     <HikeCard key={hike._id} hike={hike} />
