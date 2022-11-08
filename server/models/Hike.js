@@ -76,15 +76,15 @@ hikeSchema.query.filterByCityAndProvince = function (city, province) {
     }
 
     if (city === undefined && province !== undefined) {
-        return this.where({ province: new RegExp(province, "i") }) // regex for case insensitive
+        return this.where({ province: province }) // regex for case insensitive
     }
 
     if (city !== undefined && province === undefined) {
-        return this.where({ city: new RegExp(city, "i") })
+        return this.where({ city: city })
     }
 
-    return this.where({ city: new RegExp(city, "i") })
-        .where({ province: new RegExp(province, "i") })
+    return this.where({ city: city })
+        .where({ province: province })
 }
 
 
