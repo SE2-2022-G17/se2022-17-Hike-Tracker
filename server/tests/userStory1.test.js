@@ -2,6 +2,8 @@ const request = require('supertest');
 const app = require("../server.js");
 const mongoose = require('mongoose');
 
+mongoose.connect("mongodb://localhost/hike_tracker");
+
 describe('Test API for getting hikes', () => {
     it('test visitor hikes', async() => {
         let query = "?minAscent=1000&maxAscent=3000"
@@ -20,8 +22,7 @@ describe('Test API for getting hikes', () => {
     })
 });
 
-afterAll(() => {
+afterAll(async () => {
     app.close();
-    mongoose.connection.close();
-    mongoose.disconnect();
+    await mongoose.disconnect();
 });
