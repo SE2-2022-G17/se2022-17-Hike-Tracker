@@ -5,7 +5,7 @@ const Position = require("./models/Position")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
-exports.getVistorHikes = async (
+exports.getVisitorHikes = async (
     difficulty,
     minLength,
     maxLength,

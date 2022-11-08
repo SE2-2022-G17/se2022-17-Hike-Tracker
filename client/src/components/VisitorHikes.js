@@ -1,5 +1,5 @@
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import API from '../API';
@@ -20,6 +20,14 @@ function VisitorHikes() {
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
+
+    useEffect(() => {
+        API.getVisitorHikes()
+            .then(retrivedHikes => {
+                setHikes(retrivedHikes);
+            })
+            .catch(err => console.log(err));
+    }, []);
 
     const getVisitorHikes = async (ev) => {
         ev.preventDefault();
@@ -43,8 +51,14 @@ function VisitorHikes() {
         if (maxTime !== undefined && Number.isNaN(Number(maxTime))) {
             return
         }
+        if (longitude !== undefined && Number.isNaN(Number(longitude))) {
+            return
+        }
+        if (latitude !== undefined && Number.isNaN(Number(latitude))) {
+            return
+        }
 
-        const retrivedHikes = await API.getVistorHikes(
+        const retrivedHikes = await API.getVisitorHikes(
             difficulty,
             minLength,
             maxLength,
@@ -151,7 +165,6 @@ function CoordinatesPicker(props) {
                         <Form.Control
                             type="text"
                             onChange={(ev) => setLongitude(ev.target.value)}
-                            disabled={true}
                         />
                     </Form.Group>
                 </Form>
@@ -163,7 +176,6 @@ function CoordinatesPicker(props) {
                         <Form.Control
                             type="text"
                             onChange={(ev) => setLatitude(ev.target.value)}
-                            disabled={true}
                         />
                     </Form.Group>
                 </Form>

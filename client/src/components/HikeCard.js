@@ -9,6 +9,9 @@ function HikeCard(props) {
         <Card className="hike-card">
             <Card.Body>
                 <Card.Title>{hike.title}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">
+                    {"[" + hike.startPoint.location.coordinates + "]"}
+                </Card.Subtitle>
                 <Card.Text>
                     {hike.description}
                 </Card.Text>
