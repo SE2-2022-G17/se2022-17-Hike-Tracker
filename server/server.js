@@ -3,6 +3,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const dao = require('./dao');
+const http = require('http');
 
 
 // init express
@@ -45,9 +46,11 @@ app.get('/visitor/hikes', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
-
+const server=http.createServer(app);
 
 // activate the server
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+server.listen(port, () => {
+    console.log(`app listening at http://localhost:${port}`);
 });
+
+module.exports = server;

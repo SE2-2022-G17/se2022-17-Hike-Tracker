@@ -5,7 +5,6 @@ const Difficulty = require("../models/Difficulty")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
-
 run()
 //clear()
 

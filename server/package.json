@@ -4,7 +4,7 @@
     "description": "se2 server",
     "main": "server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest --forceExit",
         "start": "node server.js"
     },
     "author": "Andrea Amato",
@@ -19,5 +19,9 @@
         "passport": "^0.6.0",
         "passport-local": "^1.0.0",
         "sqlite3": "^5.0.2"
-    }
+    },
+    "devDependencies": {
+        "jest": "^29.2.0",
+        "supertest": "^6.3.0"
+}
 }
