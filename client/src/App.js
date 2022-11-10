@@ -9,6 +9,7 @@ import {
   Route,
   Link,
 } from "react-router-dom";
+import LocalGuide from './components/LocalGuide';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Link to="visitor/hikes">Hikes</Link>} />
         <Route path="visitor/hikes" element={<VisitorHikes />} />
+        <Route path="/localGuide" element={<LocalGuide />}/>
       </Routes>
     </BrowserRouter>
   );
