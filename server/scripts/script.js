@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Hike = require("../models/Hike")
 const Position = require("../models/Position")
 const Difficulty = require("../models/Difficulty")
+const User = require("../models/User")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
@@ -12,6 +13,7 @@ async function clear() {
     try {
         await Hike.deleteMany()
         await Position.deleteMany()
+        await User.deleteMany()
     } catch (e) {
         console.log(e.message)
     }

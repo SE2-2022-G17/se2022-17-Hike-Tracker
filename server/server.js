@@ -28,7 +28,7 @@ app.get('/visitor/hikes', (req, res) => {
     let province = req.query.province
     let longitude = req.query.longitude
     let latitude = req.query.latitude
-     
+
     dao.getVisitorHikes(
         difficulty = difficulty,
         minLength = minLength,
@@ -39,14 +39,27 @@ app.get('/visitor/hikes', (req, res) => {
         maxTime = maxTime,
         city = city,
         province = province,
-        longitude = longitude, 
+        longitude = longitude,
         latitude = latitude
     )
         .then((hikes) => { res.json(hikes); })
         .catch((error) => { res.status(500).json(error); });
 });
 
-const server=http.createServer(app);
+app.post('/register', (req, res) => {
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    dao.registerUser(firstName, lastName, email, password)
+        .then(() => { res.status(201).end(); })
+        .catch((error) => { res.status(400).json(error); });
+
+    return
+});
+
+const server = http.createServer(app);
 
 // activate the server
 server.listen(port, () => {

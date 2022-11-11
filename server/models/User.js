@@ -18,35 +18,23 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true 
     },
-    type: {
+    role: {
         type: String,
         enum: Type,
+        default: Type.hiker
+    },
+    active: {
+        type: Boolean,
+        default: false
+    },
+    hash: {
+        type: String,
         required: true
     }
 })
 
-//hash password before saving user
-userSchema.pre("save", function (next) {
-    const user = this;
-
-    if (this.isModified("password") || this.isNew) {
-        bcrypt.genSalt(10, function (saltError, salt) {
-            if (saltError) return next(saltError);
-            else {
-                bcrypt.hash(user.password, salt, function (err, hash) {
-                    if (err) return next(err);
-
-                    user.password = hash;
-                    next();
-                })
-            }
-        })
-    } else {
-        return next();
-    }
-});
 
 //check password
 userSchema.methods.comparePassword = function (password, callback) {
