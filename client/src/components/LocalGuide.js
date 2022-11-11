@@ -28,17 +28,20 @@ function SideMenu(){
 
 function MainContent(){
     const [title,setTitle] = useState('');
-    const [length,setLength] = useState(0);
+    const [length,setLength] = useState('');
     const [time,setTime] = useState('');
-    const [ascent,setAscent] = useState(0);
+    const [ascent,setAscent] = useState('');
     const [difficulty,setDifficulty] = useState('');
+    const [start,setStart] = useState({longitude:'',latitude:''});
+    const [end,setEnd] = useState({longitude:'',latitude:''});
+    const [references,setReferences] = useState([{longitude:'',latitude:''}]);
     const [description,setDescription] = useState('');
     const [track,setTrack]=useState();
 
-    const handleSubmit = (event) =>{
+    const handleSubmit = async (event) =>{
         event.preventDefault();
-        //aggiusta data
-        //API.sendData(tutto)
+        //parameters controls 
+        await API.sendHikeDescription(title,length,time,ascent,difficulty,start,end,references,description,track);
     }
 
     return <>
@@ -58,8 +61,8 @@ function MainContent(){
                 <Form.Control type="number" required={true} value={length} onChange={event => setLength(event.target.value)}  placeholder="Enter the length in kilometers"/>
             </Form.Group>
             <Form.Group>
-                <Form.Label>Expected time:</Form.Label>
-                <Form.Control type="text" required={true} value={time} onChange={event => setTime(event.target.value)}  placeholder="e.g. 1h 20m"/>
+                <Form.Label>Expected time (minutes):</Form.Label>
+                <Form.Control type="number" required={true} value={time} onChange={event => setTime(event.target.value)}  placeholder="Enter the expected time in minutes"/>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Ascent (ms):</Form.Label>
@@ -67,23 +70,96 @@ function MainContent(){
             </Form.Group>
             <Form.Group>
                 <Form.Label>Difficulty:</Form.Label>
-                <Form.Select onChange={event => setDifficulty(event.target.key)}>
-                    <option key="Tourist">Tourist</option>
-                    <option key="Hiker">Hiker</option>
-                    <option kry="ProfessionalHiker">ProfessionalHiker</option>
+                <Form.Select onChange={event => setDifficulty(event.target.value)}>
+                    <option value="Tourist">Tourist</option>
+                    <option value="Hiker">Hiker</option>
+                    <option value="Professional hiker">Professional hiker</option>
                 </Form.Select>
             </Form.Group>
             <Form.Group>
-                <Form.Label>Start point:</Form.Label>
-                <Form.Control placeholder="Enter the start point"/>
+                <Form.Label><b>Start point</b></Form.Label>
+            </Form.Group>
+            <Form.Group as={Row}>
+                <Col sm="4">
+                    <Form.Label>Longitude:</Form.Label>
+                    <Form.Control type="number" placeholder="Enter the longitude" value={start.longitude} onChange={event => 
+                        setStart((oldStart)=>{
+                            return {
+                                longitude:event.target.value,
+                                latitude:oldStart.latitude
+                            }
+                    })}/>
+                </Col>
+                <Col sm="4">
+                <Form.Label> Latitude:</Form.Label>
+                    <Form.Control type="number" placeholder="Enter the latitude" value={start.latitude} onChange={event => 
+                        setStart((oldStart)=>{
+                            return {
+                                longitude:oldStart.longitude,
+                                latitude:event.target.value
+                            }
+                    })}/>
+                </Col>
             </Form.Group>
             <Form.Group>
-                <Form.Label>End point:</Form.Label>
-                <Form.Control placeholder="Enter the end point"/>
+                <Form.Label><b>End point</b></Form.Label>
+            </Form.Group>
+            <Form.Group as={Row}>
+                <Col sm="4">
+                    <Form.Label>Longitude:</Form.Label>
+                    <Form.Control type="number" placeholder="Enter the longitude" value={end.longitude} onChange={event => 
+                        setEnd((oldEnd)=>{
+                            return {
+                                longitude:event.target.value,
+                                latitude:oldEnd.latitude
+                            }
+                    })}/>
+                </Col>
+                <Col sm="4">
+                <Form.Label> Latitude:</Form.Label>
+                    <Form.Control type="number" placeholder="Enter the latitude" value={end.latitude} onChange={event => 
+                        setEnd((oldEnd)=>{
+                            return {
+                                longitude:oldEnd.longitude,
+                                latitude:event.target.value
+                            }
+                    })}/>
+                </Col>
             </Form.Group>
             <Form.Group>
-                <Form.Label>Reference point:</Form.Label>
-                <Form.Control placeholder="Enter the reference point"/>
+                <Form.Label><b>Reference point:</b></Form.Label>
+            </Form.Group>
+            <Form.Group as={Row}>
+                <Col sm="4">
+                    <Form.Label>Longitude:</Form.Label>
+                    <Form.Control type="number" placeholder="Enter the longitude" value={references[0].longitude} onChange={event => 
+                        setReferences((oldReferences)=>{
+                            return oldReferences.map((reference,index)=>{
+                                if(index===0){
+                                    return {
+                                        longitude:event.target.value,
+                                        latitude:oldReferences[0].latitude}
+                                }else {
+                                    return reference;
+                                }
+                            })
+                    })}/>
+                </Col>
+                <Col sm="4">
+                <Form.Label> Latitude:</Form.Label>
+                    <Form.Control key={1} type="number" placeholder="Enter the latitude" value={references[0].latitude} onChange={event => 
+                        setReferences((oldReferences)=>{
+                            return oldReferences.map((reference,index)=>{
+                                if(index===0){
+                                    return {
+                                        longitude:oldReferences[0].longitude,
+                                        latitude:event.target.value }
+                                }else {
+                                    return reference;
+                                }
+                            })
+                    })}/>
+                </Col>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Description:</Form.Label>

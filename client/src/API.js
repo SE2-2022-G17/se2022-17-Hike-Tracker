@@ -47,6 +47,30 @@ async function getVisitorHikes(
     return hikes
 }
 
-const API = { getVisitorHikes };
+async function sendHikeDescription(title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track){
+    const response = await fetch(url + '/localGuide/addHike',{
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+         },
+        //credentials: 'include',
+        body: JSON.stringify({
+            "title":title,
+            "length":length,
+            "time": time,
+            "ascent": ascent,
+            "difficulty": difficulty,
+            "startPoint": startPoint,
+            "endPoint": endPoint,
+            "referencePoints": referencePoints,
+            "description": description,
+            "track": track
+        }) 
+    })
+    
+    return response.ok;
+}
+
+const API = { getVisitorHikes, sendHikeDescription };
 
 export default API;
