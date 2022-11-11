@@ -4,6 +4,8 @@ const express = require('express');
 const morgan = require('morgan');
 const dao = require('./dao');
 const http = require('http');
+const jwt = require('jsonwebtoken');
+const Type = require('./models/UserType');
 
 
 // init express
@@ -46,7 +48,7 @@ app.get('/visitor/hikes', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
-app.post('/register', (req, res) => {
+app.post('/user/register', (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const email = req.body.email;
@@ -59,7 +61,7 @@ app.post('/register', (req, res) => {
     return
 });
 
-app.post('/login', (req, res) => {
+app.post('/user/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -68,6 +70,37 @@ app.post('/login', (req, res) => {
         .catch((error) => { res.status(error).end(); });
 
 });
+
+/* This is an example of protected endpoint */
+/* use the verifyUserToken middleware in order to get and validate the token */
+/* The client should send in its requests an Authorization header in this format: */
+/* Bearer <token> */
+app.get('/example/protected', verifyUserToken, async (req, res) => {
+    const user = req.user;
+    if(user.role === Type.hiker){
+        console.log("USER is an hiker");
+    }
+    res.status(201).end();
+});
+
+
+async function verifyUserToken(req, res, next) {
+    if (!req.headers.authorization) {
+        return res.status(401).send("Unauthorized request");
+    }
+    const token = req.headers["authorization"].split(" ")[1];
+    if (!token) {
+        return res.status(401).send("Access denied. No token provided.");
+    }
+    try {
+        const decodedUser = jwt.verify(token, 'my_secret_key');
+        req.user = decodedUser;
+        next();
+    } catch (err) {
+        res.status(400).send("Invalid token.");
+    }
+};
+
 
 
 const server = http.createServer(app);

@@ -102,6 +102,7 @@ exports.loginUser = async (email, password) => {
 
 }
 
+/* Util function to generate random 6 digit activation code */
 function generateActivationCode(length = 6) {
     let activationCode = ""
 
