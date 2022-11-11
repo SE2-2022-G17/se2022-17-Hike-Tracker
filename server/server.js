@@ -59,6 +59,17 @@ app.post('/register', (req, res) => {
     return
 });
 
+app.post('/login', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    return dao.loginUser(email, password)
+        .then((token) => { res.json(token); })
+        .catch((error) => { res.status(error).end(); });
+
+});
+
+
 const server = http.createServer(app);
 
 // activate the server

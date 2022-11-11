@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
+const jwt = require('jsonwebtoken')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
@@ -80,10 +81,31 @@ exports.registerUser = async (firstName, lastName, email, password) => {
 
 }
 
+exports.loginUser = async (email, password) => {
+    const user = await User.findOne({ email: email })
+
+    if (user === null)
+        throw 404
+
+    const result = await bcrypt.compare(password, user.hash)
+
+    if (result === false)
+        throw 401
+
+    const token = jwt.sign({
+        'email': user.email,
+        'role': user.role,
+        'active': user.active
+    }, 'my_secret_key')
+
+    return { token: token }
+
+}
+
 function generateActivationCode(length = 6) {
     let activationCode = ""
 
-    for(let i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
         activationCode += (Math.floor(Math.random() * 9) + 1)
     }
 
