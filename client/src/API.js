@@ -1,5 +1,9 @@
 const url = 'http://localhost:3000';
 
+async function signUp(credential){}
+
+async function logIn(credential){}
+
 async function getVisitorHikes(
     difficulty,
     minLength,
@@ -47,6 +51,6 @@ async function getVisitorHikes(
     return hikes
 }
 
-const API = { getVisitorHikes };
+const API = { getVisitorHikes, logIn, signUp };
 
 export default API;
