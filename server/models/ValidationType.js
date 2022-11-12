@@ -1,7 +1,7 @@
-const validationType = {
+const ValidationType = {
     notValidated: 0,
     mailOnly: 1,
     mailAndAdmin: 2
 }
 
-module.exports = validationType;
+module.exports = ValidationType;

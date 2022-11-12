@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const Type = require("./UserType")
-const validationType = require("./ValidationType")
+const ValidationType = require("./ValidationType")
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true 
+        unique: true
     },
     role: {
         type: String,
@@ -22,8 +22,9 @@ const userSchema = new mongoose.Schema({
         default: Type.hiker
     },
     active: {
-        type: int,
-        default: validationType.notValidated
+        type: Number,
+        enum: ValidationType,
+        default: ValidationType.notValidated
     },
     hash: {
         type: String,
