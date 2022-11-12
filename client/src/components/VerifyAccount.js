@@ -1,11 +1,12 @@
 import { Card,Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useState } from 'react'
-import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import API from '../API';
+import { useNavigate,useParams } from 'react-router-dom';
 
-
-function VerCard(props){
+function VerifyAccount(){
+    const email = useParams().email;
+    const navigate = useNavigate();
     const [code,setCode] = useState('Insert code');
     const [valid,setValid] = useState(false);
     const [messageVisible,setMessageVisible] = useState(false);
@@ -13,23 +14,21 @@ function VerCard(props){
     const handleSubmit = (event) => {
         event.preventDefault();
 
+        console.log(email);
         // validation that forms are not empty
-        
         if (code == "") {
             setValid(false);
             setMessageVisible(true);
         }
         else{
             setValid(true);
-            API.validateEmail(props.email,code)
+            API.validateEmail(email,code)
             .then((response)=>{
                 if(response=='OK'){
-                    props.setEmailIsValidated(true);
                     setMessageVisible(true);
                     setValid(true);
                 }
                 else{
-                    props.setEmailIsValidated(false);
                     setMessageVisible(true);
                     setValid(false);
                 };
@@ -42,17 +41,16 @@ function VerCard(props){
             <Card.Body>
                 <Form>
                     <Container>
-                        {
-                            props.emailSent ?
-                                <Row>
-                                    <Col>
-                                        <Card.Text>
-                                            Verification code sent on email.
-                                     </Card.Text>
-                                    </Col>
-                                </Row>:
-                                <></>
-                        }
+                        <Row>
+                            <Col>
+                                <Card.Title>
+                                    This account requires email verification.
+                                    </Card.Title>
+                                    <Card.Text>
+                                        Please insert the code you received to verify your email.
+                                    </Card.Text>
+                                </Col>
+                            </Row>
                         <Row>
                             <Col>
                                 <Form.Group controlId='verifyCode' className='base-form'>
@@ -62,12 +60,11 @@ function VerCard(props){
                             </Col>
                             <Col>
                                 {
-                                    props.emailSent ? 
-                                        valid ?
+                                    valid ?
                                         <></>:
-                                        <Button type='submit' onClick={handleSubmit} className='primary'>Verify</Button>:
-                                    <Spinner animation="border" variant="success" />
+                                        <Button type='submit' onClick={handleSubmit} className='primary'>Verify</Button>    
                                 }
+                                
                             </Col>
                         </Row>
                         {
@@ -76,6 +73,9 @@ function VerCard(props){
                                     <Row>
                                         <Col>
                                             <Alert variant='success'>Email correctly verified.</Alert>
+                                        </Col>
+                                        <Col>
+                                            <Button onClick={()=>{navigate('/login')}}>Go to login</Button>
                                         </Col>
                                     </Row> :
                                     <Row>
@@ -92,4 +92,4 @@ function VerCard(props){
     </>);
 }
 
-export {VerCard} ;
+export default VerifyAccount;

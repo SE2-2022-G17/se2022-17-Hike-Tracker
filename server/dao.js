@@ -10,7 +10,7 @@ const validationType = require('./models/ValidationType')
 
 
 
-mongoose.connect("mongodb://localhost/hike_tracker")
+mongoose.connect("mongodb://localhost/hike_tracker");
 
 exports.getVisitorHikes = async (
     difficulty,
