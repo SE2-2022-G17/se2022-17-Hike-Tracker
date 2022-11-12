@@ -13,8 +13,6 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Link,
-  Navigate,
   useNavigate
 } from "react-router-dom";
 
@@ -42,6 +40,7 @@ function MainApp() {
         console.log(user.token)
         localStorage.setItem('token', user.token);
 
+        setShowAuthButton(true);
         setLoggedIn(true);
         setUser(user);
         navigate('/');
@@ -56,6 +55,7 @@ function MainApp() {
     API.signUp(credentials)
       .then(user => {
         setUser(user);
+        setShowAuthButton(true);
         navigate('/');
       })
       .catch(err => {
@@ -71,6 +71,21 @@ function MainApp() {
     navigate('/');
   }
 
+  useEffect(() => {
+    const authToken = localStorage.getItem('token');
+    if (authToken === null) {
+      setLoggedIn(false);
+      setShowAuthButton(true);
+      console.log("User is not logged-in");
+    }
+    else {
+      console.log("User token is: " + authToken);
+      setShowAuthButton(true);
+      setLoggedIn(true);
+    }
+
+  }, []);
+
   return (
     <>
       <NavigationBar
@@ -78,7 +93,7 @@ function MainApp() {
         doLogOut={doLogOut}
         openLogin={doLogIn}
         showAuthButton={showAuthButton}
-        hideAuthButton={() => setShowAuthButton(false)}
+        setShowAuthButton={setShowAuthButton}
       />
       <Routes>
         <Route path="/" element={<VisitorHikes />} />

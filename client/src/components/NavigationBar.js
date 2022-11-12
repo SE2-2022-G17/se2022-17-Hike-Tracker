@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Button, Col } from 'react-bootstrap';
 import { BoxArrowRight } from 'react-bootstrap-icons';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 
 function NavigationBar(props) {
@@ -24,7 +24,7 @@ function NavigationBar(props) {
                             <NavLink to="/login">
                                 <Button
                                     variant="outline-info"
-                                    onClick={props.hideAuthButton}>
+                                    onClick={() => { props.setShowAuthButton(false) }}>
                                     Login
                                 </Button>
                             </NavLink>

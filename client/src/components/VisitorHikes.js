@@ -22,7 +22,6 @@ function VisitorHikes() {
     const [hikes, setHikes] = useState([]);
 
     useEffect(() => {
-        console.log(localStorage.getItem('token'))
         API.getVisitorHikes()
             .then(retrivedHikes => {
                 setHikes(retrivedHikes);
