@@ -1,11 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React from 'react';
+import { Row, Col, Alert } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import VisitorHikes from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import NavigationBar from './components/NavigationBar';
+import { ProfileModal } from './components/Profile';
 
 import API from './API';
 
@@ -32,6 +34,7 @@ function MainApp() {
   const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showAuthButton, setShowAuthButton] = useState(true);
+  const [modalShow, setModalShow] = useState(false);
 
   const navigate = useNavigate();
 
@@ -40,7 +43,6 @@ function MainApp() {
       .then(user => {
         console.log(user.token)
         localStorage.setItem('token', user.token);
-
         setShowAuthButton(true);
         setLoggedIn(true);
         setUser(user);
@@ -95,7 +97,17 @@ function MainApp() {
         openLogin={doLogIn}
         showAuthButton={showAuthButton}
         setShowAuthButton={setShowAuthButton}
+        setModalShow={setModalShow}
       />
+      {errorMessage ?  //Error Alert
+        <Row className="justify-content-center"><Col xs={6}>
+          <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible>{errorMessage}</Alert>
+        </Col></Row>
+        : false}
+      <ProfileModal
+        show={modalShow}
+        onHide={() => setModalShow(false)} 
+        user={user}/>
       <Routes>
         <Route path="/" element={<VisitorHikes />} />
         <Route path="visitor/hikes" element={<VisitorHikes />} />
@@ -103,7 +115,7 @@ function MainApp() {
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/localGuide" element={<LocalGuide />} />
       </Routes>
     </>
   );

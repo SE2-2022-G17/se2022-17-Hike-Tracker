@@ -1,10 +1,11 @@
 import React from 'react';
 import { Navbar, Button, Col } from 'react-bootstrap';
+import { BiUserCircle } from "react-icons/bi";
 import { BoxArrowRight } from 'react-bootstrap-icons';
 import { NavLink } from 'react-router-dom';
 
-
 function NavigationBar(props) {
+
     return (
         <Navbar bg="dark" variant="dark" className="navigation-bar">
             <Col xs={9}>
@@ -15,11 +16,16 @@ function NavigationBar(props) {
                 {
                     props.showAuthButton ?
                         props.loggedIn ?
-                            <NavLink to="/">
-                                <span onClick={props.doLogOut}>
-                                    <BoxArrowRight className="clickable logout-button" />
+                            <>
+                                <span onClick={() => props.setModalShow(true)} >
+                                    <BiUserCircle className="clickable logout-button mx-3" />
                                 </span>
-                            </NavLink>
+                                <NavLink to="/">
+                                    <span onClick={props.doLogOut}>
+                                        <BoxArrowRight className="clickable logout-button" />
+                                    </span>
+                                </NavLink>
+                            </>
                             :
                             <NavLink to="/login">
                                 <Button
