@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
+const validationType = require('./models/ValidationType')
 
 
 
@@ -49,7 +50,7 @@ exports.getVisitorHikes = async (
 
 }
 
-exports.registerUser = async (firstName, lastName, email, password) => {
+exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
 
@@ -75,7 +76,8 @@ exports.registerUser = async (firstName, lastName, email, password) => {
         lastName: lastName,
         email: email,
         hash: hash,
-        activationCode: activationCode
+        activationCode: activationCode,
+        role: role
     })
 
     await user.save()
@@ -112,7 +114,7 @@ exports.validateUser = async (email, activationCode) => {
     if(user.activationCode !== activationCode)
         throw 404
 
-    user.active = true; //activate account if codes are equal
+    user.active = validationType.mailOnly; //activate account if codes are equal
     await user.save()
     console.log(user);
 }
