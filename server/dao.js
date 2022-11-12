@@ -58,15 +58,13 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
     var transporter = nodemailer.createTransport({
         service: "hotmail",
         auth: {
-            user: "fbs305924@outlook.com",
-            pass: "!Sbf236858"
-            //user: "se2g17@outlook.com",
-            //pass: "c1cl@m1n0"
+            user: "se2g17@outlook.com",
+            pass: "c1cl@m1n0"
         }
     })
 
     var mailOptions = {
-        from: "fbs305924@outlook.com",
+        from: "se2g17@outlook.com",
         to: email,
         subject: "Activation Code",
         text: activationCode
