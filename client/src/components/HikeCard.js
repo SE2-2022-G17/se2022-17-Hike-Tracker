@@ -10,7 +10,10 @@ function HikeCard(props) {
             <Card.Body>
                 <Card.Title>{hike.title}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
-                    {"[" + hike.startPoint.location.coordinates + "]"}
+                    {(hike.startPoint !== null && hike.startPoint.location !== null) ?
+                        "[" + hike.startPoint.location.coordinates + "]"
+                        : undefined
+                    }
                 </Card.Subtitle>
                 <Card.Text>
                     {hike.description}
