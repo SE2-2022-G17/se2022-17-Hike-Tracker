@@ -102,3 +102,31 @@
 .home-page-link{
   text-decoration: none;
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.underlined {
+  text-decoration: underline;
+}
+
+.alternative {
+  color: gray;
+  padding: 1rem 0rem;
+}
+
+
+.login-container {
+  width: 45%;
+  padding-top: 2rem;
+}
+
+.base-form{
+  padding: 2% 0%;
+}
+
+.signup-container {
+  width: 45%;
+  padding-top: 2rem;
+}

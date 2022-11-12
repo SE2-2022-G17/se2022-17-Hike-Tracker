@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BackButton } from './Utility';
 
 function SignUpForm(props) {
@@ -17,7 +18,7 @@ function SignUpForm(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         props.setErrorMessage('');
-        const credentials = { name, surname, username, password, type};
+        const credentials = { name, surname, username, password, type };
 
         // validation that forms are not empty
         let valid = true;
@@ -44,13 +45,12 @@ function SignUpForm(props) {
 
     return (
 
-        <Container>
-            <BackButton setDirty={props.setDirty} />
+        <Container className="signup-container">
             <Row className="justify-content-center">
                 <Col xs={6}>
                     <h2 className='text-center'>Sign Up</h2>
                     <Form >
-                        <Form.Group controlId='type'>
+                        <Form.Group controlId='type' className='base-form'>
                             <Form.Label >Who are you?</Form.Label>
                             <Form.Select aria-label="Tipo di iscrizione" onChange={(event) => { setType(event.target.value); }} >
                                 <option value="hiker">Hiker</option>
@@ -60,34 +60,31 @@ function SignUpForm(props) {
                                 <option value="emergencyOperator">Emergency Operator</option>
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group controlId='name'>
+                        <Form.Group controlId='name' className='base-form'>
                             <Form.Label>First Name:</Form.Label>
                             <Form.Control type='text' value={name} onChange={ev => setName(ev.target.value)} />
                         </Form.Group>
-                        <Form.Group controlId='surname'>
+                        <Form.Group controlId='surname' className='base-form'>
                             <Form.Label>Last name:</Form.Label>
                             <Form.Control type='text' value={surname} onChange={ev => setSurname(ev.target.value)} />
                         </Form.Group>
-                        <Form.Group controlId='username'>
+                        <Form.Group controlId='username' className='base-form'>
                             <Form.Label>Email:</Form.Label>
                             <Form.Control type='email' value={username} onChange={ev => setUsername(ev.target.value)} />
                         </Form.Group>
-                        <Form.Group controlId='password'>
+                        <Form.Group controlId='password' className='base-form'>
                             <Form.Label>Password:</Form.Label>
                             <Form.Control type='password' value={password} onChange={ev => setPassword(ev.target.value)} />
                         </Form.Group>
-                        <Form.Group controlId='confirmPassword'>
+                        <Form.Group controlId='confirmPassword' className='base-form'>
                             <Form.Label>Confirm Password:</Form.Label>
                             <Form.Control type='password' value={confirmPassword} onChange={ev => setConfirmPassword(ev.target.value)} />
                         </Form.Group>
                         <Col className='text-center my-3'>
                             <Button type='submit' className='primary' onClick={handleSubmit}>Sign Up</Button>
+                            <p className='alternative'>Already registered? <Link to='/login'>Login</Link></p>
                         </Col>
                     </Form>
-                    <p className="forgot-password text-right">
-                        Already registered?
-                        <Button variant="secondary" size="sm" onClick={() => { props.setDirty(true); navigate(`/login`); }}> Login</Button>
-                    </p>
                 </Col>
             </Row>
         </Container>
