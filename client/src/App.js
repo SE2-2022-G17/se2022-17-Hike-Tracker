@@ -19,12 +19,12 @@ import {
 function App() {
   return (
     <BrowserRouter>
-      <App2 />
+      <MainApp />
     </BrowserRouter>
   )
 }
 
-function App2() {
+function MainApp() {
 
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
@@ -68,12 +68,12 @@ function App2() {
 
   return (
     <Routes>
-      <Route path="/" element={<Link to="visitor/hikes">Hikes</Link>} />
+      <Route path="/" element={<VisitorHikes />} />
       <Route path="visitor/hikes" element={<VisitorHikes />} />
       <Route path='/login' element={
-      <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+        <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
       <Route path='/signup' element={
-      <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+        <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
     </Routes>
   );
 }
