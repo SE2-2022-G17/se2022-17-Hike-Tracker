@@ -39,6 +39,9 @@ function MainApp() {
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
+        console.log(user.token)
+        localStorage.setItem('token', user.token);
+
         setLoggedIn(true);
         setUser(user);
         navigate('/');
@@ -52,7 +55,6 @@ function MainApp() {
   const signUp = (credentials) => {
     API.signUp(credentials)
       .then(user => {
-        setLoggedIn(true);
         setUser(user);
         navigate('/');
       })
@@ -63,7 +65,7 @@ function MainApp() {
   }
 
   const doLogOut = async () => {
-    await API.logOut();
+    localStorage.clear()
     setLoggedIn(false);
     setUser({});
     navigate('/');
