@@ -63,11 +63,18 @@ app.post('/user/register', (req, res) => {
     const password = req.body.password;
     const role = req.body.role;
 
-    dao.registerUser(firstName, lastName, email, password,role)
-        .then(() => { res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); });
+    return dao.registerUser(firstName, lastName, email, password,role)
+    .then(() => { res.status(201).end(); })
+    .catch((error) => { res.status(400).json(error); });
+});
 
-    return
+app.post('/user/validateEmail',(req,res)=>{
+    const email = req.body.email;
+    const verificationCode = req.body.verificationCode;
+
+    return dao.validateUser(email,verificationCode)
+        .then(()=>{res.status(201).end(); })
+        .catch((error) => { res.status(400).json(error); })
 });
 
 app.post('/user/login', (req, res) => {

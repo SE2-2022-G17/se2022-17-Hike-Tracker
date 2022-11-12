@@ -1,12 +1,35 @@
 const url = 'http://localhost:3000';
 
+async function validateEmail(email,verificationCode){
+    const info = {
+        email: email,
+        verificationCode: verificationCode
+    }
+    let response = await fetch(new URL('/user/validateEmail', url), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(info),
+      });
+      if (response.ok) {
+        return "OK"
+      } else {
+        const errDetail = await response.json();
+        //throw errDetail.message;
+        return "Error"
+      }
+
+}
+
 async function signUp(credentials){
     const info = {
         firstName: credentials.name,
         lastName: credentials.surname,
         email: credentials.username,
         password: credentials.password,
-        type: credentials.type
+        role: credentials.type
     }
 
     let response = await fetch(new URL('/user/register', url), {
@@ -118,6 +141,6 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
     return response.ok;
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp,validateEmail };
 
 export default API;
