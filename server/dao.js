@@ -51,6 +51,7 @@ exports.getVisitorHikes = async (
 
 exports.registerUser = async (firstName, lastName, email, password) => {
     const hash = await bcrypt.hash(password, 10)
+    const activationCode = generateActivationCode()
 
     var transporter = nodemailer.createTransport({
         service: "hotmail",
@@ -64,7 +65,7 @@ exports.registerUser = async (firstName, lastName, email, password) => {
         from: "se2g17@outlook.com",
         to: email,
         subject: "Activation Code",
-        text: generateActivationCode()
+        text: activationCode
     }
 
     await transporter.sendMail(mailOptions)
@@ -74,7 +75,7 @@ exports.registerUser = async (firstName, lastName, email, password) => {
         lastName: lastName,
         email: email,
         hash: hash,
-
+        activationCode: activationCode
     })
 
     await user.save()
@@ -100,6 +101,20 @@ exports.loginUser = async (email, password) => {
 
     return { token: token }
 
+}
+
+exports.validateUser = async (email, activationCode) => {
+    const user = await User.findOne({ email: email })
+
+    if (user === null)
+        throw 404
+
+    if(user.activationCode !== activationCode)
+        throw 404
+
+    user.active = true; //activate account if codes are equal
+    await user.save()
+    console.log(user);
 }
 
 /* Util function to generate random 6 digit activation code */

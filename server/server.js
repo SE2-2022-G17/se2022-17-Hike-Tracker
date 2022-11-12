@@ -71,13 +71,25 @@ app.post('/user/login', (req, res) => {
 
 });
 
+// user/validate receives a JSON containing the code
+app.put('/user/validate', verifyUserToken, (req, res) => {
+    const user = req.user;
+    const activationCode = req.body.code;
+
+    dao.validateUser(user.email, activationCode)
+        .then(() => { res.sendStatus(204); })
+        .catch((error) => { res.status(error).end(); });
+
+    return;
+});
+
 /* This is an example of protected endpoint */
 /* use the verifyUserToken middleware in order to get and validate the token */
 /* The client should send in its requests an Authorization header in this format: */
 /* Bearer <token> */
 app.get('/example/protected', verifyUserToken, async (req, res) => {
     const user = req.user;
-    if(user.role === Type.hiker){
+    if (user.role === Type.hiker) {
         console.log("USER is an hiker");
     }
     res.status(201).end();
