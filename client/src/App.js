@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import VisitorHikes from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
+import NavigationBar from './components/NavigationBar';
+
 import API from './API';
 
 import {
@@ -30,6 +32,7 @@ function MainApp() {
   const [user, setUser] = useState({});
   const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showAuthButton, setShowAuthButton] = useState(true);
 
   const navigate = useNavigate();
 
@@ -67,14 +70,23 @@ function MainApp() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<VisitorHikes />} />
-      <Route path="visitor/hikes" element={<VisitorHikes />} />
-      <Route path='/login' element={
-        <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
-      <Route path='/signup' element={
-        <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
-    </Routes>
+    <>
+      <NavigationBar
+        loggedIn={loggedIn}
+        doLogOut={doLogOut}
+        openLogin={doLogIn}
+        showAuthButton={showAuthButton}
+        hideAuthButton={() => setShowAuthButton(false)}
+      />
+      <Routes>
+        <Route path="/" element={<VisitorHikes />} />
+        <Route path="visitor/hikes" element={<VisitorHikes />} />
+        <Route path='/login' element={
+          <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+        <Route path='/signup' element={
+          <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+      </Routes>
+    </>
   );
 }
 
