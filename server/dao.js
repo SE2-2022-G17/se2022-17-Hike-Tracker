@@ -50,7 +50,7 @@ exports.getVisitorHikes = async (
 
 }
 
-exports.registerUser = async (firstName, lastName, email, password) => {
+exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
 
@@ -76,7 +76,8 @@ exports.registerUser = async (firstName, lastName, email, password) => {
         lastName: lastName,
         email: email,
         hash: hash,
-        activationCode: activationCode
+        activationCode: activationCode,
+        role: role
     })
 
     await user.save()

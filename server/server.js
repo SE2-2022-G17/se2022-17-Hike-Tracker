@@ -53,8 +53,9 @@ app.post('/user/register', (req, res) => {
     const lastName = req.body.lastName;
     const email = req.body.email;
     const password = req.body.password;
+    const role = req.body.role;
 
-    dao.registerUser(firstName, lastName, email, password)
+    dao.registerUser(firstName, lastName, email, password,role)
         .then(() => { res.status(201).end(); })
         .catch((error) => { res.status(400).json(error); });
 
