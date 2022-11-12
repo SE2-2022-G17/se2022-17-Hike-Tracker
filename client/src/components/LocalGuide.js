@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import API from "../API";
 
 function LocalGuide() {
-
     return <>
         <Container>
             <Row>
@@ -34,7 +33,7 @@ function MainContent() {
     const [difficulty, setDifficulty] = useState('Tourist');
     const [start, setStart] = useState({ longitude: "", latitude: "" });
     const [end, setEnd] = useState({ longitude: "", latitude: "" });
-    const [references, setReferences] = useState([{ longitude: "", latitude: "" }]);
+    const [references, setReferences] = useState([]);
     const [description, setDescription] = useState("");
     const [track, setTrack] = useState("");
     const [numbrefs, setNumbrefs] = useState(0);
@@ -54,11 +53,12 @@ function MainContent() {
         event.preventDefault();
         await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province);
     }
-
+    
     return <>
         <Container className="local-guide-form">
             <h1>Welcome to your homepage, local guide.</h1>
             <br /><br /><br />
+                <Map/>
             <Form className="block-example mb-0 form-padding" onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label><b>Add an hike</b></Form.Label>
