@@ -58,7 +58,6 @@ function MainContent() {
         <Container className="local-guide-form">
             <h1>Welcome to your homepage, local guide.</h1>
             <br /><br /><br />
-                <Map/>
             <Form className="block-example mb-0 form-padding" onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label><b>Add an hike</b></Form.Label>

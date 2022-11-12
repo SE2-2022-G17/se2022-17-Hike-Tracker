@@ -120,17 +120,6 @@ exports.validateUser = async (email, activationCode) => {
     console.log(user);
 }
 
-/* Util function to generate random 6 digit activation code */
-function generateActivationCode(length = 6) {
-    let activationCode = ""
-
-    for (let i = 0; i < length; i++) {
-        activationCode += (Math.floor(Math.random() * 9) + 1)
-    }
-
-    return activationCode
-}
-
 exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
     var referencePositions = [];
     referencePoints.forEach(async (point)=>{
@@ -163,4 +152,15 @@ exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endP
         }
     });
     return hike._id;
+}
+
+/* Util function to generate random 6 digit activation code */
+function generateActivationCode(length = 6) {
+    let activationCode = ""
+
+    for (let i = 0; i < length; i++) {
+        activationCode += (Math.floor(Math.random() * 9) + 1)
+    }
+
+    return activationCode
 }
