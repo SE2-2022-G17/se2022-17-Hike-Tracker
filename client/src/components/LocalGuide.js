@@ -38,6 +38,8 @@ function MainContent() {
     const [description, setDescription] = useState("");
     const [track, setTrack] = useState("");
     const [numbrefs, setNumbrefs] = useState(0);
+    const [city, setCity] = useState("")
+    const [province, setProvince] = useState("")
 
     useEffect(() => {
         if (length <= 0)
@@ -50,7 +52,7 @@ function MainContent() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track);
+        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province);
     }
 
     return <>
@@ -233,6 +235,14 @@ function MainContent() {
                 <Form.Group className="local-guide-form">
                     <Form.Label>Description:</Form.Label>
                     <Form.Control as="textarea" type="text" required={true} value={description} onChange={event => setDescription(event.target.value)} placeholder="Enter the description" />
+                </Form.Group>
+                <Form.Group className="local-guide-form">
+                    <Form.Label>City:</Form.Label>
+                    <Form.Control type="text" required={true} value={city} onChange={event => setCity(event.target.value)} placeholder="Enter the city" />
+                </Form.Group>
+                <Form.Group className="local-guide-form">
+                    <Form.Label>Province:</Form.Label>
+                    <Form.Control type="text" required={true} value={province} onChange={event => setProvince(event.target.value)} placeholder="Enter the province" />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
                     <Form.Label>GPX track:</Form.Label>

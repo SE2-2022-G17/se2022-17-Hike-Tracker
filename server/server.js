@@ -56,7 +56,7 @@ app.get('/visitor/hikes', (req, res) => {
 
 app.post('/localGuide/addHike',async (req,res)=>{
     try{
-        await dao.saveNewHike(req.body.title,req.body.length,req.body.time,req.body.ascent,req.body.difficulty,req.body.startPoint,req.body.endPoint,req.body.referencePoints,req.body.description,req.body.track);
+        await dao.saveNewHike(req.body.title,req.body.length,req.body.time,req.body.ascent,req.body.difficulty,req.body.startPoint,req.body.endPoint,req.body.referencePoints,req.body.description,req.body.track, req.body.city, req.body.province);
         return res.status(201).end();
     } catch(err){
         return res.status(500).json(err);

@@ -39,7 +39,7 @@ async function getVisitorHikes(
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
-    
+
     query += parametes.join("&")
 
     const response = await fetch(url + '/visitor/hikes' + query)
@@ -47,16 +47,16 @@ async function getVisitorHikes(
     return hikes
 }
 
-async function sendHikeDescription(title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track){
-    const response = await fetch(url + '/localGuide/addHike',{
+async function sendHikeDescription(title, length, time, ascent, difficulty, startPoint, endPoint, referencePoints, description, track, city, province) {
+    const response = await fetch(url + '/localGuide/addHike', {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-         },
+        },
         //credentials: 'include',
         body: JSON.stringify({
-            "title":title,
-            "length":length,
+            "title": title,
+            "length": length,
             "time": time,
             "ascent": ascent,
             "difficulty": difficulty,
@@ -64,10 +64,12 @@ async function sendHikeDescription(title,length,time,ascent,difficulty,startPoin
             "endPoint": endPoint,
             "referencePoints": referencePoints,
             "description": description,
-            "track": track
-        }) 
+            "track": track,
+            "city": city,
+            "province": province
+        })
     })
-    
+
     return response.ok;
 }
 

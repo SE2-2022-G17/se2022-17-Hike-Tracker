@@ -45,7 +45,7 @@ exports.getVisitorHikes = async (
 
 }
 
-exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track) =>{
+exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
     var referencePositions = [];
     referencePoints.forEach(async (point)=>{
         const pos = await Position.create({"location.coordinates":[point.longitude,point.latitude]});
@@ -66,7 +66,9 @@ exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endP
         startPoint: startPosition._id,
         endPoint: endPosition._id,
         referencePoints:referencePositions,
-        description:description
+        description:description,
+        city: city,
+        province: province
     })
     hike.save((err)=>{
         if(err){
