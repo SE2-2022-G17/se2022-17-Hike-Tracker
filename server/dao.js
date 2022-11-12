@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
+const { prependOnceListener } = require('./models/Hike')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
@@ -128,4 +129,38 @@ function generateActivationCode(length = 6) {
     }
 
     return activationCode
+}
+
+exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
+    var referencePositions = [];
+    referencePoints.forEach(async (point)=>{
+        const pos = await Position.create({"location.coordinates":[point.longitude,point.latitude]});
+        referencePositions= [...referencePositions, pos._id];
+        })
+    const startPosition = await Position.create({
+        "location.coordinates": [startPoint.longitude,startPoint.latitude]
+    })
+    const endPosition = await Position.create({
+        "location.coordinates": [endPoint.longitude,endPoint.latitude]
+    })
+    const hike = new Hike({
+        title:title,
+        length:length,
+        expectedTime:time,
+        ascent:ascent,
+        difficulty:difficulty,
+        startPoint: startPosition._id,
+        endPoint: endPosition._id,
+        referencePoints:referencePositions,
+        description:description,
+        city: city,
+        province: province
+    })
+    hike.save((err)=>{
+        if(err){
+            console.log(err);
+            return err;
+        }
+    });
+    return hike._id;
 }

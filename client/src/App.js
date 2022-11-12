@@ -15,6 +15,7 @@ import {
   Route,
   useNavigate
 } from "react-router-dom";
+import LocalGuide from './components/LocalGuide';
 
 function App() {
   return (
@@ -102,6 +103,7 @@ function MainApp() {
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+        <Route path="/localGuide" element={<LocalGuide />}/>
       </Routes>
     </>
   );

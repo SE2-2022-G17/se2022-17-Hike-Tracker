@@ -6,11 +6,19 @@ const dao = require('./dao');
 const http = require('http');
 const jwt = require('jsonwebtoken');
 const Type = require('./models/UserType');
+const cors = require('cors');
 
 
 // init express
 const app = new express();
 const port = 3001;
+
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+    someSite:'None'
+};
+app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -105,6 +113,16 @@ async function verifyUserToken(req, res, next) {
 
 
 const server = http.createServer(app);
+app.post('/localGuide/addHike',async (req,res)=>{
+    try{
+        await dao.saveNewHike(req.body.title,req.body.length,req.body.time,req.body.ascent,req.body.difficulty,req.body.startPoint,req.body.endPoint,req.body.referencePoints,req.body.description,req.body.track, req.body.city, req.body.province);
+        return res.status(201).end();
+    } catch(err){
+        return res.status(500).json(err);
+    }
+});
+
+const server=http.createServer(app);
 
 // activate the server
 server.listen(port, () => {
