@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
+const validationType = require('./models/ValidationType')
 
 
 
@@ -112,7 +113,7 @@ exports.validateUser = async (email, activationCode) => {
     if(user.activationCode !== activationCode)
         throw 404
 
-    user.active = true; //activate account if codes are equal
+    user.active = validationType.mailOnly; //activate account if codes are equal
     await user.save()
     console.log(user);
 }

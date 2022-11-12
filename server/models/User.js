@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const Type = require("./UserType")
+const validationType = require("./ValidationType")
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -21,8 +22,8 @@ const userSchema = new mongoose.Schema({
         default: Type.hiker
     },
     active: {
-        type: Boolean,
-        default: false
+        type: int,
+        default: validationType.notValidated
     },
     hash: {
         type: String,
