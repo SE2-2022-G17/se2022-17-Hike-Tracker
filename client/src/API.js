@@ -1,8 +1,48 @@
 const url = 'http://localhost:3000';
 
-async function signUp(credential){}
+async function signUp(credentials){
+    const info = {
+        firstName: credentials.name,
+        lastName: credentials.surname,
+        email: credentials.username,
+        password: credentials.password,
+        type: credentials.type
+    }
 
-async function logIn(credential){}
+    let response = await fetch(new URL('/user/register', url), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(info),
+      });
+      if (response.ok) {
+        const user = await response.json();
+        return user;
+      } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+      }
+}
+
+async function logIn(credentials){
+    let response = await fetch(new URL('/user/login', url), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email:credentials.username, password: credentials.password}),
+      });
+      if (response.ok) {
+        const user = await response.json();
+        return user;
+      } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+      }
+}
 
 async function getVisitorHikes(
     difficulty,
