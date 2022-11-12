@@ -81,3 +81,52 @@
 .local-guide-form {
   padding: 1rem 0rem;
 }
+
+.navigation-bar {
+  margin-bottom: 0.6rem;
+  padding: 1rem;
+}
+
+.logout-button {
+  color: whitesmoke;
+  font-size: 2rem;
+}
+
+.auth-button {
+  display: flex;
+  justify-content: right;
+  padding: 0rem 1rem;
+}
+
+.home-page-link{
+  text-decoration: none;
+  font-size: x-large;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.underlined {
+  text-decoration: underline;
+}
+
+.alternative {
+  color: gray;
+  padding: 1rem 0rem;
+}
+
+
+.login-container {
+  width: 45%;
+  padding-top: 2rem;
+}
+
+.base-form{
+  padding: 2% 0%;
+}
+
+.signup-container {
+  width: 45%;
+  padding-top: 2rem;
+}

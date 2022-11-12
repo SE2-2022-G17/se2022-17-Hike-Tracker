@@ -1,5 +1,49 @@
 const url = 'http://localhost:3000';
 
+async function signUp(credentials){
+    const info = {
+        firstName: credentials.name,
+        lastName: credentials.surname,
+        email: credentials.username,
+        password: credentials.password,
+        type: credentials.type
+    }
+
+    let response = await fetch(new URL('/user/register', url), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(info),
+      });
+      if (response.ok) {
+        const user = await response.json();
+        return user;
+      } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+      }
+}
+
+async function logIn(credentials){
+    let response = await fetch(new URL('/user/login', url), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email:credentials.username, password: credentials.password}),
+      });
+      if (response.ok) {
+        const user = await response.json();
+        return user;
+      } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+      }
+}
+
 async function getVisitorHikes(
     difficulty,
     minLength,
@@ -47,6 +91,7 @@ async function getVisitorHikes(
     return hikes
 }
 
+
 async function sendHikeDescription(title, length, time, ascent, difficulty, startPoint, endPoint, referencePoints, description, track, city, province) {
     const response = await fetch(url + '/localGuide/addHike', {
         method: "POST",
@@ -73,6 +118,6 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
     return response.ok;
 }
 
-const API = { getVisitorHikes, sendHikeDescription };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp };
 
 export default API;

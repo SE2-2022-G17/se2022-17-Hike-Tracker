@@ -4,6 +4,8 @@ const express = require('express');
 const morgan = require('morgan');
 const dao = require('./dao');
 const http = require('http');
+const jwt = require('jsonwebtoken');
+const Type = require('./models/UserType');
 const cors = require('cors');
 
 
@@ -36,7 +38,7 @@ app.get('/visitor/hikes', (req, res) => {
     let province = req.query.province
     let longitude = req.query.longitude
     let latitude = req.query.latitude
-     
+
     dao.getVisitorHikes(
         difficulty = difficulty,
         minLength = minLength,
@@ -47,12 +49,68 @@ app.get('/visitor/hikes', (req, res) => {
         maxTime = maxTime,
         city = city,
         province = province,
-        longitude = longitude, 
+        longitude = longitude,
         latitude = latitude
     )
         .then((hikes) => { res.json(hikes); })
         .catch((error) => { res.status(500).json(error); });
 });
+
+app.post('/user/register', (req, res) => {
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const email = req.body.email;
+    const password = req.body.password;
+    const role = req.body.role;
+
+    dao.registerUser(firstName, lastName, email, password,role)
+        .then(() => { res.status(201).end(); })
+        .catch((error) => { res.status(400).json(error); });
+
+    return
+});
+
+app.post('/user/login', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    return dao.loginUser(email, password)
+        .then((token) => { res.json(token); })
+        .catch((error) => { res.status(error).end(); });
+
+});
+
+/* This is an example of protected endpoint */
+/* use the verifyUserToken middleware in order to get and validate the token */
+/* The client should send in its requests an Authorization header in this format: */
+/* Bearer <token> */
+app.get('/example/protected', verifyUserToken, async (req, res) => {
+    const user = req.user;
+    if(user.role === Type.hiker){
+        console.log("USER is an hiker");
+    }
+    res.status(201).end();
+});
+
+
+async function verifyUserToken(req, res, next) {
+    if (!req.headers.authorization) {
+        return res.status(401).send("Unauthorized request");
+    }
+    const token = req.headers["authorization"].split(" ")[1];
+    if (!token) {
+        return res.status(401).send("Access denied. No token provided.");
+    }
+    try {
+        const decodedUser = jwt.verify(token, 'my_secret_key');
+        req.user = decodedUser;
+        next();
+    } catch (err) {
+        res.status(400).send("Invalid token.");
+    }
+};
+
+
 
 app.post('/localGuide/addHike',async (req,res)=>{
     try{
