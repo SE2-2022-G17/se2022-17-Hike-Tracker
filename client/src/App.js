@@ -8,6 +8,7 @@ import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import NavigationBar from './components/NavigationBar';
 import { ProfileModal } from './components/Profile';
+import VerifyAccount from './components/VerifyAccount';
 
 import API from './API';
 
@@ -18,6 +19,7 @@ import {
   useNavigate
 } from "react-router-dom";
 import LocalGuide from './components/LocalGuide';
+import ValidationType from './models/ValidationType';
 
 function App() {
   return (
@@ -41,12 +43,24 @@ function MainApp() {
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
-        console.log(user.token)
-        localStorage.setItem('token', user.token);
-        setShowAuthButton(true);
-        setLoggedIn(true);
-        setUser(user);
-        navigate('/');
+        var base64Url = user.token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        var payload = JSON.parse(jsonPayload);
+
+        if(payload.active===ValidationType.notValidated){
+          navigate('/verifyAccount/'+payload.email);
+        }
+        else{
+          localStorage.setItem('token', user.token);
+          setShowAuthButton(true);
+          setLoggedIn(true);
+          setUser(user);
+          navigate('/');
+        }   
       })
       .catch(err => {
         //handleError(err, err);
@@ -59,7 +73,6 @@ function MainApp() {
       .then(user => {
         setUser(user);
         setShowAuthButton(true);
-        navigate('/');
       })
       .catch(err => {
         //handleError(err, err);
@@ -115,7 +128,8 @@ function MainApp() {
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />} />
+        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
       </Routes>
     </>
   );

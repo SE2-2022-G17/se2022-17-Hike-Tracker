@@ -51,7 +51,8 @@ function MainContent() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province);
+        const authToken = localStorage.getItem('token');
+        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province, authToken);
     }
     
     return <>
@@ -245,7 +246,7 @@ function MainContent() {
                 </Form.Group>
                 <Form.Group className="local-guide-form">
                     <Form.Label>GPX track:</Form.Label>
-                    <Form.Control type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
+                    <Form.Control type="file" size="sm" onChange={event =>setTrack(event.target.files[0])} />
                 </Form.Group>
                 <br />
                 <Button variant="primary" type="submit">

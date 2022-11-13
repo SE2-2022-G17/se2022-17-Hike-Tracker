@@ -10,7 +10,7 @@ const validationType = require('./models/ValidationType')
 
 
 
-mongoose.connect("mongodb://localhost/hike_tracker")
+mongoose.connect("mongodb://localhost/hike_tracker");
 
 exports.getVisitorHikes = async (
     difficulty,
@@ -122,10 +122,11 @@ exports.validateUser = async (email, activationCode) => {
 
 exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
     var referencePositions = [];
+
     referencePoints.forEach(async (point)=>{
         const pos = await Position.create({"location.coordinates":[point.longitude,point.latitude]});
         referencePositions= [...referencePositions, pos._id];
-        })
+    })
     const startPosition = await Position.create({
         "location.coordinates": [startPoint.longitude,startPoint.latitude]
     })
@@ -143,12 +144,13 @@ exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endP
         referencePoints:referencePositions,
         description:description,
         city: city,
-        province: province
+        province: province,
+        track_file:track.buffer
     })
     hike.save((err)=>{
         if(err){
             console.log(err);
-            return err;
+            throw new TypeError(JSON.stringify(err));
         }
     });
     return hike._id;
