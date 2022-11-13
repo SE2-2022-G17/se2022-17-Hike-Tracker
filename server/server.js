@@ -120,7 +120,7 @@ async function verifyUserToken(req, res, next) {
 
 const upload = multer();
 
-app.post('/localGuide/addHike',[upload.single('track')/*,verifyUserToken*/],async (req,res)=>{
+app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (req,res)=>{
     try{
         let rawRef=req.body.referencePoints;
         let referencePoints = [];
