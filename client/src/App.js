@@ -76,18 +76,7 @@ function MainApp() {
         }   
       })
       .catch(err => {
-        //handleError(err, err);
-      }
-      )
-  }
-
-  const signUp = (credentials) => {
-    API.signUp(credentials)
-      .then(user => {
-        setUser(user);
-        setShowAuthButton(true);
-      })
-      .catch(err => {
+        setErrorMessage("Username or password incorrect.");
         //handleError(err, err);
       }
       )
@@ -147,7 +136,7 @@ function MainApp() {
         </Col></Row>
         : false}
         {
-          loggedIn ? 
+          user.user != undefined ? 
             <ProfileModal
             show={modalShow}
             onHide={() => setModalShow(false)} 
@@ -161,7 +150,7 @@ function MainApp() {
         <Route path='/login' element={
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
-          <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+          <SignUpForm setDirty={setDirty} setErrorMessage={setErrorMessage} setUser={setUser} setShowAuthButton={setShowAuthButton}/>} />
         <Route path="/localGuide" element={<LocalGuide />}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/HighLevelVerification" element={<HighVerification />}/>

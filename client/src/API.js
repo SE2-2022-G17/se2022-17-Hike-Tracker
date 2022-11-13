@@ -41,11 +41,10 @@ async function signUp(credentials) {
         body: JSON.stringify(info),
     });
     if (response.ok) {
-        const user = await response.json();
-        return user;
+        return "OK";
     } else {
-        const errDetail = await response.json();
-        throw errDetail.message;
+        //const errDetail = await response.json();
+        return "Error";
     }
 }
 
