@@ -7,6 +7,7 @@ const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
+const ObjectId = require('mongodb').ObjectId
 
 
 
@@ -165,4 +166,34 @@ function generateActivationCode(length = 6) {
     }
 
     return activationCode
+}
+
+exports.getHike = async (id) => {
+    try {
+        return await Hike.findById(ObjectId(id))
+            .populate('startPoint') // populate is basically a join
+            .populate('endPoint')
+            .then(doc => {
+                return doc;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+exports.getHikeTrack = async (id) => {
+    try {
+        return await Hike.findById(ObjectId(id), {_id: 0, track_file: 1})
+            .then(doc => {
+                return doc;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (e) {
+        console.log(e.message)
+    }
 }

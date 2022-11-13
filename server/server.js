@@ -142,6 +142,36 @@ app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (r
     }
 });
 
+app.get('/hiker/hikes/:id', (req, res) => {
+    const hikeId = req.params.id;
+
+    dao.getHike(hikeId)
+        .then((hike) => { res.json(hike); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
+app.get('/hiker/hike-track/:id', (req, res) => {
+    const hikeId = req.params.id;
+
+    dao.getHikeTrack(hikeId)
+        .then((hike
+        ) => {
+            const filePath = './public/tracks/' + hike.track_file;
+
+            res.download(
+                filePath,
+                (err) => {
+                    if (err) {
+                        res.send({
+                            error : err,
+                            msg   : "Problem downloading the file"
+                        })
+                    }
+                });
+        })
+        .catch((error) => { res.status(500).json(error); });
+});
+
 
 const server=http.createServer(app);
 

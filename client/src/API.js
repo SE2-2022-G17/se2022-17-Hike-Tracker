@@ -1,4 +1,5 @@
 const url = 'http://localhost:3000';
+const getHikeTrackUrl = url + '/hiker/hike-track/';
 
 async function validateEmail(email, verificationCode) {
     const info = {
@@ -154,6 +155,11 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
     return await response.ok;
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail };
+async function getHike(id) {
+    const response = await fetch(url + '/hiker/hikes/' + id)
+    return await response.json()
+}
+
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl };
 
 export default API;

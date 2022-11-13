@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import VisitorHikes from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
+import ShowHike from "./components/ShowHikeComponent";
 import NavigationBar from './components/NavigationBar';
 import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
@@ -130,6 +131,7 @@ function MainApp() {
           <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path="/localGuide" element={<LocalGuide />}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
+        <Route path="/hiker/hike/:id" element={<ShowHike />} />
       </Routes>
     </>
   );
