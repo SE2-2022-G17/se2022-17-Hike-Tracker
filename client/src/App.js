@@ -97,6 +97,7 @@ function MainApp() {
     localStorage.clear()
     setLoggedIn(false);
     setUser({});
+    setRole("");
     navigate('/');
   }
 
@@ -148,7 +149,7 @@ function MainApp() {
       <ProfileModal
         show={modalShow}
         onHide={() => setModalShow(false)} 
-        user={user}/>
+        user={user.user}/>
       <Routes>
         <Route path="/" element={<VisitorHikes />} />
         <Route path="visitor/hikes" element={<VisitorHikes />} />
