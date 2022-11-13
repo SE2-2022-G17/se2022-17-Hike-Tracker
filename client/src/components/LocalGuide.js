@@ -51,7 +51,8 @@ function MainContent() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province);
+        const authToken = localStorage.getItem('token');
+        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province, authToken);
     }
     
     return <>
