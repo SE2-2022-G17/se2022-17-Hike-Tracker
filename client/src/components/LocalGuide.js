@@ -1,4 +1,4 @@
-import { Button, Col, Container, Form, Nav, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Nav, Row } from "react-bootstrap";
 import { useEffect, useState } from 'react';
 import API from "../API";
 
@@ -28,6 +28,8 @@ function MainContent() {
     const [numbrefs, setNumbrefs] = useState(0);
     const [city, setCity] = useState("")
     const [province, setProvince] = useState("")
+    const [err,setErr] = useState("");
+    const [loading,setLoading] = useState(false);
 
     useEffect(() => {
         if (length <= 0)
@@ -41,7 +43,15 @@ function MainContent() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
-        await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province, authToken);
+        setLoading(true);
+        const errorMsg=await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province, authToken);
+        if(errorMsg!==""){
+            setErr(errorMsg);
+        } else {
+            setErr(true);
+        }
+        setTimeout(()=>setErr(""),5000);
+        setLoading(false);
     }
     
     return <>
@@ -237,10 +247,24 @@ function MainContent() {
                     <Form.Label>GPX track:</Form.Label>
                     <Form.Control type="file" size="sm" onChange={event =>setTrack(event.target.files[0])} />
                 </Form.Group>
+                {
+                    err!=="" && <>
+                    <br />
+                    {
+                    err===true ?
+                        <Alert transition key="info" variant="info">The form has been sent correctly!</Alert>
+                    :
+                        <Alert transition key="danger" variant="danger">An error occurred!<br/>{err}</Alert>
+                    }
+                    </>
+                }
                 <br />
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
+                {
+                    !loading &&
+                    <Button variant="primary" type="submit">
+                        Submit
+                    </Button>
+                }
             </Form>
         </Container>
     </>

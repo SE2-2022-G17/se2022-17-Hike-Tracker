@@ -120,20 +120,20 @@ async function verifyUserToken(req, res, next) {
 
 const upload = multer();
 
-app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (req,res)=>{
-    let rawRef=req.body.referencePoints;
-    let referencePoints = [];
-    if(rawRef!=='[]'){
-        rawRef=rawRef.slice(1,referencePoints.length-1);
-        rawRef.split("},").forEach((JSONobj)=>{
-            if(JSONobj[JSONobj.length-1]!=='}'){
-                referencePoints= [...referencePoints,JSON.parse(JSONobj+'}')];
-            } else {
-                referencePoints= [...referencePoints,JSON.parse(JSONobj)];
-            }
-        });
-    }
+app.post('/localGuide/addHike',[upload.single('track')/*,verifyUserToken*/],async (req,res)=>{
     try{
+        let rawRef=req.body.referencePoints;
+        let referencePoints = [];
+        if(rawRef!=='[]'){
+            rawRef=rawRef.slice(1,referencePoints.length-1);
+            rawRef.split("},").forEach((JSONobj)=>{
+                if(JSONobj[JSONobj.length-1]!=='}'){
+                    referencePoints= [...referencePoints,JSON.parse(JSONobj+'}')];
+                } else {
+                    referencePoints= [...referencePoints,JSON.parse(JSONobj)];
+                }
+            });
+        }
         await dao.saveNewHike(req.body.title,req.body.length,req.body.time,req.body.ascent,req.body.difficulty,JSON.parse(req.body.startPoint),JSON.parse(req.body.endPoint),referencePoints,req.body.description,req.file, req.body.city, req.body.province);
         return res.status(201).end();
     } catch(err){
