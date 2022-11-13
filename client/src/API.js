@@ -151,7 +151,12 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
         })*/
 
     })
-    return await response.ok;
+    const resp = await response;
+    if(resp.ok){
+        return "";
+    }else{
+        return resp.statusText;
+    }
 }
 
 async function getHike(id) {

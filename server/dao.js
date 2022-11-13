@@ -131,29 +131,35 @@ exports.validateUser = async (email, activationCode) => {
 
 exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
     var referencePositions = [];
-    
-    require("fs").writeFile("./public/tracks/"+track.originalname,track.buffer,(err)=>{
-        console.log(err);
-    });
-
+    if(track){
+        require("fs").writeFile("./public/tracks/"+track.originalname,track.buffer,(err)=>{
+            console.log(err);
+        });
+    }
     referencePoints.forEach(async (point)=>{
         const pos = await Position.create({"location.coordinates":[point.longitude,point.latitude]});
         referencePositions= [...referencePositions, pos._id];
     })
-    const startPosition = await Position.create({
-        "location.coordinates": [startPoint.longitude,startPoint.latitude]
-    })
-    const endPosition = await Position.create({
-        "location.coordinates": [endPoint.longitude,endPoint.latitude]
-    })
+    let startPosition = undefined;
+    if(startPoint.latitude!=="" && startPoint.longitude!==""){
+        startPosition = await Position.create({
+            "location.coordinates": [startPoint.longitude,startPoint.latitude]
+        })
+    }
+    let endPosition = undefined;
+    if(endPoint.latitude!=="" && endPoint.longitude!==""){
+        endPosition = await Position.create({
+            "location.coordinates": [endPoint.longitude,endPoint.latitude]
+        })
+    }
     const hike = new Hike({
         title:title,
         length:length,
         expectedTime:time,
         ascent:ascent,
         difficulty:difficulty,
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
+        startPoint: startPosition ? startPosition._id : undefined,
+        endPoint: endPosition ? endPosition._id : undefined,
         referencePoints:referencePositions,
         description:description,
         city: city,
