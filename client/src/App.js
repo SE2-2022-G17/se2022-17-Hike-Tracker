@@ -146,10 +146,15 @@ function MainApp() {
           <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible>{errorMessage}</Alert>
         </Col></Row>
         : false}
-      <ProfileModal
-        show={modalShow}
-        onHide={() => setModalShow(false)} 
-        user={user.user}/>
+        {
+          loggedIn ? 
+            <ProfileModal
+            show={modalShow}
+            onHide={() => setModalShow(false)} 
+            user={user.user}/>:
+          <></>
+        }
+      
       <Routes>
         <Route path="/" element={<VisitorHikes />} />
         <Route path="visitor/hikes" element={<VisitorHikes />} />
