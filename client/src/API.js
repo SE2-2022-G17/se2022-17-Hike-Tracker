@@ -1,6 +1,6 @@
 const url = 'http://localhost:3000';
 
-async function validateEmail(email,verificationCode){
+async function validateEmail(email, verificationCode) {
     const info = {
         email: email,
         verificationCode: verificationCode
@@ -9,21 +9,21 @@ async function validateEmail(email,verificationCode){
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(info),
-      });
-      if (response.ok) {
+    });
+    if (response.ok) {
         return "OK"
-      } else {
+    } else {
         const errDetail = await response.json();
         //throw errDetail.message;
         return "Error"
-      }
+    }
 
 }
 
-async function signUp(credentials){
+async function signUp(credentials) {
     const info = {
         firstName: credentials.name,
         lastName: credentials.surname,
@@ -36,35 +36,35 @@ async function signUp(credentials){
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(info),
-      });
-      if (response.ok) {
+    });
+    if (response.ok) {
         const user = await response.json();
         return user;
-      } else {
+    } else {
         const errDetail = await response.json();
         throw errDetail.message;
-      }
+    }
 }
 
-async function logIn(credentials){
+async function logIn(credentials) {
     let response = await fetch(new URL('/user/login', url), {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({email:credentials.username, password: credentials.password}),
-      });
-      if (response.ok) {
+        body: JSON.stringify({ email: credentials.username, password: credentials.password }),
+    });
+    if (response.ok) {
         const user = await response.json();
         return user;
-      } else {
+    } else {
         const errDetail = await response.json();
         throw errDetail.message;
-      }
+    }
 }
 
 async function getVisitorHikes(
@@ -115,10 +115,10 @@ async function getVisitorHikes(
 }
 
 
-async function sendHikeDescription(title, length, time, ascent, difficulty, startPoint, endPoint, referencePoints, description, track, city, province) {
+async function sendHikeDescription(title, length, time, ascent, difficulty, startPoint, endPoint, referencePoints, description, track, city, province, token) {
     const body = new FormData();
-    body.append("track",track);
-    body.append("title",title);
+    body.append("track", track);
+    body.append("title", title);
     body.append("length", length);
     body.append("time", time);
     body.append("ascent", ascent);
@@ -131,6 +131,9 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
     body.append("province", province);
     const response = fetch(url + '/localGuide/addHike', {
         method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
         //credentials: 'include',
         body: body/*JSON.stringify({
             "title": title,
@@ -146,11 +149,11 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
             "province": province,
             "track_file":track
         })*/
-        
+
     })
     return await response.ok;
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp,validateEmail };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail };
 
 export default API;
