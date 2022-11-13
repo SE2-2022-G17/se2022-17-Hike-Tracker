@@ -6,7 +6,14 @@ function HikeCard(props) {
     const { hike } = props;
 
     return (
-        <Card className="hike-card cursor-pointer" onClick={ () => props.goToHike(hike._id) }>
+        <>
+            <Card className="hike-card cursor-pointer" onClick={ () => {
+                const authToken = localStorage.getItem('token');
+                if (authToken !== null) {
+                    return props.goToHike(hike._id);
+                }
+                else return {};
+            }}>
             <Card.Body>
                 <Card.Title>{hike.title}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
@@ -39,8 +46,7 @@ function HikeCard(props) {
                 </Row>
             </Card.Body>
         </Card>
-    );
-
+    </>);
 }
 
 export default HikeCard;
