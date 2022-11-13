@@ -133,7 +133,7 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
         headers: {
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
         },
-        //credentials: 'include',
+        credentials: 'include',
         body: body/*JSON.stringify({
             "title": title,
             "length": length,

@@ -130,6 +130,10 @@ exports.validateUser = async (email, activationCode) => {
 
 exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
     var referencePositions = [];
+    
+    require("fs").writeFile("./public/tracks/"+track.originalname,track.buffer,(err)=>{
+        console.log(err);
+    });
 
     referencePoints.forEach(async (point)=>{
         const pos = await Position.create({"location.coordinates":[point.longitude,point.latitude]});
@@ -153,7 +157,7 @@ exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endP
         description:description,
         city: city,
         province: province,
-        track_file: track !== undefined ? track.buffer : null
+        track_file: track !== undefined ? track.originalname : null
     })
     hike.save((err)=>{
         if(err){
