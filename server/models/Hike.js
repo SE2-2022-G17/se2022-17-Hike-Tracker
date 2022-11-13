@@ -34,7 +34,8 @@ const hikeSchema = new mongoose.Schema({
     referencePoints: [{ type: Schema.Types.ObjectId, ref: 'Position' }],
     city: String,
     province: String,
-    description: String
+    description: String,
+    track_file: Buffer
 })
 
 hikeSchema.query.filterByDifficulty = function (difficulty) {
