@@ -7,6 +7,42 @@
   pointer-events: none;
 }
 
+.map-container {
+  height: 400px;
+}
+
+.mapboxgl-popup {
+  max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.marker-end {
+  background-image: url('https://img.icons8.com/FF00B0/marker.png');
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.marker-start {
+  background-image: url('https://img.icons8.com/ff0000/marker.png');
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

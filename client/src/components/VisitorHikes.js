@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import API from '../API';
 import Difficulty from '../constants/Difficulty';
 import HikeCard from './HikeCard';
+import {useNavigate} from "react-router-dom";
 
 
 function VisitorHikes() {
@@ -186,14 +187,22 @@ function CoordinatesPicker(props) {
 
 function HikesList(props) {
 
+    const navigator = useNavigate();
+
+    let goToHike = (id) => {
+        navigator('hiker/hikes/' + id);
+    }
+
     return (
         <Container fluid>
             {props.hikes.length === 0 ? <h3>No hikes available</h3> : undefined}
-            {props.hikes.map((hike, index) => {
-                return (
-                    <HikeCard key={hike._id} hike={hike} />
-                );
-            })}
+            {
+                props.hikes.map((hike, index) => {
+                    return (
+                        <HikeCard key={hike._id} hike={hike} goToHike={ goToHike } />
+                    );
+                })
+            }
         </Container>
     );
 }
