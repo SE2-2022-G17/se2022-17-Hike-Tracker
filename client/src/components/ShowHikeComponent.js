@@ -26,7 +26,6 @@ function ShowHike(props) {
     useEffect(() => {
         if (id !== null && hike === null) {
             API.getHike(id).then(function (hike) {
-                console.log(hike)
                 setHike(hike);
 
                 if (hike.startPoint !== null) {
@@ -83,9 +82,13 @@ function ShowHike(props) {
                             const el = document.createElement('div');
                             el.className = 'marker-start';
 
-                            console.log(hike.startPoint.location.coordinates);
                             new mapboxgl.Marker(el)
                                 .setLngLat([hike.startPoint.location.coordinates[1], hike.startPoint.location.coordinates[0]])
+                                .setPopup(
+                                    new mapboxgl.Popup({ offset: 25 }) // add popups
+                                        .setHTML(
+                                            '<h3>Start point</h3>'                                        )
+                                )
                                 .addTo(map.current);
                         }
 
@@ -93,9 +96,13 @@ function ShowHike(props) {
                             const el = document.createElement('div');
                             el.className = 'marker-end';
 
-                            console.log(hike.endPoint.location.coordinates);
                             new mapboxgl.Marker(el)
                                 .setLngLat([hike.endPoint.location.coordinates[1], hike.endPoint.location.coordinates[0]])
+                                .setPopup(
+                                    new mapboxgl.Popup({ offset: 25 }) // add popups
+                                        .setHTML(
+                                            '<h3>End point</h3>'                                        )
+                                )
                                 .addTo(map.current);
                         }
 
