@@ -1,6 +1,8 @@
 import Modal from 'react-bootstrap/Modal';
 
+
 function ProfileModal(props) {
+
   return (
     <Modal
       {...props}
@@ -19,7 +21,7 @@ function ProfileModal(props) {
               <p className="mb-0">Full Name</p>
             </div>
             <div className="col-sm-9">
-              <p className="text-muted mb-0">`{props.user.firstName} {props.user.lastName}`</p>
+              <p className="text-muted mb-0">{props.user.firstName} {props.user.lastName}</p>
             </div>
           </div>
           <hr />
@@ -46,8 +48,7 @@ function ProfileModal(props) {
               <p className="mb-0">Profile state</p>
             </div>
             <div className="col-sm-9">
-              <p className="text-muted mb-0">{//TODO
-              }</p>
+              <p className="text-muted mb-0">{props.user.active ? 'Active' : 'Not active'}</p>
             </div>
           </div>
         </div>

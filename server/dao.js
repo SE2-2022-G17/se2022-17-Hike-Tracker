@@ -102,7 +102,15 @@ exports.loginUser = async (email, password) => {
         'active': user.active
     }, 'my_secret_key')
 
-    return { token: token }
+    const res={
+        'firstName': user.firstName,
+        'lastName':user.lastName,
+        'email': user.email,
+        'role': user.role,
+        'active': user.active
+    }
+
+    return { token: token, user: res}
 
 }
 
