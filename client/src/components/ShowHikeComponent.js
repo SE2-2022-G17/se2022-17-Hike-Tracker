@@ -28,6 +28,7 @@ function ShowHike(props) {
             API.getHike(id).then(function (hike) {
                 console.log(hike)
                 setHike(hike);
+
                 if (hike.startPoint !== null) {
                     setLat(hike.startPoint.location.coordinates[0])
                     setLng(hike.startPoint.location.coordinates[1])
@@ -42,7 +43,7 @@ function ShowHike(props) {
             map.current = new mapboxgl.Map({
                 container: mapContainer.current,
                 style: 'mapbox://styles/mapbox/streets-v11',
-                center: [lat, lng],
+                center: [lng, lat],
                 zoom: zoom
             });
 
@@ -63,6 +64,7 @@ function ShowHike(props) {
                             data: geoJson,
                         });
 
+
                         map.current.addLayer({
                             id: hike._id,
                             type: 'line',
@@ -72,44 +74,33 @@ function ShowHike(props) {
                                 'line-cap': 'round',
                             },
                             paint: {
-                                'line-color': 'red',
+                                'line-color': 'blue',
                                 'line-width': 4,
                             },
                         })
+
+                        if (hike.startPoint !== null) {
+                            const el = document.createElement('div');
+                            el.className = 'marker-start';
+
+                            console.log(hike.startPoint.location.coordinates);
+                            new mapboxgl.Marker(el)
+                                .setLngLat([hike.startPoint.location.coordinates[1], hike.startPoint.location.coordinates[0]])
+                                .addTo(map.current);
+                        }
+
+                        if (hike.endPoint !== null) {
+                            const el = document.createElement('div');
+                            el.className = 'marker-end';
+
+                            console.log(hike.endPoint.location.coordinates);
+                            new mapboxgl.Marker(el)
+                                .setLngLat([hike.endPoint.location.coordinates[1], hike.endPoint.location.coordinates[0]])
+                                .addTo(map.current);
+                        }
+
                     }
-
-                    const el = document.createElement('div');
-                    el.className = 'marker';
-
-// make a marker for each feature and add it to the map
-                    console.log(hike.startPoint.location.coordinates);
-                    new mapboxgl.Marker(el)
-                        .setLngLat([hike.startPoint.location.coordinates[0], hike.startPoint.location.coordinates[1]])
-                        // .setPopup(
-                        //     new mapboxgl.Popup({ offset: 25 }) // add popups
-                        //         .setHTML(
-                        //             `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-                        //         )
-                        // )
-                        .addTo(map.current);
-
-
                 });
-
-
-                // 2. Add a layer displaying our route
-                // map.addLayer({
-                //   type: 'line',
-                //   source: 'test', // same id as above
-                //   layout: {
-                //     'line-join': 'round',
-                //     'line-cap': 'round',
-                //   },
-                //   paint: {
-                //     'line-color': 'red',
-                //     'line-width': 4,
-                //   },
-                // });
             });
         }
     });

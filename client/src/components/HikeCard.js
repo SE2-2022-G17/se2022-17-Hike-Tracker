@@ -6,7 +6,7 @@ function HikeCard(props) {
     const { hike } = props;
 
     return (
-        <Card className="hike-card">
+        <Card className="hike-card cursor-pointer" onClick={ () => props.goToHike(hike._id) }>
             <Card.Body>
                 <Card.Title>{hike.title}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">

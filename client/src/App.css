@@ -7,11 +7,24 @@
   pointer-events: none;
 }
 
-.marker {
-  background-image: url('../public/mark_start.png');
+.marker-end {
+  background-image: url('https://img.icons8.com/FF00B0/marker.png');
   background-size: cover;
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.marker-start {
+  background-image: url('https://img.icons8.com/ff0000/marker.png');
+  background-size: cover;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   cursor: pointer;
 }
