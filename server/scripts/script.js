@@ -27,8 +27,8 @@ async function run() {
         let title = "title" + i
         let length = generateRandomDecimalInRangeFormatted(0, 100, 2) //kms
         let expectedTime = generateRandomDecimalInRangeFormatted(0, 10, 1)
-        let startPoint = [45.177786, 7.083372]
-        let endPoint = [45.203531,7.077340 ]
+        let startPoint = [7.083372, 45.177786]
+        let endPoint = [7.077340, 45.203531]
         let ascent = generateRandomIntegerInRange(-420, 8848) // Dead Sea and Mount Everest 
         let difficultyIndex = generateRandomIntegerInRange(0, 2)
         let description = "description" + i

@@ -29,8 +29,8 @@ function ShowHike(props) {
                 setHike(hike);
 
                 if (hike.startPoint !== null) {
-                    setLat(hike.startPoint.location.coordinates[0])
-                    setLng(hike.startPoint.location.coordinates[1])
+                    setLng(hike.startPoint.location.coordinates[0])
+                    setLat(hike.startPoint.location.coordinates[1])
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -83,7 +83,7 @@ function ShowHike(props) {
                             el.className = 'marker-start';
 
                             new mapboxgl.Marker(el)
-                                .setLngLat([hike.startPoint.location.coordinates[1], hike.startPoint.location.coordinates[0]])
+                                .setLngLat(hike.startPoint.location.coordinates)
                                 .setPopup(
                                     new mapboxgl.Popup({ offset: 25 }) // add popups
                                         .setHTML(
@@ -97,7 +97,7 @@ function ShowHike(props) {
                             el.className = 'marker-end';
 
                             new mapboxgl.Marker(el)
-                                .setLngLat([hike.endPoint.location.coordinates[1], hike.endPoint.location.coordinates[0]])
+                                .setLngLat(hike.endPoint.location.coordinates)
                                 .setPopup(
                                     new mapboxgl.Popup({ offset: 25 }) // add popups
                                         .setHTML(
