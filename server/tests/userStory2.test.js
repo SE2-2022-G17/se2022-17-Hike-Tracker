@@ -1,11 +1,12 @@
 const request = require('supertest');
 const app = require("../server.js");
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken')
 
 mongoose.connect("mongodb://localhost/hike_tracker");
 
 describe('Test API for creating hikes (US2)', () => {
-    it('test create correct hike', async () => {
+    it('test create hike - unauthorized', async () => {
 
         const response = await request(app)
             .post("/localGuide/addHike")
@@ -22,6 +23,36 @@ describe('Test API for creating hikes (US2)', () => {
                 "track": "",
                 "city": "city99",
                 "province": "PR99"
+            });
+
+
+        expect(response.statusCode).toBe(401);
+    })
+
+
+    it('test create correct hike', async () => {
+        const token = jwt.sign({
+            'email': "test@email.com",
+            'role': "localGuide",
+            'active': true
+        }, 'my_secret_key')
+
+        const response = await request(app)
+            .post("/localGuide/addHike")
+            .set('Authorization', "Bearer " + token)
+            .send({
+                'title': 'titleTest',
+                'length': '99',
+                'time': '45',
+                'ascent': '594',
+                'difficulty': 'Tourist',
+                'startPoint': '{"longitude":"37","latitude":"13"}',
+                'endPoint': '{"longitude":"37","latitude":"13"}',
+                'referencePoints': '[]',
+                'description': 'descrTest',
+                'city': 'cityTest',
+                'province': 'PRT',
+                'track': ""
             });
 
 

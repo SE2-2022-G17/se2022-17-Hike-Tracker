@@ -10,6 +10,7 @@ import ShowHike from "./components/ShowHikeComponent";
 import NavigationBar from './components/NavigationBar';
 import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
+import {HighVerification} from './components/highLevelUserVerification'
 
 import API from './API';
 
@@ -21,6 +22,7 @@ import {
 } from "react-router-dom";
 import LocalGuide from './components/LocalGuide';
 import ValidationType from './models/ValidationType';
+import Type from './models/UserType';
 
 function App() {
   return (
@@ -38,44 +40,44 @@ function MainApp() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showAuthButton, setShowAuthButton] = useState(true);
   const [modalShow, setModalShow] = useState(false);
+  const [role,setRole]=useState("");
 
   const navigate = useNavigate();
 
-  const doLogIn = (credentials) => {
-    API.logIn(credentials)
-      .then(user => {
-        var base64Url = user.token.split('.')[1];
+  function extractTokenPayload(token){
+        var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
+        return JSON.parse(jsonPayload);
+  }
 
-        var payload = JSON.parse(jsonPayload);
-
-        if(payload.active===ValidationType.notValidated){
+  const doLogIn = (credentials) => {
+    API.logIn(credentials)
+      .then(user => {
+        const payload=extractTokenPayload(user.token);
+        setRole(payload.role);
+        if(payload.active === ValidationType.notValidated){
           navigate('/verifyAccount/'+payload.email);
         }
         else{
           localStorage.setItem('token', user.token);
-          setShowAuthButton(true);
-          setLoggedIn(true);
-          setUser(user);
-          navigate('/');
+          if((payload.role === Type.platformManager  
+            || payload.role === Type.emergencyOperator )
+            && payload.active === ValidationType.mailOnly){
+              navigate('/HighLevelVerification');
+            }
+            else{
+              setShowAuthButton(true);
+              setLoggedIn(true);
+              setUser(user);
+              navigate('/');
+            }
         }   
       })
       .catch(err => {
-        //handleError(err, err);
-      }
-      )
-  }
-
-  const signUp = (credentials) => {
-    API.signUp(credentials)
-      .then(user => {
-        setUser(user);
-        setShowAuthButton(true);
-      })
-      .catch(err => {
+        setErrorMessage("Username or password incorrect.");
         //handleError(err, err);
       }
       )
@@ -85,6 +87,7 @@ function MainApp() {
     localStorage.clear()
     setLoggedIn(false);
     setUser({});
+    setRole("");
     navigate('/');
   }
 
@@ -96,9 +99,23 @@ function MainApp() {
       console.log("User is not logged-in");
     }
     else {
-      console.log("User token is: " + authToken);
-      setShowAuthButton(true);
-      setLoggedIn(true);
+      const tokenPayload = extractTokenPayload(authToken);
+      setRole(tokenPayload.role);
+      if(tokenPayload.active === ValidationType.notValidated){
+        navigate('/verifyAccount/'+tokenPayload.email);
+      }
+      else{
+        if((tokenPayload.role === Type.platformManager  
+          || tokenPayload.role === Type.emergencyOperator )
+          && tokenPayload.active === ValidationType.mailOnly){
+            navigate('/HighLevelVerification');
+          }
+          else{
+            console.log("User token is: " + authToken);
+            setShowAuthButton(true);
+            setLoggedIn(true);
+          }
+      }   
     }
 
   }, []);
@@ -112,26 +129,33 @@ function MainApp() {
         showAuthButton={showAuthButton}
         setShowAuthButton={setShowAuthButton}
         setModalShow={setModalShow}
+        role={role}
       />
       {errorMessage ?  //Error Alert
         <Row className="justify-content-center"><Col xs={6}>
           <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible>{errorMessage}</Alert>
         </Col></Row>
         : false}
-      <ProfileModal
-        show={modalShow}
-        onHide={() => setModalShow(false)} 
-        user={user}/>
+        {
+          user.user != undefined ? 
+            <ProfileModal
+            show={modalShow}
+            onHide={() => setModalShow(false)} 
+            user={user.user}/>:
+          <></>
+        }
+      
       <Routes>
         <Route path="/" element={<VisitorHikes />} />
         <Route path="visitor/hikes" element={<VisitorHikes />} />
         <Route path='/login' element={
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
-          <SignUpForm signup={signUp} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
+          <SignUpForm setDirty={setDirty} setErrorMessage={setErrorMessage} setUser={setUser} setShowAuthButton={setShowAuthButton}/>} />
         <Route path="/localGuide" element={<LocalGuide />}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/hiker/hikes/:id" element={<ShowHike />} />
+        <Route path="/HighLevelVerification" element={<HighVerification />}/>
       </Routes>
     </>
   );

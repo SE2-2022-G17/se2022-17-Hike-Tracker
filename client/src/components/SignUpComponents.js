@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate,Link } from 'react-router-dom';
-import { BackButton } from './Utility';
 import { VerCard } from './Verification.js'
+import API from '../API';
 
 function SignUpForm(props) {
-
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [username, setUsername] = useState('');
@@ -17,6 +16,30 @@ function SignUpForm(props) {
     const [signedUp,setSignedUp] = useState(false);
     const [emailIsValidated,setEmailIsValidated] = useState(false);
     const navigate = useNavigate();
+
+    const signUp = (credentials) => {
+        API.signUp(credentials)
+          .then(user => {
+            if(user !== 'Error'){
+                console.log("Ciao");
+                props.setUser(user);
+                props.setShowAuthButton(true);
+                props.setErrorMessage("");
+                setSignedUp(true);
+                setVerificationVisibile(true);
+                setTimeout(()=>setEmailSent(true),2000);
+            }
+            else{
+                props.setErrorMessage('Email already registered.');
+                setSignedUp(false);
+                setVerificationVisibile(false);
+            }
+          })
+          .catch(err => {
+            //handleError(err, err);
+          }
+          )
+      }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -42,10 +65,7 @@ function SignUpForm(props) {
             props.setErrorMessage('Please confirm your password correctly');
         }
         if (valid) {
-            setVerificationVisibile(true);
-            props.signup(credentials);
-            setSignedUp(true);
-            setTimeout(()=>setEmailSent(true),2000);
+            signUp(credentials);
         }
     };
 
@@ -88,7 +108,7 @@ function SignUpForm(props) {
                         </Form.Group>
                         <Col className='text-center my-3'>
                             {
-                                signedUp ?<></>: 
+                                signedUp?<></>: 
                                 <>
                                     <Button type='submit' className='primary' onClick={handleSubmit}>Sign Up</Button>
                                 </>

@@ -42,11 +42,10 @@ async function signUp(credentials) {
         body: JSON.stringify(info),
     });
     if (response.ok) {
-        const user = await response.json();
-        return user;
+        return "OK";
     } else {
-        const errDetail = await response.json();
-        throw errDetail.message;
+        //const errDetail = await response.json();
+        return "Error";
     }
 }
 
@@ -135,7 +134,7 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
         headers: {
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
         },
-        //credentials: 'include',
+        credentials: 'include',
         body: body/*JSON.stringify({
             "title": title,
             "length": length,
