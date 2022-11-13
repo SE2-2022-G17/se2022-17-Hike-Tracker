@@ -34,29 +34,29 @@ describe('Test API for creating hikes (US2)', () => {
         const token = jwt.sign({
             'email': "test@email.com",
             'role': "localGuide",
-            'active': "true"
+            'active': true
         }, 'my_secret_key')
 
         const response = await request(app)
             .post("/localGuide/addHike")
-            .set('Authorization', token)
+            .set('Authorization', "Bearer " + token)
             .send({
-                "title": "title99",
-                "length": "12",
-                "time": "45",
-                "ascent": "321",
-                "difficulty": "Tourist",
-                "startPoint": { "longitude": "37", "latitude": "13" },
-                "endPoint": { "longitude": "37", "latitude": "13" },
-                "referencePoints": [],
-                "description": "descr",
-                "track": "",
-                "city": "city99",
-                "province": "PR99"
+                'title': 'titleTest',
+                'length': '99',
+                'time': '45',
+                'ascent': '594',
+                'difficulty': 'Tourist',
+                'startPoint': '{"longitude":"37","latitude":"13"}',
+                'endPoint': '{"longitude":"37","latitude":"13"}',
+                'referencePoints': '[]',
+                'description': 'descrTest',
+                'city': 'cityTest',
+                'province': 'PRT',
+                'track': ""
             });
 
 
-        expect(response.statusCode).toBe(401);
+        expect(response.statusCode).toBe(201);
     })
 });
 

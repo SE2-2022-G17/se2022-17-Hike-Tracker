@@ -153,7 +153,7 @@ exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endP
         description:description,
         city: city,
         province: province,
-        track_file:track.buffer
+        track_file: track !== undefined ? track.buffer : null
     })
     hike.save((err)=>{
         if(err){
