@@ -199,7 +199,7 @@ function HikesList(props) {
             {
                 props.hikes.map((hike, index) => {
                     return (
-                        <HikeCard key={hike._id} hike={hike} goToHike={ goToHike } />
+                        <HikeCard key={hike._id} hike={hike} goToHike={ goToHike }/>
                     );
                 })
             }
