@@ -1,8 +1,6 @@
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
-import { BackButton } from './Utility';
 import { Link } from 'react-router-dom';
-//import './ComponentsStyle.css'
 
 
 function LoginForm(props) {
@@ -18,10 +16,10 @@ function LoginForm(props) {
     let valid = true;
     if (username === '') {
       valid = false;
-      props.setErrorMessage('Inserire username valido');
+      props.setErrorMessage('Please enter valid email');
     } else if (password === '') {
       valid = false;
-      props.setErrorMessage('Inserire password valida');
+      props.setErrorMessage('IPlease enter valid password');
     }
     if (valid) {
       props.login(credentials);
