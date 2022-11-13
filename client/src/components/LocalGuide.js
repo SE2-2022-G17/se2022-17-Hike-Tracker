@@ -6,22 +6,11 @@ function LocalGuide() {
     return <>
         <Container>
             <Row>
-                <Col xs lg="3">
-                    <SideMenu />
-                </Col>
                 <Col>
                     <MainContent />
                 </Col>
             </Row>
         </Container>
-    </>
-}
-
-function SideMenu() {
-    return <>
-        <Nav defaultActiveKey="/localGuide" className="flex-column">
-            <Nav.Link href="/localGuide">Personal Homepage</Nav.Link>
-        </Nav>
     </>
 }
 
