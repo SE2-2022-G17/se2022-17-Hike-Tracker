@@ -93,13 +93,23 @@ async function getVisitorHikes(
 
 
 async function sendHikeDescription(title, length, time, ascent, difficulty, startPoint, endPoint, referencePoints, description, track, city, province) {
-    const response = await fetch(url + '/localGuide/addHike', {
+    const body = new FormData();
+    body.append("track",track);
+    body.append("title",title);
+    body.append("length", length);
+    body.append("time", time);
+    body.append("ascent", ascent);
+    body.append("difficulty", difficulty);
+    body.append("startPoint", JSON.stringify(startPoint));
+    body.append("endPoint", JSON.stringify(endPoint));
+    body.append("referencePoints", JSON.stringify(referencePoints));
+    body.append("description", description);
+    body.append("city", city);
+    body.append("province", province);
+    const response = fetch(url + '/localGuide/addHike', {
         method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
         //credentials: 'include',
-        body: JSON.stringify({
+        body: body/*JSON.stringify({
             "title": title,
             "length": length,
             "time": time,
@@ -109,13 +119,13 @@ async function sendHikeDescription(title, length, time, ascent, difficulty, star
             "endPoint": endPoint,
             "referencePoints": referencePoints,
             "description": description,
-            "track": track,
             "city": city,
-            "province": province
-        })
+            "province": province,
+            "track_file":track
+        })*/
+        
     })
-
-    return response.ok;
+    return await response.ok;
 }
 
 const API = { getVisitorHikes, sendHikeDescription, logIn, signUp };

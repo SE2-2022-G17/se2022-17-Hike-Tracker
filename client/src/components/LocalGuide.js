@@ -245,7 +245,7 @@ function MainContent() {
                 </Form.Group>
                 <Form.Group className="local-guide-form">
                     <Form.Label>GPX track:</Form.Label>
-                    <Form.Control type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
+                    <Form.Control type="file" size="sm" onChange={event =>setTrack(event.target.files[0])} />
                 </Form.Group>
                 <br />
                 <Button variant="primary" type="submit">
