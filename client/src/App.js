@@ -58,7 +58,7 @@ function MainApp() {
           localStorage.setItem('token', user.token);
           setShowAuthButton(true);
           setLoggedIn(true);
-          setUser(user);
+          setUser(user.user);
           navigate('/');
         }   
       })

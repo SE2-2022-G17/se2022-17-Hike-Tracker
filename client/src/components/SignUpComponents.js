@@ -3,6 +3,7 @@ import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { BackButton } from './Utility';
 import { VerCard } from './Verification.js'
+import { Navigate, useNavigate } from 'react-router-dom';
 
 function SignUpForm(props) {
 
