@@ -16,31 +16,33 @@ function HikeCard(props) {
             }}>
             <Card.Body>
                 <Card.Title>{hike.title}</Card.Title>
+                {/*
                 <Card.Subtitle className="mb-2 text-muted">
                     {(hike.startPoint !== null && hike.startPoint.location !== null) ?
                         "[" + hike.startPoint.location.coordinates + "]"
                         : undefined
                     }
                 </Card.Subtitle>
+                */}
                 <Card.Text>
                     {hike.description}
                 </Card.Text>
                 <Row>
-                    <Col>
+                    <Col xs={2}>
                         {hike.length + " km"}
                     </Col>
-                    <Col className="hike-detail">
+                    <Col className="hike-detail" xs={2}>
                         <ArrowUpRight />
                         <p className="hike-feature">{hike.ascent + " m"}</p>
                     </Col>
-                    <Col className="hike-detail">
+                    <Col className="hike-detail" xs={2}>
                         <Clock />
                         <p className="hike-feature">{hike.expectedTime + " h"}</p>
                     </Col>
-                    <Col>
+                    <Col xs={2}>
                         {hike.difficulty}
                     </Col>
-                    <Col>
+                    <Col xs={4}>
                         {hike.city + ", " + hike.province}
                     </Col>
                 </Row>

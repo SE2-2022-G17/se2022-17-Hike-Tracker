@@ -13,7 +13,7 @@ function NavigationBar(props) {
                 <Navbar.Brand href="/" className='home-page-link'>Hike Tracker</Navbar.Brand>
                 {
                     props.role === userType.localGuide ?
-                        <Navbar.Brand href="/LocalGuide" className='home-page-link'>Describe Hike</Navbar.Brand>:
+                        <Navbar.Brand href="/LocalGuide" className='secondary-link'>Describe Hike</Navbar.Brand> :
                         <></>
                 }
             </Col>

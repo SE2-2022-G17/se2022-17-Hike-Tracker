@@ -115,17 +115,12 @@ async function getVisitorHikes(
 }
 
 
-async function sendHikeDescription(title, length, time, ascent, difficulty, startPoint, endPoint, referencePoints, description, track, city, province, token) {
+async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
     const body = new FormData();
     body.append("track", track);
     body.append("title", title);
-    body.append("length", length);
     body.append("time", time);
-    body.append("ascent", ascent);
     body.append("difficulty", difficulty);
-    body.append("startPoint", JSON.stringify(startPoint));
-    body.append("endPoint", JSON.stringify(endPoint));
-    body.append("referencePoints", JSON.stringify(referencePoints));
     body.append("description", description);
     body.append("city", city);
     body.append("province", province);
