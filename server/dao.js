@@ -232,5 +232,4 @@ exports.createHut = async (name, description, beds) => {
     })
 
     hut.save()
-    console.log(hut)
 }

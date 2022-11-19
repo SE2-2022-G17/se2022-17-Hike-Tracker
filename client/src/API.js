@@ -147,9 +147,9 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
 
     })
     const resp = await response;
-    if(resp.ok){
+    if (resp.ok) {
         return "";
-    }else{
+    } else {
         return resp.statusText;
     }
 }
@@ -159,6 +159,23 @@ async function getHike(id) {
     return await response.json()
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl };
+async function createHut(name, description, beds, token) {
+    const response = await fetch(url + '/huts', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name: name,
+            description: description,
+            beds: beds
+        })
+    })
+
+    return response.status
+}
+
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut };
 
 export default API;

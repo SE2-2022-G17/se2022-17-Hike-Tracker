@@ -16,6 +16,11 @@ function NavigationBar(props) {
                         <Navbar.Brand href="/LocalGuide" className='secondary-link'>Describe Hike</Navbar.Brand> :
                         <></>
                 }
+                {
+                    props.role === userType.localGuide ?
+                        <Navbar.Brand href="/huts/create" className='secondary-link'>Huts</Navbar.Brand> :
+                        <></>
+                }
             </Col>
 
             <Col xs={3} className="auth-button">

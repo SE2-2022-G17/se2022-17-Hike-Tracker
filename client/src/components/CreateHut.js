@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Container, Form, Button, Row, Col } from "react-bootstrap";
+import { Container, Form, Button, Alert} from "react-bootstrap";
+import API from '../API';
 
 
 function CreateHut(props) {
@@ -7,6 +8,8 @@ function CreateHut(props) {
     const [description, setDescription] = useState('')
     const [beds, setBeds] = useState(0)
     const [disabled, setDisabled] = useState(true)
+    const [message, setMessage] = useState('')
+    const [variant, setVariant] = useState('warning')
 
     // this is used to validate data and activate button
     useEffect(() => {
@@ -23,8 +26,29 @@ function CreateHut(props) {
 
     }, [name, description, beds])
 
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+        const authToken = localStorage.getItem('token');
+
+        const response = await API.createHut(name, description, beds, authToken);
+
+        if (response === 204) {
+            //HTTP status code 204 means No Content (successful)
+            setVariant('success')
+            setMessage("Hut created successfully")
+        } else {
+            setVariant('danger')
+            setMessage("An error occurred during the creation of the Hut")
+        }
+        console.log(response)
+    }
+
     return (
         <Container className="form-container">
+            {
+                message === '' ? undefined :
+                <Alert variant={variant}>{message}</Alert>
+            }
             <Form>
                 <Form.Group className="mb-3">
                     <Form.Label>Hut name</Form.Label>
@@ -53,7 +77,12 @@ function CreateHut(props) {
                         onChange={event => { if (event.target.value >= 0) setBeds(event.target.value) }}
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit" disabled={disabled}>
+                <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={disabled}
+                    onClick={handleSubmit}
+                >
                     Create
                 </Button>
             </Form>
