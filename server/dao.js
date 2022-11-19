@@ -8,6 +8,8 @@ const Position = require("./models/Position")
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
 const ObjectId = require('mongodb').ObjectId
+const fs = require('fs');
+let gpxParser = require('gpxparser');
 
 
 
@@ -103,15 +105,15 @@ exports.loginUser = async (email, password) => {
         'active': user.active
     }, 'my_secret_key')
 
-    const res={
+    const res = {
         'firstName': user.firstName,
-        'lastName':user.lastName,
+        'lastName': user.lastName,
         'email': user.email,
         'role': user.role,
         'active': user.active
     }
 
-    return { token: token, user: res}
+    return { token: token, user: res }
 
 }
 
@@ -121,7 +123,7 @@ exports.validateUser = async (email, activationCode) => {
     if (user === null)
         throw 404
 
-    if(user.activationCode !== activationCode)
+    if (user.activationCode !== activationCode)
         throw 404
 
     user.active = validationType.mailOnly; //activate account if codes are equal
@@ -129,45 +131,47 @@ exports.validateUser = async (email, activationCode) => {
     console.log(user);
 }
 
-exports.saveNewHike = async (title,length,time,ascent,difficulty,startPoint,endPoint,referencePoints,description,track, city, province) =>{
-    var referencePositions = [];
-    if(track){
-        require("fs").writeFile("./public/tracks/"+track.originalname,track.buffer,(err)=>{
-            console.log(err);
-        });
-    }
-    referencePoints.forEach(async (point)=>{
-        const pos = await Position.create({"location.coordinates":[point.longitude,point.latitude]});
-        referencePositions= [...referencePositions, pos._id];
-    })
-    let startPosition = undefined;
-    if(startPoint.latitude!=="" && startPoint.longitude!==""){
+exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
+    let startPosition = undefined
+    let endPosition = undefined
+
+    if (track) {
+        fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+
+        const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+        var gpx = new gpxParser()
+        gpx.parse(content)
+        var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+        var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+        var points = gpx.tracks[0].points
+        var startPoint = points[0]
+        var endPoint = points[points.length - 1]
+
         startPosition = await Position.create({
-            "location.coordinates": [startPoint.longitude,startPoint.latitude]
+            "location.coordinates": [startPoint.lon, startPoint.lat]
         })
-    }
-    let endPosition = undefined;
-    if(endPoint.latitude!=="" && endPoint.longitude!==""){
+
         endPosition = await Position.create({
-            "location.coordinates": [endPoint.longitude,endPoint.latitude]
+            "location.coordinates": [endPoint.lon, endPoint.lat]
         })
     }
+
     const hike = new Hike({
-        title:title,
-        length:length,
-        expectedTime:time,
-        ascent:ascent,
-        difficulty:difficulty,
-        startPoint: startPosition ? startPosition._id : undefined,
-        endPoint: endPosition ? endPosition._id : undefined,
-        referencePoints:referencePositions,
-        description:description,
+        title: title,
+        length: length,
+        expectedTime: time,
+        ascent: ascent,
+        difficulty: difficulty,
+        startPoint: startPosition._id,
+        endPoint: endPosition._id,
+        description: description,
         city: city,
         province: province,
         track_file: track !== undefined ? track.originalname : null
     })
-    hike.save((err)=>{
-        if(err){
+
+    hike.save((err) => {
+        if (err) {
             console.log(err);
             throw new TypeError(JSON.stringify(err));
         }
@@ -204,7 +208,7 @@ exports.getHike = async (id) => {
 
 exports.getHikeTrack = async (id) => {
     try {
-        return await Hike.findById(ObjectId(id), {_id: 0, track_file: 1})
+        return await Hike.findById(ObjectId(id), { _id: 0, track_file: 1 })
             .then(doc => {
                 return doc;
             })

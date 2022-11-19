@@ -8,6 +8,10 @@
 - npm install
 - npm start
 
+## Default user (localguide)
+- test@email.com
+- password
+
 ## Authentication and Authorization
 ### Client:
 - After a successful login the jwt is stored in localStorage
@@ -20,7 +24,7 @@
 - the endpoint is called '/example/protected'
 
 ### Populate the DB
-run node server/scripts/script.js
+run node server/scripts/populateDB.js
 
 ### MongoDB
 you should have running a mongo database (the service: MongoDB server, must be running)<br/>

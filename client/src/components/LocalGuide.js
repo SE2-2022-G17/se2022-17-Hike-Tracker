@@ -16,35 +16,25 @@ function LocalGuide() {
 
 function MainContent() {
     const [title, setTitle] = useState("");
-    const [length, setLength] = useState("");
     const [time, setTime] = useState("");
-    const [ascent, setAscent] = useState("");
     const [difficulty, setDifficulty] = useState('Tourist');
-    const [start, setStart] = useState({ longitude: "", latitude: "" });
-    const [end, setEnd] = useState({ longitude: "", latitude: "" });
-    const [references, setReferences] = useState([]);
     const [description, setDescription] = useState("");
     const [track, setTrack] = useState("");
-    const [numbrefs, setNumbrefs] = useState(0);
     const [city, setCity] = useState("")
     const [province, setProvince] = useState("")
     const [err,setErr] = useState("");
     const [loading,setLoading] = useState(false);
 
     useEffect(() => {
-        if (length <= 0)
-            setLength('');
         if (time <= 0)
             setTime('');
-        if (numbrefs < 0)
-            setNumbrefs(0);
-    }, [time, length, numbrefs])
+    }, [time])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
         setLoading(true);
-        const errorMsg=await API.sendHikeDescription(title, length, time, ascent, difficulty, start, end, references, description, track, city, province, authToken);
+        const errorMsg=await API.sendHikeDescription(title, time, difficulty, description, track, city, province, authToken);
         if(errorMsg!==""){
             setErr(errorMsg);
         } else {
@@ -68,17 +58,10 @@ function MainContent() {
                     <Form.Control type="text" required={true} value={title} onChange={event => setTitle(event.target.value)} placeholder="Enter the title" />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
-                    <Form.Label>Length (km):</Form.Label>
-                    <Form.Control type="number" required={true} value={length} onChange={event => setLength(event.target.value)} placeholder="Enter the length in kilometers" />
-                </Form.Group>
-                <Form.Group className="local-guide-form">
                     <Form.Label>Expected time (minutes):</Form.Label>
                     <Form.Control type="number" required={true} value={time} onChange={event => setTime(event.target.value)} placeholder="Enter the expected time in minutes" />
                 </Form.Group>
-                <Form.Group className="local-guide-form">
-                    <Form.Label>Ascent (m):</Form.Label>
-                    <Form.Control type="number" required={true} value={ascent} onChange={event => setAscent(event.target.value)} placeholder="Enter the ascent in meters" />
-                </Form.Group>
+
                 <Form.Group className="local-guide-form">
                     <Form.Label>Difficulty:</Form.Label>
                     <Form.Select onChange={event => setDifficulty(event.target.value)}>
@@ -87,149 +70,6 @@ function MainContent() {
                         <option value="Professional hiker">Professional hiker</option>
                     </Form.Select>
                 </Form.Group>
-
-                <Form.Group as={Row} className="local-guide-form">
-                    <Form.Label><b>Start point</b></Form.Label>
-                    <Col sm="4">
-                        <Form.Label>Longitude:</Form.Label>
-                        <Form.Control type="number" placeholder="Enter the longitude" value={start.longitude} onChange={event =>
-                            setStart((oldStart) => {
-                                if (event.target.value <= 180 && event.target.value >= -180) {
-                                    return {
-                                        longitude: event.target.value,
-                                        latitude: oldStart.latitude
-                                    }
-                                } else {
-                                    return {
-                                        longitude: oldStart.longitude,
-                                        latitude: oldStart.latitude
-                                    }
-                                }
-                            })} />
-                    </Col>
-                    <Col sm="4">
-                        <Form.Label> Latitude:</Form.Label>
-                        <Form.Control type="number" placeholder="Enter the latitude" value={start.latitude} onChange={event =>
-                            setStart((oldStart) => {
-                                if (event.target.value >= -90 && event.target.value <= 90) {
-                                    return {
-                                        longitude: oldStart.longitude,
-                                        latitude: event.target.value
-                                    }
-                                } else {
-                                    return {
-                                        longitude: oldStart.longitude,
-                                        latitude: oldStart.latitude
-                                    }
-                                }
-                            })} />
-                    </Col>
-                </Form.Group>
-
-                <Form.Group as={Row} className="local-guide-form">
-                    <Form.Label><b>End point</b></Form.Label>
-                    <Col sm="4">
-                        <Form.Label>Longitude:</Form.Label>
-                        <Form.Control type="number" placeholder="Enter the longitude" value={end.longitude} onChange={event =>
-                            setEnd((oldEnd) => {
-                                if (event.target.value <= 180 && event.target.value >= -180) {
-                                    return {
-                                        longitude: event.target.value,
-                                        latitude: oldEnd.latitude
-                                    }
-                                } else {
-                                    return {
-                                        longitude: oldEnd.longitude,
-                                        latitude: oldEnd.latitude
-                                    }
-                                }
-                            })} />
-                    </Col>
-                    <Col sm="4">
-                        <Form.Label> Latitude:</Form.Label>
-                        <Form.Control type="number" placeholder="Enter the latitude" value={end.latitude} onChange={event =>
-                            setEnd((oldEnd) => {
-                                if (event.target.value >= -90 && event.target.value <= 90) {
-                                    return {
-                                        longitude: oldEnd.longitude,
-                                        latitude: event.target.value
-                                    }
-                                } else {
-                                    return {
-                                        longitude: oldEnd.longitude,
-                                        latitude: oldEnd.latitude
-                                    }
-                                }
-                            })} />
-                    </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="local-guide-form">
-                    <Col sm="5">
-                        <Form.Label><p><b>Reference point:</b>&nbsp;&nbsp; how many will you insert?</p></Form.Label>
-                    </Col>
-                    <Col sm="3">
-                        <Form.Control type="number" value={numbrefs} onChange={event => {
-                            numbrefs < event.target.value ?
-                                setReferences((oldRef) => [...oldRef, ...[...Array(event.target.value - oldRef.length)].map(x => { return { longitude: "", latitude: "" } })])
-                                : setReferences((oldRef) => oldRef.filter((ref, index) => index < event.target.value))
-                            return setNumbrefs(event.target.value)
-                        }} >
-                        </Form.Control>
-                    </Col>
-                </Form.Group>
-
-
-                {numbrefs > 0 && references.map((not, pos) => (
-                    <Form.Group as={Row} key={pos} className="local-guide-form">
-                        <Form.Label>#{pos + 1}</Form.Label>
-                        <Col sm="4">
-                            <Form.Label>Longitude:</Form.Label>
-                            <Form.Control type="number" placeholder="Enter the longitude" value={references[pos].longitude} onChange={event =>
-                                setReferences((oldReferences) => {
-                                    return oldReferences.map((reference, index) => {
-                                        if (index === pos) {
-                                            if (event.target.value <= 180 && event.target.value >= -180) {
-                                                return {
-                                                    longitude: event.target.value,
-                                                    latitude: oldReferences[pos].latitude
-                                                }
-                                            } else {
-                                                return {
-                                                    longitude: oldReferences[pos].longitude,
-                                                    latitude: oldReferences[pos].latitude
-                                                }
-                                            }
-                                        } else {
-                                            return reference;
-                                        }
-                                    })
-                                })} />
-                        </Col>
-                        <Col sm="4">
-                            <Form.Label> Latitude:</Form.Label>
-                            <Form.Control type="number" placeholder="Enter the latitude" value={references[pos].latitude} onChange={event =>
-                                setReferences((oldReferences) => {
-                                    return oldReferences.map((reference, index) => {
-                                        if (index === pos) {
-                                            if (event.target.value >= -90 && event.target.value <= 90) {
-                                                return {
-                                                    longitude: oldReferences[pos].longitude,
-                                                    latitude: event.target.value
-                                                }
-                                            } else {
-                                                return {
-                                                    longitude: oldReferences[pos].longitude,
-                                                    latitude: oldReferences[pos].latitude
-                                                }
-                                            }
-                                        } else {
-                                            return reference;
-                                        }
-                                    })
-                                })} />
-                        </Col>
-                    </Form.Group>
-                ))}
 
                 <Form.Group className="local-guide-form">
                     <Form.Label>Description:</Form.Label>
