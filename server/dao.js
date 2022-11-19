@@ -10,6 +10,7 @@ const validationType = require('./models/ValidationType')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
+const Hut = require('./models/Hut')
 
 
 
@@ -218,4 +219,18 @@ exports.getHikeTrack = async (id) => {
     } catch (e) {
         console.log(e.message)
     }
+}
+
+exports.createHut = async (name, description, beds) => {
+    if(name === undefined || description === undefined)
+        throw 400
+
+    const hut = await Hut.create({
+        name: name,
+        description: description,
+        beds: beds
+    })
+
+    hut.save()
+    console.log(hut)
 }
