@@ -11,6 +11,7 @@ import NavigationBar from './components/NavigationBar';
 import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
 import {HighVerification} from './components/highLevelUserVerification'
+import CreateHut from './components/CreateHut'
 
 import API from './API';
 
@@ -156,6 +157,7 @@ function MainApp() {
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/hiker/hikes/:id" element={<ShowHike/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
+        <Route path="/huts/create" element={<CreateHut />}/>
       </Routes>
     </>
   );
