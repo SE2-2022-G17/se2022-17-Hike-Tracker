@@ -24,9 +24,13 @@
 - the endpoint is called '/example/protected'
 
 ### Populate the DB
-run node server/scripts/populateDB.js
+- run node server/scripts/populateDB.js
+
+### How to test the application
+- cd server
+- npm test tests/<name_of_test_file> 
 
 ### MongoDB
-you should have running a mongo database (the service: MongoDB server, must be running)<br/>
-if you want to use a docker container: <br />
+- you should have running a mongo database (the service: MongoDB server, must be running)<br/>
+- if you want to use a docker container: <br />
 ``docker container run -p 27017:27017 mongo``
