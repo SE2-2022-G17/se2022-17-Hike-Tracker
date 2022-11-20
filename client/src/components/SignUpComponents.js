@@ -23,7 +23,6 @@ function SignUpForm(props) {
             if(user !== 'Error'){
                 console.log("Ciao");
                 props.setUser(user);
-                props.setShowAuthButton(true);
                 props.setErrorMessage("");
                 setSignedUp(true);
                 setVerificationVisibile(true);
