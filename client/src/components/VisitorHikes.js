@@ -75,10 +75,16 @@ function VisitorHikes() {
         setHikes(retrivedHikes);
     }
 
+    const newP = async (ev) => {
+        const authToken = localStorage.getItem('token');
+        await API.sendParkingDescription(1,2,3,authToken);
+    }
+
     return (
         <Row>
             <Col xs={3}>
                 <Container fluid>
+                    <Button onClick={()=>{newP();}}>Nuovo parking</Button>
                     <h2>Search for hikes!</h2>
                     <DifficultyPicker difficulty={difficulty} setDifficulty={setDifficulty} />
                     <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />

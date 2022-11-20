@@ -131,6 +131,24 @@ exports.validateUser = async (email, activationCode) => {
     console.log(user);
 }
 
+exports.saveNewParking = async (position, parkingSpaces) => {
+    const point = await Position.create({
+        "location.coordinates": [position.lon, position.lat]
+    });
+    const parking = new Parking({
+        point: point,
+        parkingSpaces: parkingSpaces
+    });
+
+    parking.save((err) => {
+        if (err) {
+            console.log(err);
+            throw new TypeError(JSON.stringify(err));
+        }
+    });
+    return parking._id;
+}
+
 exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
     let startPosition = undefined
     let endPosition = undefined

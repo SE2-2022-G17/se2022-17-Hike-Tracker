@@ -130,6 +130,21 @@ app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (r
     }
 });
 
+app.post('/localGuide/addParking',verifyUserToken,async (req,res) => {
+    console.log(req.body);
+    try{
+        const position = {
+            longitude: req.body.longitude,
+            latitude: req.body.latitude
+        }
+        await dao.saveNewParking(position,req.body.parkingSpaces);
+        return res.status(201).end();
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
 
