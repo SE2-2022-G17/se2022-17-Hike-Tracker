@@ -132,13 +132,9 @@ exports.validateUser = async (email, activationCode) => {
     console.log(user);
 }
 
-exports.saveNewParking = async (position, parkingSpaces) => {
-    const point = await Position.create({
-        "location.coordinates": [position.longitude, position.latitude]
-    });
-    
+exports.saveNewParking = async (name, parkingSpaces) => {
     const parking = new Parking({
-        point: point,
+        name: name,
         parkingSpaces: parkingSpaces
     });
 

@@ -74,6 +74,7 @@ function VisitorHikes() {
         );
         setHikes(retrivedHikes);
     }
+    
     return (
         <Row>
             <Col xs={3}>
