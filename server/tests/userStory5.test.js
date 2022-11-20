@@ -91,7 +91,7 @@ describe('Test API for creating huts (US5)', () => {
                 beds: 4
             });
 
-        expect(response.statusCode).toBe(204);
+        expect(response.statusCode).toBe(201);
     })
 });
 

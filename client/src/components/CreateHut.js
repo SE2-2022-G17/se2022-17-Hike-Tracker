@@ -32,8 +32,8 @@ function CreateHut(props) {
 
         const response = await API.createHut(name, description, beds, authToken);
 
-        if (response === 204) {
-            //HTTP status code 204 means No Content (successful)
+        if (response === 201) {
+            //HTTP status code 201 means Created (successful)
             setVariant('success')
             setMessage("Hut created successfully")
         } else {
