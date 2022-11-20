@@ -185,3 +185,12 @@
 .feat-icon {
   width: 16px;
 }
+
+.visitor-hike {
+  max-width: 96%;
+}
+
+.filter {
+  font-size: larger;
+  cursor: pointer;
+}

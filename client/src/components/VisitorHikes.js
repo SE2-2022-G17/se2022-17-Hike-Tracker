@@ -76,9 +76,22 @@ function VisitorHikes() {
     }
 
     return (
-        <Container>
+        <Container className='visitor-hike'>
             <Row>
-                <Col>
+                <Col xl={3}>
+                    <Container fluid>
+                        <h5>Search for hikes!</h5>
+                        <DifficultyPicker difficulty={difficulty} setDifficulty={setDifficulty} />
+                        <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />
+                        <MinMaxPicker filter="ascent" setMinFilter={setMinAscent} setMaxFilter={setMaxAscent} />
+                        <MinMaxPicker filter="time" setMinFilter={setMinTime} setMaxFilter={setMaxTime} />
+                        <TextField filter="City" setFilter={setCity} />
+                        <TextField filter="Province" setFilter={setProvince} />
+                        <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
+                        <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
+                    </Container>
+                </Col>
+                <Col xl={9}>
                     <HikesList hikes={hikes} />
                 </Col>
             </Row>
