@@ -155,7 +155,7 @@
 
 
 .login-container {
-  width: 45%;
+  max-width: 600px;
   padding-top: 2rem;
 }
 
@@ -164,7 +164,7 @@
 }
 
 .signup-container {
-  width: 45%;
+  max-width: 600px;
   padding-top: 2rem;
 }
 
