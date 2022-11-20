@@ -114,7 +114,7 @@ async function getVisitorHikes(
     return hikes
 }
 
-async function sendParkingDescription(name,parkingSpaces,token) {
+async function createParking(name,description,parkingSpaces,token) {
     const response = fetch(url + '/localGuide/addParking', {
         method: "POST",
         headers: {
@@ -124,14 +124,11 @@ async function sendParkingDescription(name,parkingSpaces,token) {
         credentials: 'include',
         body: JSON.stringify({
             name: name,
+            description: description,
             parkingSpaces: parkingSpaces})
     });
     const resp = await response;
-    if(resp.ok){
-        return "";
-    }else{
-        return resp.statusText;
-    }
+    return resp.status;
 }
 
 async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
@@ -178,6 +175,6 @@ async function getHike(id) {
     return await response.json()
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl,sendParkingDescription };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createParking };
 
 export default API;

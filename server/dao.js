@@ -132,9 +132,10 @@ exports.validateUser = async (email, activationCode) => {
     console.log(user);
 }
 
-exports.saveNewParking = async (name, parkingSpaces) => {
+exports.saveNewParking = async (name, description, parkingSpaces) => {
     const parking = new Parking({
         name: name,
+        description: description,
         parkingSpaces: parkingSpaces
     });
 

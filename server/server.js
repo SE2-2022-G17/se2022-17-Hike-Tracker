@@ -132,7 +132,7 @@ app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (r
 
 app.post('/localGuide/addParking',verifyUserToken, async (req,res) => {
     try{
-        await dao.saveNewParking(req.body.name,req.body.parkingSpaces);
+        await dao.saveNewParking(req.body.name,req.body.description,req.body.parkingSpaces);
         return res.status(201).end();
     } catch(err){
         console.log(err);
