@@ -173,7 +173,7 @@ app.post('/huts', verifyUserToken, async (req, res) => {
 
     try {
         await dao.createHut(name, description, beds);
-        res.sendStatus(204);
+        res.sendStatus(201);
     } catch (error) {
         res.sendStatus(error);
     }
