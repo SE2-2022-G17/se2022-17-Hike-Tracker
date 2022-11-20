@@ -130,8 +130,7 @@ app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (r
     }
 });
 
-app.post('/localGuide/addParking',verifyUserToken,async (req,res) => {
-    console.log(req.body);
+app.post('/localGuide/addParking',verifyUserToken, async (req,res) => {
     try{
         const position = {
             longitude: req.body.longitude,

@@ -7,6 +7,7 @@ const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
+const Parking = require('./models/Parking')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -133,8 +134,9 @@ exports.validateUser = async (email, activationCode) => {
 
 exports.saveNewParking = async (position, parkingSpaces) => {
     const point = await Position.create({
-        "location.coordinates": [position.lon, position.lat]
+        "location.coordinates": [position.longitude, position.latitude]
     });
+    
     const parking = new Parking({
         point: point,
         parkingSpaces: parkingSpaces

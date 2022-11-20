@@ -115,19 +115,20 @@ async function getVisitorHikes(
 }
 
 async function sendParkingDescription(longitude,latitude,parkingSpaces,token) {
-    const body = JSON.stringify({
-        longitude: longitude,
-        latitude: latitude,
-        parkingSpaces: parkingSpaces
-    });
+    const body = new FormData();
+    body.append("logitude", longitude);
+    body.append("latitude", latitude);
+    body.append("parkingSpaces", parkingSpaces);
+    console.log(body);
     const response = fetch(url + '/localGuide/addParking', {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: body
-    })
+        body: JSON.stringify({longitude:longitude,latitude:latitude,parkingSpaces:parkingSpaces})
+    });
     const resp = await response;
     if(resp.ok){
         return "";
