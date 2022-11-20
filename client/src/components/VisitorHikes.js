@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import API from '../API';
 import Difficulty from '../constants/Difficulty';
 import HikeCard from './HikeCard';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 function VisitorHikes() {
@@ -76,24 +76,13 @@ function VisitorHikes() {
     }
 
     return (
-        <Row>
-            <Col xs={3}>
-                <Container fluid>
-                    <h2>Search for hikes!</h2>
-                    <DifficultyPicker difficulty={difficulty} setDifficulty={setDifficulty} />
-                    <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />
-                    <MinMaxPicker filter="ascent" setMinFilter={setMinAscent} setMaxFilter={setMaxAscent} />
-                    <MinMaxPicker filter="time" setMinFilter={setMinTime} setMaxFilter={setMaxTime} />
-                    <TextField filter="City" setFilter={setCity} />
-                    <TextField filter="Province" setFilter={setProvince} />
-                    <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
-                    <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
-                </Container>
-            </Col>
-            <Col xs={9}>
-                <HikesList hikes={hikes} />
-            </Col>
-        </Row>
+        <Container>
+            <Row>
+                <Col>
+                    <HikesList hikes={hikes} />
+                </Col>
+            </Row>
+        </Container>
     );
 }
 
@@ -194,16 +183,16 @@ function HikesList(props) {
     }
 
     return (
-        <Container fluid>
+        <>
             {props.hikes.length === 0 ? <h3>No hikes available</h3> : undefined}
             {
                 props.hikes.map((hike, index) => {
                     return (
-                        <HikeCard key={hike._id} hike={hike} goToHike={ goToHike }/>
+                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} />
                     );
                 })
             }
-        </Container>
+        </>
     );
 }
 

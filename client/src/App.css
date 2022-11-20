@@ -93,12 +93,13 @@
 
 .hike-card {
   margin: 1rem 0rem;
-  width: 64rem;
+  width: 100%;
 }
 
 .hike-detail {
   display: flex;
   align-items: center;
+  padding-left: 1rem;
 }
 
 .hike-feature {
@@ -179,4 +180,8 @@
 
 .form-number {
   max-width: 75px;
+}
+
+.feat-icon {
+  width: 16px;
 }
