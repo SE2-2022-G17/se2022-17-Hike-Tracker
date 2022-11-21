@@ -15,6 +15,7 @@ function SignUpForm(props) {
     const [emailSent,setEmailSent] = useState(false);
     const [signedUp,setSignedUp] = useState(false);
     const [emailIsValidated,setEmailIsValidated] = useState(false);
+    const [regButtonDisabled,setRegButtonDisabled] = useState(false);
     const navigate = useNavigate();
 
     const signUp = (credentials) => {
@@ -30,6 +31,7 @@ function SignUpForm(props) {
                 props.setErrorMessage('Email already registered.');
                 setSignedUp(false);
                 setVerificationVisibile(false);
+                setRegButtonDisabled(false);
             }
           })
           .catch(err => {
@@ -41,6 +43,7 @@ function SignUpForm(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         props.setErrorMessage('');
+        setRegButtonDisabled(true);
         const credentials = { name, surname, username, password, type };
 
         // validation that forms are not empty
@@ -63,6 +66,9 @@ function SignUpForm(props) {
         }
         if (valid) {
             signUp(credentials);
+        }
+        else{
+            setRegButtonDisabled(false);
         }
     };
 
@@ -107,7 +113,7 @@ function SignUpForm(props) {
                             {
                                 signedUp?<></>: 
                                 <>
-                                    <Button type='submit' className='primary' onClick={handleSubmit}>Sign Up</Button>
+                                    <Button type='submit' className='primary' onClick={handleSubmit} disabled={regButtonDisabled}>Sign Up</Button>
                                 </>
                                 
                             }
