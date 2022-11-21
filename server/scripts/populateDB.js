@@ -6,6 +6,7 @@ const User = require("../models/User")
 const UserType = require("../models/UserType")
 const fs = require('fs');
 let gpxParser = require('gpxparser');
+const Location = require("../models/Location")
 
 
 mongoose.connect("mongodb://localhost/hike_tracker")
@@ -17,6 +18,7 @@ async function clear() {
         await Hike.deleteMany()
         await Position.deleteMany()
         await User.deleteMany()
+        await Location.deleteMany()
     } catch (e) {
         console.log(e.message)
     }

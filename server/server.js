@@ -160,6 +160,26 @@ app.get('/hiker/hike-track/:id', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+// note: verifyUserToken check if the Authentication header is present and valid
+app.post('/huts', verifyUserToken, async (req, res) => {
+    const name = req.body.name;
+    const description = req.body.description;
+    const beds = req.body.beds;
+    const user = req.user; // this is received from verifyUserToken middleware
+    if(user.role !== Type.localGuide){
+        res.sendStatus(403);
+        return;
+    }
+
+    try {
+        await dao.createHut(name, description, beds);
+        res.sendStatus(201);
+    } catch (error) {
+        res.sendStatus(error);
+    }
+
+});
+
 
 const server=http.createServer(app);
 
