@@ -53,7 +53,11 @@ function ResponsiveNavBar(props) {
                                                     onClick={() => props.setModalShow(true)}>
                                                     User Info
                                                 </NavDropdown.Item>
-                                                <NavDropdown.Item href="/" onClick={props.doLogOut}>
+                                                <NavDropdown.Item 
+                                                    href="/" 
+                                                    onClick={props.doLogOut}
+                                                    className="danger"
+                                                >
                                                     Logout
                                                 </NavDropdown.Item>
                                             </NavDropdown>

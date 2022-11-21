@@ -21,6 +21,7 @@ describe('Test API for creating huts (US5)', () => {
 
     it('test wrong role', async () => {
         const token = jwt.sign({
+            'fullName': "Kanye West",
             'email': "test@email.com",
             'role': "hiker",
             'active': true
@@ -40,6 +41,7 @@ describe('Test API for creating huts (US5)', () => {
 
     it('test bad request - missing name', async () => {
         const token = jwt.sign({
+            'fullName': "Kanye West",
             'email': "test@email.com",
             'role': "localGuide",
             'active': true
@@ -58,6 +60,7 @@ describe('Test API for creating huts (US5)', () => {
 
     it('test bad request - missing description', async () => {
         const token = jwt.sign({
+            'fullName': "Kanye West",
             'email': "test@email.com",
             'role': "localGuide",
             'active': true
@@ -77,6 +80,7 @@ describe('Test API for creating huts (US5)', () => {
 
     it('test create correct hut', async () => {
         const token = jwt.sign({
+            'fullName': "Kanye West",
             'email': "test@email.com",
             'role': "localGuide",
             'active': true
