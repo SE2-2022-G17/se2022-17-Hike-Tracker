@@ -21,8 +21,6 @@ function SignUpForm(props) {
         API.signUp(credentials)
           .then(user => {
             if(user !== 'Error'){
-                console.log("Ciao");
-                props.setUser(user);
                 props.setErrorMessage("");
                 setSignedUp(true);
                 setVerificationVisibile(true);

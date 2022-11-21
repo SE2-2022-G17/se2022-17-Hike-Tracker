@@ -194,3 +194,7 @@
   font-size: larger;
   cursor: pointer;
 }
+
+.danger {
+  color: red;
+}

@@ -101,6 +101,7 @@ exports.loginUser = async (email, password) => {
         throw 401
 
     const token = jwt.sign({
+        'fullName': user.firstName + " " + user.lastName,
         'email': user.email,
         'role': user.role,
         'active': user.active

@@ -32,6 +32,7 @@ describe('Test API for creating hikes (US2)', () => {
 
     it('test create correct hike', async () => {
         const token = jwt.sign({
+            'fullName': "Kanye West",
             'email': "test@email.com",
             'role': "localGuide",
             'active': true
