@@ -93,12 +93,13 @@
 
 .hike-card {
   margin: 1rem 0rem;
-  width: 64rem;
+  width: 100%;
 }
 
 .hike-detail {
   display: flex;
   align-items: center;
+  padding-left: 1rem;
 }
 
 .hike-feature {
@@ -154,7 +155,7 @@
 
 
 .login-container {
-  width: 45%;
+  max-width: 600px;
   padding-top: 2rem;
 }
 
@@ -163,7 +164,7 @@
 }
 
 .signup-container {
-  width: 45%;
+  max-width: 600px;
   padding-top: 2rem;
 }
 
@@ -179,4 +180,17 @@
 
 .form-number {
   max-width: 75px;
+}
+
+.feat-icon {
+  width: 16px;
+}
+
+.visitor-hike {
+  max-width: 96%;
+}
+
+.filter {
+  font-size: larger;
+  cursor: pointer;
 }

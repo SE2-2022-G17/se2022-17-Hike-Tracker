@@ -7,7 +7,7 @@ import VisitorHikes from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import ShowHike from "./components/ShowHikeComponent";
-import NavigationBar from './components/NavigationBar';
+import ResponsiveNavBar from './components/ResponsiveNavBar';
 import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
 import {HighVerification} from './components/highLevelUserVerification'
@@ -39,7 +39,6 @@ function MainApp() {
   const [user, setUser] = useState({});
   const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showAuthButton, setShowAuthButton] = useState(true);
   const [modalShow, setModalShow] = useState(false);
   const [role,setRole]=useState("");
 
@@ -70,7 +69,6 @@ function MainApp() {
               navigate('/HighLevelVerification');
             }
             else{
-              setShowAuthButton(true);
               setLoggedIn(true);
               setUser(user);
               navigate('/');
@@ -96,7 +94,6 @@ function MainApp() {
     const authToken = localStorage.getItem('token');
     if (authToken === null) {
       setLoggedIn(false);
-      setShowAuthButton(true);
       console.log("User is not logged-in");
     }
     else {
@@ -113,7 +110,6 @@ function MainApp() {
           }
           else{
             console.log("User token is: " + authToken);
-            setShowAuthButton(true);
             setLoggedIn(true);
           }
       }   
@@ -123,12 +119,10 @@ function MainApp() {
 
   return (
     <>
-      <NavigationBar
+      <ResponsiveNavBar
         loggedIn={loggedIn}
         doLogOut={doLogOut}
         openLogin={doLogIn}
-        showAuthButton={showAuthButton}
-        setShowAuthButton={setShowAuthButton}
         setModalShow={setModalShow}
         role={role}
       />
@@ -138,7 +132,7 @@ function MainApp() {
         </Col></Row>
         : false}
         {
-          user.user != undefined ? 
+          user.user !== undefined ? 
             <ProfileModal
             show={modalShow}
             onHide={() => setModalShow(false)} 
@@ -152,7 +146,7 @@ function MainApp() {
         <Route path='/login' element={
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
-          <SignUpForm setDirty={setDirty} setErrorMessage={setErrorMessage} setUser={setUser} setShowAuthButton={setShowAuthButton}/>} />
+          <SignUpForm setDirty={setDirty} setErrorMessage={setErrorMessage} setUser={setUser}/>} />
         <Route path="/localGuide" element={<LocalGuide />}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/hiker/hikes/:id" element={<ShowHike/>} />
