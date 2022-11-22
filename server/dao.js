@@ -222,15 +222,24 @@ exports.getHikeTrack = async (id) => {
     }
 }
 
-exports.createHut = async (name, description, beds) => {
+exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
     if(name === undefined || description === undefined)
         throw 400
 
+    const position = await Position.create({
+        "location.coordinates": [longitude,latitude]
+    });
+    
     const hut = await Hut.create({
         name: name,
         description: description,
-        beds: beds
+        beds: beds,
+        point: position,
+        altitude: altitude,
+        city: city,
+        province: province
     })
 
     hut.save()
+    position.save()
 }

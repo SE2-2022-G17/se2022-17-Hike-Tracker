@@ -159,7 +159,7 @@ async function getHike(id) {
     return await response.json()
 }
 
-async function createHut(name, description, beds, token) {
+async function createHut(name, description, beds, token,longitude,latitude,altitude,city,province) {
     const response = await fetch(url + '/huts', {
         method: "POST",
         headers: {
@@ -169,7 +169,12 @@ async function createHut(name, description, beds, token) {
         body: JSON.stringify({
             name: name,
             description: description,
-            beds: beds
+            beds: beds,
+            longitude: longitude,
+            latitude: latitude,
+            altitude: altitude,
+            city: city,
+            province: province
         })
     })
 

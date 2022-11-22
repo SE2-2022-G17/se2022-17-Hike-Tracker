@@ -130,6 +130,7 @@ app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (r
     }
 });
 
+
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
 
@@ -160,19 +161,37 @@ app.get('/hiker/hike-track/:id', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+app.get('/hutsList', (req, res) => {
+    const hikeId = req.params.id;
+
+    dao.getHike(hikeId)
+        .then((hike) => { res.json(hike); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
 // note: verifyUserToken check if the Authentication header is present and valid
 app.post('/huts', verifyUserToken, async (req, res) => {
     const name = req.body.name;
     const description = req.body.description;
     const beds = req.body.beds;
     const user = req.user; // this is received from verifyUserToken middleware
+    const longitude = req.body.longitude;
+    const latitude = req.body.latitude;
+    const altitude = req.body.altitude;
+    const city = req.body.city;
+    const province = req.body.province;
+
     if(user.role !== Type.localGuide){
         res.sendStatus(403);
         return;
     }
 
+    if ( longitude === '' || latitude === ''){
+        res.sendStatus(500);
+    }
+
     try {
-        await dao.createHut(name, description, beds);
+        await dao.createHut(name, description, beds, longitude, latitude, altitude,city,province);
         res.sendStatus(201);
     } catch (error) {
         res.sendStatus(error);

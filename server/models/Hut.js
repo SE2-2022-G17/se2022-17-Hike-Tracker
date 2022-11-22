@@ -9,6 +9,18 @@ var hutSchema = new Schema({
         type: Number,
         min: 0,
         default: 0
+    },
+    altitude: {
+        type: Number,
+        default: 0
+    },
+    city: {
+        type: String,
+        default: ''
+    },
+    province: {
+        type: String,
+        default: ''
     }
 })
 
