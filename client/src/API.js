@@ -134,7 +134,7 @@ async function getHuts(
 
     let parametes = []
 
-    if (bedsMin !== undefined)
+    if (bedsMin !== undefined && bedsMin.trim().length!=0)
         parametes.push("bedsMin=" + bedsMin)
     if (minAltitude !== undefined && minAltitude.trim().length !== 0)
         parametes.push("altitudeMin=" + minAltitude)

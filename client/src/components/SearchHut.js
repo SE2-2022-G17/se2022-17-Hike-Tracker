@@ -54,15 +54,8 @@ function SearchHut(props) {
             {
                 if(map.current)map.current.flyTo({center: [longitude, latitude], zoom: 11});
             }
-
-            let bm;
-            if(bedsMin.trim().length == 0)
-                bm=0;
-            else 
-                bm=bedsMin;
-
             API.getHuts(
-                    bm,
+                    bedsMin,
                     altitudeMin,
                     altitudeMax,
                     longitude,
