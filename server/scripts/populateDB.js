@@ -9,9 +9,17 @@ let gpxParser = require('gpxparser');
 const Location = require("../models/Location")
 
 
-mongoose.connect("mongodb://localhost/hike_tracker")
+mongoose
+    .connect(
+        'mongodb://mongo:27017/hike-tracker', // the mongo container listening to port 27017
+        { useNewUrlParser: true }
+    )
+    .then(async () => {
+        console.log('MongoDB Connected')
+        await run();
+    })
+    .catch(err => console.log(err));
 
-run()
 
 async function clear() {
     try {
@@ -92,12 +100,12 @@ async function run() {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
             var gpx = new gpxParser()
             gpx.parse(content)
-            var length = ((gpx.tracks[0].distance.total)/1000).toFixed(2) //length in kilometers
+            var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
             var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
             var points = gpx.tracks[0].points
             var startPoint = points[0]
             var endPoint = points[points.length - 1]
-            
+
             const startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
             })
