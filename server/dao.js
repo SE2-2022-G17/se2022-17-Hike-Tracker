@@ -52,7 +52,33 @@ exports.getVisitorHikes = async (
     } catch (e) {
         console.log(e.message)
     }
+}
 
+exports.getHuts = async (
+    bedsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    city,
+    province
+) => {
+
+    try {
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+
+        const huts = await Hut.find()
+            .filterBy("altitude", altitudeMin, altitudeMax)
+            .filterBy("bedsMin", bedsMin, 100000)
+            .filterByCityAndProvince(city, province)
+            .filterByPositions(longitude, latitude, nearPositions)
+        return huts
+
+    } catch (e) {
+        console.log(e.message)
+    }
 }
 
 exports.registerUser = async (firstName, lastName, email, password, role) => {

@@ -57,6 +57,28 @@ app.get('/visitor/hikes', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+app.get('/getHuts', verifyUserToken,(req, res) => {
+    let bedsMin = req.query.bedsMin
+    let altitudeMin = req.query.altitudeMin
+    let altitudeMax = req.query.altitudeMax
+    let longitude = req.query.longitude
+    let latitude = req.query.latitude
+    let city = req.query.city
+    let province = req.query.province
+
+    dao.getHuts(
+        bedsMin,
+        altitudeMin,
+        altitudeMax,
+        longitude,
+        latitude,
+        city,
+        province
+    )
+        .then((hikes) => { res.json(hikes); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
 app.post('/user/register', (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;

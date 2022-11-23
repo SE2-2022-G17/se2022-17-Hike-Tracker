@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require("../server.js");
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 mongoose.connect("mongodb://localhost/hike_tracker");
 
