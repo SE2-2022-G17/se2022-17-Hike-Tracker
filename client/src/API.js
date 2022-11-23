@@ -67,6 +67,12 @@ async function logIn(credentials) {
     }
 }
 
+async function getHut(hutId) {
+    const response = await fetch(url + '/huts/hut/:' + hutId)
+    const hikes = await response.json()
+    return hikes
+}
+
 async function getVisitorHikes(
     difficulty,
     minLength,
@@ -222,6 +228,6 @@ async function createHut(name, description, beds, token,longitude,latitude,altit
     return response.status
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, getHuts };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, getHuts, getHut };
 
 export default API;

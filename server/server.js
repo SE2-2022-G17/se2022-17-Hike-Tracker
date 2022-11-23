@@ -161,6 +161,14 @@ app.get('/hiker/hikes/:id', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+app.get('/huts/hut/:id', (req, res) => {
+    const hutId = req.params.id;
+
+    dao.getHut(hutId)
+        .then((hut) => { res.json(hut); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
 app.get('/hiker/hike-track/:id', (req, res) => {
     const hikeId = req.params.id;
 
