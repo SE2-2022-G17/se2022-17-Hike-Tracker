@@ -12,6 +12,8 @@ import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
 import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
+import SearchHut from './components/SearchHut'
+
 
 import API from './API';
 
@@ -149,6 +151,7 @@ function MainApp() {
         <Route path="/hiker/hikes/:id" element={<ShowHike />} />
         <Route path="/HighLevelVerification" element={<HighVerification />} />
         <Route path="/huts/create" element={<CreateHut />} />
+        <Route path="/searchHut" element={<SearchHut />} />
       </Routes>
     </>
   );

@@ -114,6 +114,47 @@ async function getVisitorHikes(
     return hikes
 }
 
+async function getHuts(
+    bedsMin,
+    minAltitude,
+    maxAltitude,
+    longitude,
+    latitude,
+    city,
+    province,
+    token
+) {
+    let query = "?"
+
+    let parametes = []
+
+    if (bedsMin !== undefined)
+        parametes.push("bedsMin=" + bedsMin)
+    if (minAltitude !== undefined && minAltitude.trim().length !== 0)
+        parametes.push("altitudeMin=" + minAltitude)
+    if (maxAltitude !== undefined && maxAltitude.trim().length !== 0)
+        parametes.push("altitudeMax=" + maxAltitude)
+    if (longitude !== undefined && longitude.trim().length !== 0)
+        parametes.push("longitude=" + longitude)
+    if (latitude !== undefined && latitude.trim().length !== 0)
+        parametes.push("latitude=" + latitude)
+    if (city !== undefined && city.trim().length !== 0)
+        parametes.push("city=" + city)
+    if (province !== undefined && province.trim().length !== 0)
+        parametes.push("province=" + province)
+
+    query += parametes.join("&")
+    const response = await fetch(url + '/getHuts' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    const huts = await response.json()
+    return huts
+}
+
 
 async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
     const body = new FormData();
@@ -181,6 +222,6 @@ async function createHut(name, description, beds, token,longitude,latitude,altit
     return response.status
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, getHuts };
 
 export default API;

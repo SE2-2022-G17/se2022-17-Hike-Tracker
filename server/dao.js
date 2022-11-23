@@ -70,11 +70,13 @@ exports.getHuts = async (
             .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
 
         const huts = await Hut.find()
-            .filterBy("altitude", altitudeMin, altitudeMax)
-            .filterBy("bedsMin", bedsMin, 100000)
+            .select({ "__v": 0 })
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('beds', bedsMin)
             .filterByCityAndProvince(city, province)
             .filterByPositions(longitude, latitude, nearPositions)
-        return huts
+            .populate('point')
+            return huts
 
     } catch (e) {
         console.log(e.message)

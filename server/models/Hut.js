@@ -31,15 +31,15 @@ hutSchema.query.filterBy = function (filter, min, max) {
             return this //we don't filter
         } else {
             // we filter only for max value
-            return this.where(filter).lt(max)
+            return this.where(filter).lte(max)
         }
     } else {
         if (max == undefined) {
             // we filter only for min value
-            return this.where(filter).gt(min)
+            return this.where(filter).gte(min)
         } else {
             // we filter both
-            return this.where(filter).gt(min).lt(max)
+            return this.where(filter).gte(min).lte(max)
         }
     }
 }

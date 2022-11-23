@@ -14,8 +14,8 @@ describe('Test API for searching huts (US7)', () => {
             'active': true
         }, 'my_secret_key')
 
-        let query = "?minBeds=1&altitudeMin=200"
-        +"&altitudeMax=300&longitude=7&latitude=45&city=Turin&province=TO";
+        let query = "?bedsMin=1&altitudeMin=200"
+        +"&altitudeMax=300&longitude=7.66&latitude=45.06&city=Turin&province=TO";
         const response = await request(app)
         .get("/getHuts" + query)
         .set('Authorization', "Bearer " + token)
@@ -38,7 +38,7 @@ describe('Test API for searching huts (US7)', () => {
             'active': true
         }, 'my_secret_key')
 
-        let query = "?minBeds=1&altitudeMin=200"
+        let query = "?bedsMin=1&altitudeMin=200"
         +"&altitudeMax=300&longitude=&latitude=45&city=Turin&province=TO";
         const response = await request(app)
         .get("/getHuts" + query)
