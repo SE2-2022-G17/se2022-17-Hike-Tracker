@@ -1,5 +1,0 @@
-FROM alpine
-RUN apk add --update nodejs
-WORKDIR /app
-COPY . .
-CMD ["node", "scripts/populateDB.js"]
