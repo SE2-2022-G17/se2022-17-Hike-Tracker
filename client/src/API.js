@@ -68,7 +68,7 @@ async function logIn(credentials) {
 }
 
 async function getHut(hutId) {
-    const response = await fetch(url + '/huts/hut/:' + hutId)
+    const response = await fetch(url + '/huts/hut/' + hutId)
     const hikes = await response.json()
     return hikes
 }

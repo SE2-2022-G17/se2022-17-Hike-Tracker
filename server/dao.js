@@ -238,7 +238,7 @@ exports.getHike = async (id) => {
 
 exports.getHut = async (id) => {
     try {
-        return await Hut.findById(ObjectId(id), { _id: 0, track_file: 1 })
+        return await Hut.findById(ObjectId(id))
             .then(doc => {
                 return doc;
             })
