@@ -1,4 +1,10 @@
 ## How to run the app:
+
+### Run the container
+- docker-compose up -d --build
+### Stop and destory
+- docker-compose down
+
 ### Run the server:
 - cd server
 - npm install

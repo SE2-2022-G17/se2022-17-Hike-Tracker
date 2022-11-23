@@ -1,0 +1,32 @@
+version: '3'
+services:
+  server:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: "./server"
+    ports:
+      - 3001:3001
+    container_name: server-hike
+    volumes:
+      - ./:/code
+  client:
+    build:
+      dockerfile: Dockerfile
+      context: "./client"
+    ports:
+      - "3000:3000"
+    container_name: client-hike
+    stdin_open: true
+    volumes:
+      - ./client:/usr/src/app/client
+      - /usr/src/app/client/node_modules
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    container_name: mongo-hike
+    volumes:
+      - mongodb:/data/db
+volumes:
+  mongodb:

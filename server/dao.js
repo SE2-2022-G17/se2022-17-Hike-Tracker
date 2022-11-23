@@ -14,7 +14,14 @@ const Hut = require('./models/Hut')
 
 
 
-mongoose.connect("mongodb://localhost/hike_tracker");
+mongoose
+    .connect(
+        'mongodb://mongo:27017/hike-tracker', // the mongo container listening to port 27017
+        { useNewUrlParser: true }
+    )
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
+
 
 exports.getVisitorHikes = async (
     difficulty,
