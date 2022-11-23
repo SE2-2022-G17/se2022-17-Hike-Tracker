@@ -33,7 +33,12 @@ describe('Test API for creating huts (US5)', () => {
             .send({
                 name: "hut_name",
                 description: "hut_descr",
-                beds: 4
+                beds: 4,
+                longitude: 7.662,
+                latitude: 45.062,
+                altitude: 239,
+                city: 'Turin',
+                province: 'TO'
             });
 
         expect(response.statusCode).toBe(403);
@@ -92,7 +97,12 @@ describe('Test API for creating huts (US5)', () => {
             .send({
                 name: "hut_name",
                 description: "hut_descr",
-                beds: 4
+                beds: 4,
+                longitude: 7.662,
+                latitude: 45.062,
+                altitude: 239,
+                city: 'Turin',
+                province: 'TO'
             });
 
         expect(response.statusCode).toBe(201);
