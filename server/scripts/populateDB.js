@@ -17,7 +17,6 @@ mongoose
     .then(async () => {
         console.log('MongoDB Connected')
         await run();
-        process.exit()
     })
     .catch(err => console.log(err));
 
@@ -150,7 +149,6 @@ async function run() {
     console.log(user);
 
     await mongoose.disconnect()
-    process.exit()
 }
 
 
