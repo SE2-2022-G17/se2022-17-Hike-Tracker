@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Form, Button, Alert} from "react-bootstrap";
+import {Container, Form, Button, Alert, Row, Col} from "react-bootstrap";
 import API from '../API';
 
 
@@ -10,6 +10,8 @@ function CreateParking(props) {
     const [disabled, setDisabled] = useState(true)
     const [message, setMessage] = useState('')
     const [variant, setVariant] = useState('warning')
+    const [latitude, setLatitude] = useState(0)
+    const [longitude, setLongitude] = useState(0)
 
     // this is used to validate data and activate button
     useEffect(() => {
@@ -29,7 +31,7 @@ function CreateParking(props) {
     const handleSubmit = async (event) => {
         event.preventDefault()
         const authToken = localStorage.getItem('token');
-        const response = await API.createParking(name, description, parkingPlaces, authToken);
+        const response = await API.createParking(name, description, parkingPlaces, authToken, latitude, longitude);
 
         if (response === 201) {
             //HTTP status code 201 means Created (successful)
@@ -76,6 +78,43 @@ function CreateParking(props) {
                         onChange={event => { if (event.target.value >= 0) setParkingPlaces(event.target.value) }}
                     />
                 </Form.Group>
+                <Row>
+                   <Col>
+                       <h5>Coordinates</h5>
+                   </Col>
+                </Row>
+                <Row className={'mb-3'}>
+                    <Col>
+                        <Form.Group className="form-number">
+                            <Form.Label>Latitude</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={latitude}
+                                onChange={ event =>
+                                {
+                                    if (event.target.value >= 0)
+                                        setLatitude(event.target.value)
+                                }
+                                }
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group className="form-number">
+                            <Form.Label>Longitude</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={longitude}
+                                onChange={ event =>
+                                    {
+                                        if (event.target.value >= 0)
+                                            setLongitude(event.target.value)
+                                    }
+                                }
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
                 <Button
                     variant="primary"
                     type="submit"

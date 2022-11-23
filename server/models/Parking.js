@@ -8,6 +8,10 @@ var ParkingSchema = new Schema({
         type: Number,
         min: 1,
         default: 1
+    },
+    coordinate: {
+        type: Schema.Types.ObjectId,
+        ref: 'Position'
     }
 })
 

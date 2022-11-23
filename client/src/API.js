@@ -114,7 +114,7 @@ async function getVisitorHikes(
     return hikes
 }
 
-async function createParking(name,description,parkingSpaces,token) {
+async function createParking(name,description,parkingSpaces,token, latitude, longitude) {
     const response = fetch(url + '/localGuide/addParking', {
         method: "POST",
         headers: {
@@ -125,7 +125,10 @@ async function createParking(name,description,parkingSpaces,token) {
         body: JSON.stringify({
             name: name,
             description: description,
-            parkingSpaces: parkingSpaces})
+            parkingSpaces: parkingSpaces,
+            latitude: latitude,
+            longitude: longitude
+        })
     });
     const resp = await response;
     return resp.status;
