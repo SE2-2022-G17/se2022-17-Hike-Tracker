@@ -10,8 +10,6 @@ services:
     depends_on:
       - "populate"
     container_name: server-hike
-    volumes:
-      - ./:/code
   client:
     build:
       dockerfile: Dockerfile
