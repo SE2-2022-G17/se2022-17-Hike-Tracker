@@ -31,17 +31,23 @@ function ResponsiveNavBar(props) {
                                 {props.role === UserType.localGuide ?
                                     <>
                                         <Nav.Link href="/LocalGuide">Describe Hike</Nav.Link>
-                                        <NavDropdown
-                                            title="Huts"
-                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
-                                        >
-                                            <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
-                                            <NavDropdown.Divider />
-                                            <NavDropdown.Item href="#action5">Another feature</NavDropdown.Item>
-                                        </NavDropdown>
                                     </>
                                     : <></>
                                 }
+                                <NavDropdown
+                                            title="Huts"
+                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                        >
+                                            {
+                                                props.role === UserType.localGuide ?
+                                                <>
+                                                    <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
+                                                </>
+                                                : <></>
+                                            }
+                                            <NavDropdown.Divider />
+                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
+                                        </NavDropdown>
                                 {
                                     props.loggedIn ?
                                         <>

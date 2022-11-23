@@ -19,8 +19,8 @@ function SearchHut(props) {
     const [altitudeMax,setAltitudeMax] = useState('');
     const [longitude,setLongitude] = useState('');
     const [latitude,setLatitude] = useState('');
-    const [city,setCity] = useState('Turin');
-    const [province,setProvince] = useState('TO');
+    const [city,setCity] = useState('');
+    const [province,setProvince] = useState('');
     const [lng, setLng] = useState(7.662);      // Used to center the map on loading
     const [lat, setLat] = useState(45.062);
     const [refresh,setRefresh] = useState(false); // Do the not operation on this state to refresh huts
@@ -100,7 +100,6 @@ function SearchHut(props) {
                     <Container fluid>
                         <Row>
                             <Col>
-                            <h5>Search for an hut!</h5>
                                     <MinPicker filter="beds" setMinFilter={setBedsMin} />
                                     <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
                                     <TextField filter="City" setFilter={setCity} />

@@ -151,7 +151,7 @@ function MainApp() {
         <Route path="/hiker/hikes/:id" element={<ShowHike />} />
         <Route path="/HighLevelVerification" element={<HighVerification />} />
         <Route path="/huts/create" element={<CreateHut />} />
-        <Route path="/searchHut" element={<SearchHut />} />
+        <Route path="/huts/searchHut" element={<SearchHut />} />
       </Routes>
     </>
   );
