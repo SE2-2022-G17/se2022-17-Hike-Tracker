@@ -26,11 +26,12 @@ services:
       - ./client:/usr/src/app/client
       - /usr/src/app/client/node_modules
   populate:
-    image: alpine
+    build:
+      dockerfile: DockerfileP
+      context: "./server"
     container_name: populate-hike
     depends_on:
       - "mongo"
-    command: "apk add --update nodejs && node scripts/populateDB.js"
   mongo:
     image: mongo
     ports:
