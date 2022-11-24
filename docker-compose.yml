@@ -7,20 +7,29 @@ services:
       context: "./server"
     ports:
       - 3001:3001
+    depends_on:
+      - "populate"
     container_name: server-hike
-    volumes:
-      - ./:/code
   client:
     build:
       dockerfile: Dockerfile
       context: "./client"
     ports:
       - "3000:3000"
+    depends_on:
+      - "server"
     container_name: client-hike
     stdin_open: true
     volumes:
       - ./client:/usr/src/app/client
       - /usr/src/app/client/node_modules
+  populate:
+    build:
+      dockerfile: DockerfileP
+      context: "./server"
+    container_name: populate-hike
+    depends_on:
+      - "mongo"
   mongo:
     image: mongo
     ports:
