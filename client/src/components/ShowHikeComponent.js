@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Card, Col, Row, Container} from 'react-bootstrap';
+import {Card, Col, Row, Container, Button} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faClock} from '@fortawesome/free-regular-svg-icons'
 import mapboxgl from 'mapbox-gl'
@@ -9,6 +9,8 @@ import {faLayerGroup, faMountainSun, faPersonRunning} from "@fortawesome/free-so
 import Axios from "axios";
 import {useParams} from "react-router-dom";
 import API from "../API";
+import ReferencePointsForm from "./ReferencePointsForm";
+
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
 
@@ -21,7 +23,6 @@ function ShowHike(props) {
     const [lng, setLng] = useState(0);
     const [zoom, setZoom] = useState(11);
     let { id } = useParams();
-
 
     useEffect(() => {
         if (id !== null && hike === null) {
@@ -171,8 +172,17 @@ function ShowHike(props) {
                     <div ref={mapContainer} className="map-container" />
                 </Col>
             </Row>
+            {
+                //props.role === "localGuide" => shows form to link the end/start point to hut/parking
+                props.role === "localGuide" ? <>
+                <br/><br/>
+                <ReferencePointsForm hikeId={id}/>
+                </>
+                : <></>
+            }
         </Container>
     );
+    
 }
 
 export default ShowHike;

@@ -146,7 +146,7 @@ function MainApp() {
           <SignUpForm setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path="/localGuide" element={<LocalGuide />} />
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />} />
-        <Route path="/hiker/hikes/:id" element={<ShowHike />} />
+        <Route path="/hiker/hikes/:id" element={<ShowHike role={role}/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />} />
         <Route path="/huts/create" element={<CreateHut />} />
       </Routes>
