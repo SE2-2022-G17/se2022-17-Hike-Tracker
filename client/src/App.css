@@ -93,24 +93,25 @@
 
 .hike-card {
   margin: 1rem 0rem;
-  width: 64rem;
+  width: 100%;
 }
 
 .hike-detail {
   display: flex;
   align-items: center;
+  padding-left: 1rem;
 }
 
-.hike-feature{
+.hike-feature {
   padding-left: 3%;
   margin: 0;
 }
 
-.basic-filter{
+.basic-filter {
   width: 50%;
 }
 
-.coordinates{
+.coordinates {
   color: gray;
 }
 
@@ -134,7 +135,7 @@
   padding: 0rem 1rem;
 }
 
-.home-page-link{
+.home-page-link {
   text-decoration: none;
   font-size: x-large;
 }
@@ -154,16 +155,16 @@
 
 
 .login-container {
-  width: 45%;
+  max-width: 600px;
   padding-top: 2rem;
 }
 
-.base-form{
+.base-form {
   padding: 2% 0%;
 }
 
 .signup-container {
-  width: 45%;
+  max-width: 600px;
   padding-top: 2rem;
 }
 
@@ -171,4 +172,29 @@
   text-decoration: none;
   font-size: large;
   color: rgb(217, 216, 216);
+}
+
+.form-container {
+  max-width: 600px;
+}
+
+.form-number {
+  max-width: 75px;
+}
+
+.feat-icon {
+  width: 16px;
+}
+
+.visitor-hike {
+  max-width: 96%;
+}
+
+.filter {
+  font-size: larger;
+  cursor: pointer;
+}
+
+.danger {
+  color: red;
 }

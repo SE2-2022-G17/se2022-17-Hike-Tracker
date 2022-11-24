@@ -7,11 +7,14 @@ import VisitorHikes from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import ShowHike from "./components/ShowHikeComponent";
-import NavigationBar from './components/NavigationBar';
+import ResponsiveNavBar from './components/ResponsiveNavBar';
 import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
 import {HighVerification} from './components/highLevelUserVerification';
 import CreateParking from './components/CreateParking';
+import { HighVerification } from './components/highLevelUserVerification'
+import CreateHut from './components/CreateHut'
+
 import API from './API';
 
 import {
@@ -23,6 +26,7 @@ import {
 import LocalGuide from './components/LocalGuide';
 import ValidationType from './models/ValidationType';
 import Type from './models/UserType';
+import Utils from './Utils';
 
 function App() {
   return (
@@ -35,46 +39,42 @@ function App() {
 function MainApp() {
 
   const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState({});
   const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showAuthButton, setShowAuthButton] = useState(true);
   const [modalShow, setModalShow] = useState(false);
-  const [role,setRole]=useState("");
+  const [role, setRole] = useState("");
 
   const navigate = useNavigate();
 
-  function extractTokenPayload(token){
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
+  function extractTokenPayload(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
   }
 
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
-        const payload=extractTokenPayload(user.token);
+        const payload = extractTokenPayload(user.token);
         setRole(payload.role);
-        if(payload.active === ValidationType.notValidated){
-          navigate('/verifyAccount/'+payload.email);
+        if (payload.active === ValidationType.notValidated) {
+          navigate('/verifyAccount/' + payload.email);
         }
-        else{
+        else {
           localStorage.setItem('token', user.token);
-          if((payload.role === Type.platformManager  
-            || payload.role === Type.emergencyOperator )
-            && payload.active === ValidationType.mailOnly){
-              navigate('/HighLevelVerification');
-            }
-            else{
-              setShowAuthButton(true);
-              setLoggedIn(true);
-              setUser(user);
-              navigate('/');
-            }
-        }   
+          if ((payload.role === Type.platformManager
+            || payload.role === Type.emergencyOperator)
+            && payload.active === ValidationType.mailOnly) {
+            navigate('/HighLevelVerification');
+          }
+          else {
+            setLoggedIn(true);
+            navigate('/');
+          }
+        }
       })
       .catch(err => {
         setErrorMessage("Username or password incorrect.");
@@ -86,7 +86,6 @@ function MainApp() {
   const doLogOut = async () => {
     localStorage.clear()
     setLoggedIn(false);
-    setUser({});
     setRole("");
     navigate('/');
   }
@@ -95,39 +94,36 @@ function MainApp() {
     const authToken = localStorage.getItem('token');
     if (authToken === null) {
       setLoggedIn(false);
-      setShowAuthButton(true);
       console.log("User is not logged-in");
     }
     else {
       const tokenPayload = extractTokenPayload(authToken);
       setRole(tokenPayload.role);
-      if(tokenPayload.active === ValidationType.notValidated){
-        navigate('/verifyAccount/'+tokenPayload.email);
+      if (tokenPayload.active === ValidationType.notValidated) {
+        navigate('/verifyAccount/' + tokenPayload.email);
       }
-      else{
-        if((tokenPayload.role === Type.platformManager  
-          || tokenPayload.role === Type.emergencyOperator )
-          && tokenPayload.active === ValidationType.mailOnly){
-            navigate('/HighLevelVerification');
-          }
-          else{
-            console.log("User token is: " + authToken);
-            setShowAuthButton(true);
-            setLoggedIn(true);
-          }
-      }   
+      else {
+        if ((tokenPayload.role === Type.platformManager
+          || tokenPayload.role === Type.emergencyOperator)
+          && tokenPayload.active === ValidationType.mailOnly) {
+          navigate('/HighLevelVerification');
+        }
+        else {
+          console.log("User token is: " + authToken);
+          console.log("Decoded user token: " + JSON.stringify(Utils.parseJwt(authToken)))
+          setLoggedIn(true);
+        }
+      }
     }
 
   }, []);
 
   return (
     <>
-      <NavigationBar
+      <ResponsiveNavBar
         loggedIn={loggedIn}
         doLogOut={doLogOut}
         openLogin={doLogIn}
-        showAuthButton={showAuthButton}
-        setShowAuthButton={setShowAuthButton}
         setModalShow={setModalShow}
         role={role}
       />
@@ -136,15 +132,13 @@ function MainApp() {
           <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible>{errorMessage}</Alert>
         </Col></Row>
         : false}
-        {
-          user.user != undefined ? 
-            <ProfileModal
-            show={modalShow}
-            onHide={() => setModalShow(false)} 
-            user={user.user}/>:
-          <></>
-        }
-      
+      <ProfileModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
+      <></>
+
+
       <Routes>
         <Route path="/" element={<VisitorHikes />} />
         <Route path="visitor/hikes" element={<VisitorHikes />} />
@@ -157,6 +151,7 @@ function MainApp() {
         <Route path="/hiker/hikes/:id" element={<ShowHike/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
         <Route path="/parking/create" element={<CreateParking />}/>
+        <Route path="/huts/create" element={<CreateHut />} />
       </Routes>
     </>
   );
