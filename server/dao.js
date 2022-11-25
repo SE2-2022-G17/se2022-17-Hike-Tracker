@@ -7,6 +7,7 @@ const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
+const Parking = require('./models/Parking')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -138,6 +139,28 @@ exports.validateUser = async (email, activationCode) => {
     user.active = validationType.mailOnly; //activate account if codes are equal
     await user.save()
     console.log(user);
+}
+
+exports.saveNewParking = async (name, description, parkingSpaces, latitude, longitude) => {
+
+    let startPosition = await Position.create({
+        "location.coordinates": [longitude, latitude]
+    })
+
+    const parking = new Parking({
+        name: name,
+        description: description,
+        parkingSpaces: parkingSpaces,
+        coordinate: startPosition._id
+    });
+
+    parking.save((err) => {
+        if (err) {
+            console.log(err);
+            throw new TypeError(JSON.stringify(err));
+        }
+    });
+    return parking._id;
 }
 
 exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {

@@ -10,6 +10,7 @@ import ShowHike from "./components/ShowHikeComponent";
 import ResponsiveNavBar from './components/ResponsiveNavBar';
 import { ProfileModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
+import CreateParking from './components/CreateParking';
 import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
 
@@ -144,10 +145,11 @@ function MainApp() {
           <LoginForm login={doLogIn} setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setDirty={setDirty} setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />} />
-        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />} />
-        <Route path="/hiker/hikes/:id" element={<ShowHike />} />
-        <Route path="/HighLevelVerification" element={<HighVerification />} />
+        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
+        <Route path="/hiker/hikes/:id" element={<ShowHike/>} />
+        <Route path="/HighLevelVerification" element={<HighVerification />}/>
+        <Route path="/parking/create" element={<CreateParking />}/>
         <Route path="/huts/create" element={<CreateHut />} />
       </Routes>
     </>

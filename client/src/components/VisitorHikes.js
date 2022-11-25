@@ -74,7 +74,7 @@ function VisitorHikes() {
         );
         setHikes(retrivedHikes);
     }
-
+    
     return (
         <Container className='visitor-hike'>
             <Row>
