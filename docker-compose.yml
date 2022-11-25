@@ -5,6 +5,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: "./server"
+    image: bloomer24/se2022-17-hike-tracker:server
     ports:
       - 3001:3001
     depends_on:
@@ -14,6 +15,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: "./client"
+    image: bloomer24/se2022-17-hike-tracker:client
     ports:
       - "3000:3000"
     depends_on:
@@ -27,6 +29,7 @@ services:
     build:
       dockerfile: Dockerfile.populateDB
       context: "./server"
+    image: bloomer24/se2022-17-hike-tracker:populate
     container_name: populate-hike
     depends_on:
       - "mongo"
