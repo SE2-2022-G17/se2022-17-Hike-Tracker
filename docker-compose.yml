@@ -25,7 +25,7 @@ services:
       - /usr/src/app/client/node_modules
   populate:
     build:
-      dockerfile: DockerfileP
+      dockerfile: Dockerfile.populateDB
       context: "./server"
     container_name: populate-hike
     depends_on:
