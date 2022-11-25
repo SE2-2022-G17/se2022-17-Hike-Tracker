@@ -27,21 +27,41 @@ function ResponsiveNavBar(props) {
                             </Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
-                            <Nav className="justify-content-end flex-grow-1 pe-3">
+                        <Nav className="justify-content-end flex-grow-1 pe-3">
                                 {props.role === UserType.localGuide ?
                                     <>
                                         <Nav.Link href="/LocalGuide">Describe Hike</Nav.Link>
-                                        <NavDropdown
-                                            title="Huts"
-                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
-                                        >
-                                            <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
-                                            <NavDropdown.Divider />
-                                            <NavDropdown.Item href="#action5">Another feature</NavDropdown.Item>
-                                        </NavDropdown>
                                     </>
                                     : <></>
                                 }
+                                <NavDropdown
+                                            title="Huts"
+                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                        >
+                                            {
+                                                props.role === UserType.localGuide ?
+                                                <>
+                                                    <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
+                                                    <NavDropdown.Divider />
+                                                </>
+                                                : <></>
+                                            }
+                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
+                                </NavDropdown>
+                                <NavDropdown
+                                            title="Parking Lots"
+                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                        >
+                                            {
+                                                props.role === UserType.localGuide ?
+                                                <>
+                                                    <NavDropdown.Item href="/parking/create">Add a parking lot</NavDropdown.Item>
+                                                    <NavDropdown.Divider />
+                                                </>
+                                                : <></>
+                                            }
+                                            <NavDropdown.Item href="">Another feature</NavDropdown.Item>
+                                </NavDropdown>
                                 {
                                     props.loggedIn ?
                                         <>
