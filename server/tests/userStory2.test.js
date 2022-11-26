@@ -29,36 +29,6 @@ describe('Test API for creating hikes (US2)', () => {
         expect(response.statusCode).toBe(401);
     })
 
-
-    it('test create correct hike', async () => {
-        const token = jwt.sign({
-            'fullName': "Kanye West",
-            'email': "test@email.com",
-            'role': "localGuide",
-            'active': true
-        }, 'my_secret_key')
-
-        const response = await request(app)
-            .post("/localGuide/addHike")
-            .set('Authorization', "Bearer " + token)
-            .send({
-                'title': 'titleTest',
-                'length': '99',
-                'time': '45',
-                'ascent': '594',
-                'difficulty': 'Tourist',
-                'startPoint': '{"longitude":"37","latitude":"13"}',
-                'endPoint': '{"longitude":"37","latitude":"13"}',
-                'referencePoints': '[]',
-                'description': 'descrTest',
-                'city': 'cityTest',
-                'province': 'PRT',
-                'track': ""
-            });
-
-
-        expect(response.statusCode).toBe(201);
-    })
 });
 
 afterAll(async () => {
