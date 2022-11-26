@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import API from "../API";
 
 //This function print a form asking for references points: you can insert huts, parking
-//PROPS: hikeId:the id of the hike, startEndPoint:"end" if refers to ending point or "start" if refers to start point
-function ReferencePointsForm(){
+//PROPS: hikeId:the id of the hike
+function ReferencePointsForm(props){
     const [pointOpt,setPointOpt] = useState("");
     const [referenceOpt,setReferenceOpt] = useState("huts");
+    const [id,setId] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        const authToken = localStorage.getItem('token');
+        await API.linkStartArrival(pointOpt,referenceOpt,id,props.hikeId,authToken);
     }
 
     return <>
@@ -35,7 +39,7 @@ function ReferencePointsForm(){
                 </Form.Select>
                 {
                     referenceOpt==="huts" ? 
-                        <HutsForm/>
+                        <HutsForm setHut={setId}/>
                     : referenceOpt==="parking" ?
                     //form2
                     <>B</>
@@ -51,19 +55,32 @@ function ReferencePointsForm(){
     </>
 }
 
-function HutsForm(){
-    const [hutOpt,setHutOpt] = useState();
+//props: setHut() : a function that set the state(of the parent) with the id of the selected hut.
+function HutsForm(props){
+    const [hutOpt,setHutOpt] = useState([]);
     useEffect(()=>{
-        //(async()=>setHutOpt(await API.getHuts()))();
+        const authToken = localStorage.getItem('token');
+        (async()=>{
+            setHutOpt(await API.getHuts(undefined,undefined,undefined,undefined,undefined,undefined,undefined,authToken));
+        })();
     },[])
+
+    useEffect(()=>{
+        if(hutOpt && hutOpt[0])
+                props.setHut(hutOpt[0]._id);
+    },[hutOpt.length])
+
     return <>
         <Form.Group className="normal-padding-form">
             <Form.Label>
                 Select the hut:
             </Form.Label>
-            <Form.Select onChange={event => setHutOpt(event.target.value)}>
-                <option value={"id"}>{"name"}</option>
+            <Form.Select onChange={event =>props.setHut(event.target.value)}>
+                {hutOpt && hutOpt.map((hut)=><option key={hut._id} value={hut._id}>{hut.name}</option>)}
             </Form.Select>
+        </Form.Group>
+        <Form.Group>
+            <Button type="submit">Send</Button>
         </Form.Group>
     </>
 }

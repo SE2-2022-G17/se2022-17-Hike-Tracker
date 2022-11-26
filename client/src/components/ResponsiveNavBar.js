@@ -27,7 +27,7 @@ function ResponsiveNavBar(props) {
                             </Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
-                        <Nav className="justify-content-end flex-grow-1 pe-3">
+                            <Nav className="justify-content-end flex-grow-1 pe-3">
                                 {props.role === UserType.localGuide ?
                                     <>
                                         <Nav.Link href="/LocalGuide">Describe Hike</Nav.Link>
@@ -62,12 +62,6 @@ function ResponsiveNavBar(props) {
                                             }
                                             <NavDropdown.Item href="">Another feature</NavDropdown.Item>
                                 </NavDropdown>
-                                                </>
-                                                : <></>
-                                            }
-                                            <NavDropdown.Divider />
-                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
-                                        </NavDropdown>
                                 {
                                     props.loggedIn ?
                                         <>
