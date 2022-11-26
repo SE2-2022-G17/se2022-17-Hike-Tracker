@@ -99,6 +99,10 @@ describe('Test API for creating huts (US5)', () => {
     })
 });
 
+beforeAll(() => {
+    jest.setTimeout(15000);
+});
+
 afterAll(async () => {
     app.close();
     await mongoose.disconnect();
