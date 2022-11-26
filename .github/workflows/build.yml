@@ -17,9 +17,9 @@ jobs:
       - name: Change dir
         run: cd server
       - name: Install dependencies
-        run: yarn
+        run: npm install
       - name: Test and coverage
-        run: yarn jest --coverage
+        run: jest --coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
