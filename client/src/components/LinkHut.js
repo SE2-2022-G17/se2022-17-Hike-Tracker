@@ -19,7 +19,7 @@ function LinkHut(props) {
 
     function handleConfirm() {
         if (hut!==""){
-            //API addHutToHike
+            API.linkHut(hut, props.hike);
         }
     }
 
