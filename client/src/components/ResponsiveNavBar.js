@@ -62,6 +62,12 @@ function ResponsiveNavBar(props) {
                                             }
                                             <NavDropdown.Item href="">Another feature</NavDropdown.Item>
                                 </NavDropdown>
+                                                </>
+                                                : <></>
+                                            }
+                                            <NavDropdown.Divider />
+                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
+                                        </NavDropdown>
                                 {
                                     props.loggedIn ?
                                         <>
