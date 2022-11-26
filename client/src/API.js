@@ -178,6 +178,11 @@ async function getHike(id) {
     return await response.json()
 }
 
+async function getAllHuts() {
+    const response = await fetch(url + '/huts')
+    return await response.json()
+}
+
 async function createHut(name, description, beds, token) {
     const response = await fetch(url + '/huts', {
         method: "POST",
@@ -195,6 +200,6 @@ async function createHut(name, description, beds, token) {
     return response.status
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking };
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, getAllHuts, createParking };
 
 export default API;

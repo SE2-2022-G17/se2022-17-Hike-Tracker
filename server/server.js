@@ -202,6 +202,13 @@ app.post('/huts', verifyUserToken, async (req, res) => {
 
 });
 
+//to get all huts
+app.get('/huts', (req, res) => {
+    dao.getAllHuts()
+    .then ((huts)=> { res.json(huts); })
+    .catch((error) => { res.status(500).json(error); });
+})
+
 
 const server=http.createServer(app);
 

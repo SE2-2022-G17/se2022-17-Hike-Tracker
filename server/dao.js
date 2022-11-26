@@ -231,6 +231,20 @@ exports.getHike = async (id) => {
     }
 }
 
+exports.getAllHuts = async () => {
+    try {
+        return await Hut.find()
+            .then(huts => {
+                return huts;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (e) {
+        console.log(e.message);
+    }
+}
+
 exports.getHikeTrack = async (id) => {
     try {
         return await Hike.findById(ObjectId(id), { _id: 0, track_file: 1 })
@@ -246,7 +260,7 @@ exports.getHikeTrack = async (id) => {
 }
 
 exports.createHut = async (name, description, beds) => {
-    if(name === undefined || description === undefined)
+    if (name === undefined || description === undefined)
         throw 400
 
     const hut = await Hut.create({
