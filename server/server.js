@@ -209,6 +209,16 @@ app.get('/huts', (req, res) => {
     .catch((error) => { res.status(500).json(error); });
 })
 
+//link hut to the hike
+app.post('/hike/linkhut', (req,res)=>{
+    const hike = req.body.hike;
+    const hut = req.body.hut;
+
+    return dao.linkHutToHike(hut, hike)
+        .then(()=>{res.status(201).end(); })
+        .catch((error) => { res.status(400).json(error); })
+});
+
 
 const server=http.createServer(app);
 
