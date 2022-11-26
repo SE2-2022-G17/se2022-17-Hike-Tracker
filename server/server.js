@@ -269,6 +269,16 @@ app.put('/linkStartArrival',async (req,res) => {
     }
 })
 
+app.get('/parking',async (req,res) => {
+    try{
+        const result = await dao.getAllParking();
+        return res.status(200).json(result);
+    } catch(e){
+        console.log(e.message);
+        return res.status(500);
+    }
+})
+
 const server=http.createServer(app);
 
 

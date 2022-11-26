@@ -266,9 +266,14 @@ async function linkStartArrival(point,reference,id,hikeId,token){
             hikeId:hikeId
         })
     })
-    return response;
+    return await response.json();
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking, getHuts, getHut, getAllHuts,linkStartArrival };
+async function getAllParking(){
+    const result = await fetch(url + '/parking');
+    return await result.json();
+}
+
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking, getHuts, getHut, getAllHuts,linkStartArrival,getAllParking };
 
 export default API;

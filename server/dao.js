@@ -359,3 +359,17 @@ exports.modifyStartArrivalLinkToHutParking = async (point,reference,id,hikeId)=>
         throw new TypeError("DB error");
     }
 }
+
+exports.getAllParking = async () => {
+    try{
+        return await Parking.find(null,(err,docs)=>{
+            if(err){
+                console.log(err);
+            } else {
+                return docs;
+            }
+        }).clone();
+    } catch (e) {
+        console.log(e.message);
+    }
+}

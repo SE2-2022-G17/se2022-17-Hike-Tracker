@@ -39,10 +39,9 @@ function ReferencePointsForm(props){
                 </Form.Select>
                 {
                     referenceOpt==="huts" ? 
-                        <HutsForm setHut={setId}/>
+                        <LocationForm type={"hut"} setId={setId}/>
                     : referenceOpt==="parking" ?
-                    //form2
-                    <>B</>
+                        <LocationForm type={"parking"} setId={setId}/>
                     :
                     <></>
                 }
@@ -55,28 +54,31 @@ function ReferencePointsForm(props){
     </>
 }
 
-//props: setHut() : a function that set the state(of the parent) with the id of the selected hut.
-function HutsForm(props){
-    const [hutOpt,setHutOpt] = useState([]);
+//props: setId() : a function that set the state(of the parent) with the id of the selected hut.
+function LocationForm(props){
+    const [locOpt,setLocOpt] = useState([]);
     useEffect(()=>{
         const authToken = localStorage.getItem('token');
-        (async()=>{
-            setHutOpt(await API.getHuts(undefined,undefined,undefined,undefined,undefined,undefined,undefined,authToken));
-        })();
-    },[])
+        (async()=>
+            props.type==="hut" ?
+                setLocOpt(await API.getHuts(undefined,undefined,undefined,undefined,undefined,undefined,undefined,authToken))
+            :
+                setLocOpt(await API.getAllParking())
+        )();
+    },[props.type])
 
     useEffect(()=>{
-        if(hutOpt && hutOpt[0])
-                props.setHut(hutOpt[0]._id);
-    },[hutOpt.length])
+        if(locOpt && locOpt[0])
+                props.setId(locOpt[0]._id);
+    },[locOpt.length, locOpt[0]])
 
     return <>
         <Form.Group className="normal-padding-form">
             <Form.Label>
-                Select the hut:
+                Select the {props.type==="hut" ? "hut" : "parking"}:
             </Form.Label>
-            <Form.Select onChange={event =>props.setHut(event.target.value)}>
-                {hutOpt && hutOpt.map((hut)=><option key={hut._id} value={hut._id}>{hut.name}</option>)}
+            <Form.Select onChange={event =>props.setId(event.target.value)}>
+                {locOpt && locOpt.map((hut)=><option key={hut._id} value={hut._id}>{hut.name}</option>)}
             </Form.Select>
         </Form.Group>
         <Form.Group>
