@@ -19,7 +19,7 @@ jobs:
       - name: Run convenience script
         run: sudo sh get-docker.sh
       - name: Run MongoDB container
-        run: sudo docker container run -p 27017:27017 mongo
+        run: sudo docker container run -d -p 27017:27017 mongo
       - name: Install dependencies
         run: npm install --prefix server
       - name: Test and coverage
