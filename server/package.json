@@ -5,7 +5,8 @@
     "main": "server.js",
     "scripts": {
         "test": "jest --forceExit",
-        "start": "node server.js"
+        "start": "node server.js",
+        "coverage": "jest --coverage"
     },
     "author": "Andrea Amato",
     "license": "ISC",
