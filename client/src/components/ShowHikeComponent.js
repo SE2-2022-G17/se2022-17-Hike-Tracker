@@ -168,7 +168,7 @@ function ShowHike(props) {
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col className="map-margin">
                     <div ref={mapContainer} className="map-container" />
                 </Col>
             </Row>
