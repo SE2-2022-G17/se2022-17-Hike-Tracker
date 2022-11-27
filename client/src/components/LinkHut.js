@@ -11,17 +11,24 @@ function LinkHut(props) {
 
     useEffect(() => {
         API.getAllHuts()
-            .then((huts) => { setHutsList(huts); })
+            .then((huts) => {
+                if (props.hike.huts[0] !== null) {
+                    props.hike.huts.forEach(id => {
+                        huts = huts.filter((h)=> h._id !== id);
+                    });
+                }
+                setHutsList(huts);
+            })
             .catch(err => console.log(err))
         console.log(hutsList);
     }, []);
 
 
     function handleConfirm() {
-        if (hut!==""){ 
+        if (hut !== "") {
             API.linkHut(hut, props.hike)
-            .then((res) => { console.log(res); })
-            .catch(err => console.log(err))
+                .then((res) => { console.log(res); })
+                .catch(err => console.log(err))
         }
     }
 
@@ -41,7 +48,7 @@ function LinkHut(props) {
                 </Form.Group>
                 <Row className="m-3">
                     <Col className="text-center">
-                        <Button variant="outline-dark" onClick={() => handleConfirm()} disabled={hut==="" ? true : false}>Confirm</Button>
+                        <Button variant="outline-dark" onClick={() => handleConfirm()} disabled={hut === "" ? true : false}>Confirm</Button>
                     </Col>
                 </Row>
             </Form>
