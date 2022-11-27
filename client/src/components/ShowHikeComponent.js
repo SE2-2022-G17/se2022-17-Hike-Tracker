@@ -29,7 +29,7 @@ function ShowHike(props) {
         if (id !== null && hike === null) {
             API.getHike(id).then(function (hike) {
                 setHike(hike);
-
+                
                 if (hike.startPoint !== null) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
@@ -109,23 +109,23 @@ function ShowHike(props) {
                         }
 
                         //to show huts in map
-                        /*if (hike.huts[0] !== null) {
-                            hike.huts.array.forEach(hut => {
+                        if (hike.huts[0] !== null) {
+                            hike.huts.forEach(hut => {
                                 const el = document.createElement('div');
                                 el.className = 'marker-hut';
 
                                 new mapboxgl.Marker(el)
-                                    .setLngLat([hut.location.coordinates[0], hut.location.coordinates[1]])
+                                    .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]])
                                     .setPopup(
                                         new mapboxgl.Popup({ offset: 25 }) // add popups
                                             .setHTML(
-                                                '<h3>End point</h3>')
+                                                `<h3>Hut ${hut.name}</h3>`)
                                     )
                                     .addTo(map.current);
 
                             });
 
-                        }*/
+                        }
                     }
                 });
             });

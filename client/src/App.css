@@ -30,6 +30,16 @@
 
 }
 
+.marker-hut {
+  background-image: url('https://img.icons8.com/FF00B0/marker.png');
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
