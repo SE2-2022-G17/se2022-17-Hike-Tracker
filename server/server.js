@@ -259,7 +259,7 @@ app.get('/huts', (req, res) => {
 })
 
 //link hut to the hike
-app.post('/hike/linkhut', (req,res)=>{
+app.post('/hike/linkhut', verifyUserToken, (req,res)=>{
     const hike = req.body.hike;
     const hutId = req.body.hut;
 
