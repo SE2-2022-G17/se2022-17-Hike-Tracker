@@ -10,11 +10,11 @@
 
 ## Default users 
 ### Hiker
-- hiker@email.com
-- password
+- email: hiker@email.com
+- password: password
 ### Local Guide
-- localguide@email.com
-- password
+- email: localguide@email.com
+- password:password
 
 ## Authentication and Authorization
 ### Client:
