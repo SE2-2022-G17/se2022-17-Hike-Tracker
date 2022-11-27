@@ -120,25 +120,6 @@ async function getVisitorHikes(
     return hikes
 }
 
-async function createParking(name,description,parkingSpaces,token, latitude, longitude) {
-    const response = fetch(url + '/localGuide/addParking', {
-        method: "POST",
-        headers: {
-            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            name: name,
-            description: description,
-            parkingSpaces: parkingSpaces,
-            latitude: latitude,
-            longitude: longitude
-        })
-    });
-    const resp = await response;
-    return resp.status;
-}
 
 async function getHuts(
     bedsMin,
@@ -179,6 +160,26 @@ async function getHuts(
     })
     const huts = await response.json()
     return huts
+}
+
+async function createParking(name, description, parkingSpaces, token, latitude, longitude) {
+    const response = fetch(url + '/localGuide/addParking', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            name: name,
+            description: description,
+            parkingSpaces: parkingSpaces,
+            latitude: latitude,
+            longitude: longitude
+        })
+    });
+    const resp = await response;
+    return resp.status;
 }
 
 async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
@@ -269,13 +270,29 @@ async function linkStartArrival(point,reference,id,hikeId,token){
     return await response.json();
 }
 
+async function linkHut(hut, hike, token) {
+    const response = await fetch(url + '/hike/linkhut', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            hut: hut,
+            hike: hike,
+        })
+    });
+    return response.status;
+}
+
+
 async function getAllParking(){
     const result = await fetch(url + '/parking');
     return await result.json();
 }
 
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking};
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getAllHuts};
 
 export default API;
 

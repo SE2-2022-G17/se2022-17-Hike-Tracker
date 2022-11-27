@@ -250,11 +250,28 @@ app.post('/huts', verifyUserToken, async (req, res) => {
 
 });
 
+//to get all huts
 app.get('/huts', (req, res) => {
     dao.getAllHuts()
     .then ((huts)=> { res.json(huts); })
     .catch((error) => { res.status(500).json(error); });
 })
+
+//link hut to the hike
+app.post('/hike/linkhut', verifyUserToken, (req,res)=>{
+    const hike = req.body.hike;
+    const hutId = req.body.hut;
+    const user = req.user; // this is received from verifyUserToken middleware
+    
+    if(user.role !== Type.localGuide){
+        res.sendStatus(403);
+        return;
+    }
+
+    return dao.linkHutToHike(hutId, hike)
+        .then(()=>{res.status(201).end(); })
+        .catch((error) => { res.status(400).json(error); })
+});
 
 app.put('/linkStartArrival',async (req,res) => {
     try{
