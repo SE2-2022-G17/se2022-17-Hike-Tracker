@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Form, Button, Alert} from "react-bootstrap";
+import {Container, Form, Button, Alert, Row, Col} from "react-bootstrap";
 import API from '../API';
 
 
@@ -104,22 +104,28 @@ function CreateHut(props) {
                         onChange={event => { if (event.target.value >= 0) setBeds(event.target.value) }}
                     />
                 </Form.Group>
-                <Form.Group className="mb-3 form-number">
-                    <Form.Label>Longitude</Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={longitude}
-                        onChange={event => { setLongitude(event.target.value) }}
-                    />
-                </Form.Group>
-                <Form.Group className="mb-3 form-number">
-                    <Form.Label>Latitude</Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={latitude}
-                        onChange={event => { setLatitude(event.target.value) }}
-                    />
-                </Form.Group>
+                <Row>
+                    <Col>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Longitude</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={longitude}
+                                onChange={event => { setLongitude(event.target.value) }}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Latitude</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={latitude}
+                                onChange={event => { setLatitude(event.target.value) }}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
                 <Form.Group className="mb-3 form-number">
                     <Form.Label>Altitude</Form.Label>
                     <Form.Control

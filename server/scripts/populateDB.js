@@ -136,7 +136,7 @@ async function run() {
     const user = await User.create({
         firstName: "Pietro",
         lastName: "Bertorelle",
-        email: "test@email.com",
+        email: "localguide@email.com",
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
         activationCode: "123456",
         role: UserType.localGuide,
@@ -145,6 +145,19 @@ async function run() {
 
     await user.save()
     console.log(user);
+
+    const user2 = await User.create({
+        firstName: "Pietro",
+        lastName: "Bertorelle",
+        email: "hiker@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: UserType.hiker,
+        active: true
+    })
+
+    await user2.save()
+    console.log(user2);
 
     await mongoose.disconnect()
     return

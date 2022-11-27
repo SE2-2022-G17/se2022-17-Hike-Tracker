@@ -274,6 +274,7 @@ async function getAllParking(){
     return await result.json();
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking, getHuts, getHut, getAllHuts,linkStartArrival,getAllParking };
+
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking};
 
 export default API;

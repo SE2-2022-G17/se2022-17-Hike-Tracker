@@ -40,7 +40,7 @@ function SearchHut(props) {
                         '<h5>Altitude: ' + hut.altitude + '<h5>' + 
                         '<h5>Coordinates: (' + hut.point.location.coordinates[1] + ',' + hut.point.location.coordinates[0] + ')<h5>' +
                         '<h5>City: ' + hut.city + '<h5>' + 
-                        '<h5>Province: ' + hut.Province + '<h5>' 
+                        '<h5>Province: ' + hut.province + '<h5>' 
                     )
             );
             if(map.current)marker.addTo(map.current);
