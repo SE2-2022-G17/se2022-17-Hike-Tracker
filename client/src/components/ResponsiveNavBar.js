@@ -42,17 +42,11 @@ function ResponsiveNavBar(props) {
                                                 props.role === UserType.localGuide ?
                                                 <>
                                                     <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
-                                                </>
-                                                : <></>
-                                            }
-                                            <NavDropdown.Divider />
-                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
-                                        </NavDropdown>
                                                     <NavDropdown.Divider />
                                                 </>
                                                 : <></>
                                             }
-                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
+                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>            
                                 </NavDropdown>
                                 <NavDropdown
                                             title="Parking Lots"
