@@ -278,3 +278,4 @@ async function getAllParking(){
 const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking};
 
 export default API;
+
