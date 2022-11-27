@@ -1,12 +1,12 @@
 ## How to run the app:
 ### Run the server:
-- cd server
-- npm install
-- npm start
+- ``cd server``
+- ``npm install``
+- ``npm start``
 ### Run the client:
-- cd client
-- npm install
-- npm start
+- ``cd client``
+- ``npm install``
+- ``npm start``
 
 ## Default users 
 ### Hiker
@@ -28,11 +28,12 @@
 - the endpoint is called '/example/protected'
 
 ### Populate the DB
-- run node server/scripts/populateDB.js
+- ``cd server``
+- ``node server/scripts/populateDB.js``
 
 ### How to test the application
-- cd server
-- npm test tests/<name_of_test_file> 
+- ``cd server``
+- ``npm test tests/<name_of_test_file>`` 
 
 ### MongoDB
 - you should have running a mongo database (the service: MongoDB server, must be running)<br/>
