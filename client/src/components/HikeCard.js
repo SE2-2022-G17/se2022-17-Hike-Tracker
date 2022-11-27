@@ -5,10 +5,11 @@ import DistanceIcon from '../distance.svg';
 
 function HikeCard(props) {
     const { hike } = props;
+    const clickable = localStorage.getItem('token') === null ? "" : "cursor-pointer";
 
     return (
         <>
-            <Card className="hike-card cursor-pointer" onClick={() => {
+            <Card className={"hike-card " + clickable} onClick={() => {
                 const authToken = localStorage.getItem('token');
                 if (authToken !== null) {
                     return props.goToHike(hike._id);
