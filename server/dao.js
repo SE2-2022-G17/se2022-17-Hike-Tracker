@@ -53,7 +53,34 @@ exports.getVisitorHikes = async (
     } catch (e) {
         console.log(e.message)
     }
+}
 
+exports.getHuts = async (
+    bedsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    city,
+    province
+) => {
+
+    try {
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+
+        const huts = await Hut.find()
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('beds', bedsMin)
+            .filterByCityAndProvince(city, province)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+            return huts
+
+    } catch (e) {
+        console.log(e.message)
+    }
 }
 
 exports.registerUser = async (firstName, lastName, email, password, role) => {
@@ -159,49 +186,53 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
 exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
     let startPosition = undefined
     let endPosition = undefined
+    try {
 
-    if (track) {
-        fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+        if (track) {
+            fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
 
-        const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
-        var gpx = new gpxParser()
-        gpx.parse(content)
-        var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
-        var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
-        var points = gpx.tracks[0].points
-        var startPoint = points[0]
-        var endPoint = points[points.length - 1]
+            const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+            var gpx = new gpxParser()
+            gpx.parse(content)
+            var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            var points = gpx.tracks[0].points
+            var startPoint = points[0]
+            var endPoint = points[points.length - 1]
 
-        startPosition = await Position.create({
-            "location.coordinates": [startPoint.lon, startPoint.lat]
-        })
+            startPosition = await Position.create({
+                "location.coordinates": [startPoint.lon, startPoint.lat]
+            })
 
-        endPosition = await Position.create({
-            "location.coordinates": [endPoint.lon, endPoint.lat]
-        })
-    }
-
-    const hike = new Hike({
-        title: title,
-        length: length,
-        expectedTime: time,
-        ascent: ascent,
-        difficulty: difficulty,
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
-        description: description,
-        city: city,
-        province: province,
-        track_file: track !== undefined ? track.originalname : null
-    })
-
-    hike.save((err) => {
-        if (err) {
-            console.log(err);
-            throw new TypeError(JSON.stringify(err));
+            endPosition = await Position.create({
+                "location.coordinates": [endPoint.lon, endPoint.lat]
+            })
         }
-    });
-    return hike._id;
+
+        const hike = new Hike({
+            title: title,
+            length: length,
+            expectedTime: time,
+            ascent: ascent,
+            difficulty: difficulty,
+            startPoint: startPosition._id,
+            endPoint: endPosition._id,
+            description: description,
+            city: city,
+            province: province,
+            track_file: track !== undefined ? track.originalname : null
+        })
+
+        hike.save((err) => {
+            if (err) {
+                console.log(err);
+                throw new TypeError(JSON.stringify(err));
+            }
+        });
+        return hike._id;
+    } catch (e) {
+        throw 400;
+    }
 }
 
 /* Util function to generate random 6 digit activation code */
@@ -232,6 +263,36 @@ exports.getHike = async (id) => {
     }
 }
 
+
+exports.getHuts = async (
+    bedsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    city,
+    province
+) => {
+
+    try {
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+
+        const huts = await Hut.find()
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('beds', bedsMin)
+            .filterByCityAndProvince(city, province)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+            return huts
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+        
 exports.getAllHuts = async () => {
     try {
         return await Hut.find()
@@ -260,17 +321,26 @@ exports.getHikeTrack = async (id) => {
     }
 }
 
-exports.createHut = async (name, description, beds) => {
-    if (name === undefined || description === undefined)
+exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
+    if(name === undefined || description === undefined)
         throw 400
 
+    const position = await Position.create({
+        "location.coordinates": [longitude,latitude]
+    });
+    
     const hut = await Hut.create({
         name: name,
         description: description,
-        beds: beds
+        beds: beds,
+        point: position,
+        altitude: altitude,
+        city: city,
+        province: province
     })
 
     hut.save()
+    position.save()
 }
 
 exports.linkHutToHike = async (hutId, hike) => {

@@ -198,3 +198,7 @@
 .danger {
   color: red;
 }
+
+.map-margin {
+  margin-bottom: 3rem;
+}
