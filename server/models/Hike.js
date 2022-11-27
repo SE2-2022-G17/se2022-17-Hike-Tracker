@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
@@ -30,8 +31,13 @@ const hikeSchema = new mongoose.Schema({
         required: true
     },
     startPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
+    startPointHut_id: {type: ObjectId}, //is ObjectId ok?
+    startPointParking_id: {type: ObjectId},
     endPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
+    endPointHut_id:{type: ObjectId},
+    endPointParking_id:{type: ObjectId},
     referencePoints: [{ type: Schema.Types.ObjectId, ref: 'Position' }],
+    huts: [{ type: Schema.Types.ObjectId, ref: 'Hut' }],
     city: String,
     province: String,
     description: String,

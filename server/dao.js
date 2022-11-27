@@ -258,6 +258,11 @@ exports.getHike = async (id) => {
         return await Hike.findById(ObjectId(id))
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
+            .populate({
+                path: 'huts',
+                // Populate across multiple level: point of huts
+                populate: { path: 'point' }
+              })
             .then(doc => {
                 return doc;
             })
@@ -269,17 +274,61 @@ exports.getHike = async (id) => {
     }
 }
 
-exports.getHut = async (id) => {
+
+exports.getHuts = async (
+    bedsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    city,
+    province
+) => {
+
     try {
-        return await Hut.findById(ObjectId(id))
-            .then(doc => {
-                return doc;
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+
+        const huts = await Hut.find()
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('beds', bedsMin)
+            .filterByCityAndProvince(city, province)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+            return huts
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+        
+exports.getAllHuts = async () => {
+    try {
+        return await Hut.find()
+            .then(huts => {
+                return huts;
             })
             .catch(err => {
                 console.log(err);
             });
     } catch (e) {
-        console.log(e.message)
+        console.log(e.message);
+    }
+}
+
+exports.getAllHuts = async () => {
+    try {
+        return await Hut.find()
+            .then(huts => {
+                return huts;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (e) {
+        console.log(e.message);
     }
 }
 
@@ -296,7 +345,6 @@ exports.getHikeTrack = async (id) => {
         console.log(e.message)
     }
 }
-
 
 exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
     if(name === undefined || description === undefined)
@@ -318,4 +366,69 @@ exports.createHut = async (name, description, beds, longitude, latitude, altitud
 
     hut.save()
     position.save()
+}
+
+exports.linkHutToHike = async (hutId, hike) => {
+
+    if (hutId === undefined || hike === undefined)
+        throw 400;
+
+    hike.huts.push(hutId);
+    try {
+        return await Hike.findByIdAndUpdate(hike._id, {huts: hike.huts})
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    } catch (err) {
+        return err;
+    }
+}
+
+exports.modifyStartArrivalLinkToHutParking = async (point,reference,id,hikeId)=>{
+    const updateHike = {};
+    if(point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")){
+        point === "start" ? 
+            reference === "huts" ?
+                updateHike.startPointHut_id=id
+            :
+                updateHike.startPointParking_id=id
+        :
+            reference === "huts" ?
+                updateHike.endPointHut_id=id
+            :
+                updateHike.endPointParking_id=id
+        try{
+            const hike = await Hike.findByIdAndUpdate(hikeId,updateHike,(err,docs)=>{
+                if(err){
+                    console.log("line "+console.trace()+" "+err)
+                } else {
+                    return docs;
+                }
+            }).clone();
+            return hike._id;
+        } catch (err){
+            console.log("line "+console.trace()+" "+err)
+            throw new TypeError("DB error");
+        }
+    } else {
+        console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: "+point+" - "+reference+" - "+ id +" - "+ hikeId);
+        throw new TypeError("DB error");
+    }
+}
+
+exports.getAllParking = async () => {
+    try{
+        return await Parking.find(null,(err,docs)=>{
+            if(err){
+                console.log(err);
+            } else {
+                return docs;
+            }
+        }).clone();
+    } catch (e) {
+        console.log(e.message);
+    }
 }
