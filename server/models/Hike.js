@@ -32,6 +32,7 @@ const hikeSchema = new mongoose.Schema({
     startPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
     endPoint: { type: Schema.Types.ObjectId, ref: 'Position' },
     referencePoints: [{ type: Schema.Types.ObjectId, ref: 'Position' }],
+    huts: [{ type: Schema.Types.ObjectId, ref: 'Hut' }],
     city: String,
     province: String,
     description: String,

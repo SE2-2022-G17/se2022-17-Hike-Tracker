@@ -262,17 +262,47 @@ exports.getHike = async (id) => {
     }
 }
 
-exports.getHut = async (id) => {
+
+exports.getHuts = async (
+    bedsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    city,
+    province
+) => {
+
     try {
-        return await Hut.findById(ObjectId(id))
-            .then(doc => {
-                return doc;
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+
+        const huts = await Hut.find()
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('beds', bedsMin)
+            .filterByCityAndProvince(city, province)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+            return huts
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+        
+exports.getAllHuts = async () => {
+    try {
+        return await Hut.find()
+            .then(huts => {
+                return huts;
             })
             .catch(err => {
                 console.log(err);
             });
     } catch (e) {
-        console.log(e.message)
+        console.log(e.message);
     }
 }
 
@@ -289,7 +319,6 @@ exports.getHikeTrack = async (id) => {
         console.log(e.message)
     }
 }
-
 
 exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
     if(name === undefined || description === undefined)
@@ -311,4 +340,23 @@ exports.createHut = async (name, description, beds, longitude, latitude, altitud
 
     hut.save()
     position.save()
+}
+
+exports.linkHutToHike = async (hutId, hike) => {
+
+    if (hutId === undefined || hike === undefined)
+        throw 400;
+
+    hike.huts.push(hutId);
+    try {
+        return await Hike.findByIdAndUpdate(hike._id, {huts: hike.huts})
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    } catch (err) {
+        return err;
+    }
 }
