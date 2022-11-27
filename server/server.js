@@ -75,8 +75,8 @@ app.get('/getHuts', verifyUserToken,(req, res) => {
         city,
         province
     )
-        .then((hikes) => { res.json(hikes); })
-        .catch((error) => { res.status(500).json(error); });
+        .then((hikes) => {return res.json(hikes); })
+        .catch((error) => {return res.status(500).json(error); });
 });
 
 app.post('/user/register', (req, res) => {
@@ -174,7 +174,6 @@ app.post('/localGuide/addParking',verifyUserToken, async (req,res) => {
     }
 });
 
-
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
 
@@ -251,6 +250,34 @@ app.post('/huts', verifyUserToken, async (req, res) => {
 
 });
 
+app.get('/huts', (req, res) => {
+    dao.getAllHuts()
+    .then ((huts)=> { res.json(huts); })
+    .catch((error) => { res.status(500).json(error); });
+})
+
+app.put('/linkStartArrival',async (req,res) => {
+    try{
+        const result=await dao.modifyStartArrivalLinkToHutParking(req.body.point,req.body.reference,req.body.id,req.body.hikeId)
+        if(result){
+            return res.status(201).json(result);
+        }else{
+            return res.status(500).json(result);
+        }
+    } catch (err){
+        return res.status(500).json(err)
+    }
+})
+
+app.get('/parking',async (req,res) => {
+    try{
+        const result = await dao.getAllParking();
+        return res.status(200).json(result);
+    } catch(e){
+        console.log(e.message);
+        return res.status(500);
+    }
+})
 
 const server=http.createServer(app);
 
