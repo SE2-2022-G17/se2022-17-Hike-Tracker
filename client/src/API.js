@@ -211,10 +211,9 @@ async function linkHut(hut, hike) {
             hike: hike,
         })
     });
-
     return response.status;
 }
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, getAllHuts, createParking, linkHut};
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, getAllHuts, createParking, linkHut };
 
 export default API;

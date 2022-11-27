@@ -272,10 +272,21 @@ exports.createHut = async (name, description, beds) => {
     hut.save()
 }
 
-exports.linkHutToHike = async (hut, hike) => {
-    if (hut === undefined || hike === undefined)
+exports.linkHutToHike = async (hutId, hike) => {
+
+    if (hutId === undefined || hike === undefined)
         throw 400;
 
-        hike.huts.push(hut);
-        await hike.save();
+    hike.huts.push(hutId);
+    try {
+        return await Hike.findByIdAndUpdate(hike._id, {huts: hike.huts})
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    } catch (err) {
+        return err;
+    }
 }

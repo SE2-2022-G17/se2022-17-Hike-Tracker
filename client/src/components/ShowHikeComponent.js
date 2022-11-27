@@ -185,7 +185,7 @@ function ShowHike(props) {
                     : <></>
             }
             {linkHut === true ?
-                <LinkHut />
+                <LinkHut hike={hike} />
                 : <></>}
 
         </Container>

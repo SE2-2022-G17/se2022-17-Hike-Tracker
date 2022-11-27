@@ -18,21 +18,23 @@ function LinkHut(props) {
 
 
     function handleConfirm() {
-        if (hut!==""){
-            API.linkHut(hut, props.hike);
+        if (hut!==""){ 
+            API.linkHut(hut, props.hike)
+            .then((res) => { console.log(res); })
+            .catch(err => console.log(err))
         }
     }
 
     return (
         <>
             <Form style={{ border: '2px solid rgba(0, 0, 0, 0.10)' }} className="block-example m-3 form-border form-padding">
-                <Form.Group as={Row} className="m-1">
+                <Form.Group as={Row} className="m-3">
                     <Form.Label column sm="3">Which hut do you want to link?</Form.Label>
                     <Col sm="9">
                         <Form.Select onChange={event => setHut(event.target.value)}>
                             <option value=""></option>
                             {
-                                hutsList.map((hut, index) => <option value={hut.id} key={index}>{hut.name}</option>)
+                                hutsList.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
                             }
                         </Form.Select>
                     </Col>
