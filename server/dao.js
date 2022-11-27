@@ -7,6 +7,7 @@ const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
+const Parking = require('./models/Parking')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -160,52 +161,78 @@ exports.validateUser = async (email, activationCode) => {
     console.log(user);
 }
 
-exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
-    let startPosition = undefined
-    let endPosition = undefined
+exports.saveNewParking = async (name, description, parkingSpaces, latitude, longitude) => {
 
-    if (track) {
-        fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
-
-        const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
-        var gpx = new gpxParser()
-        gpx.parse(content)
-        var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
-        var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
-        var points = gpx.tracks[0].points
-        var startPoint = points[0]
-        var endPoint = points[points.length - 1]
-
-        startPosition = await Position.create({
-            "location.coordinates": [startPoint.lon, startPoint.lat]
-        })
-
-        endPosition = await Position.create({
-            "location.coordinates": [endPoint.lon, endPoint.lat]
-        })
-    }
-
-    const hike = new Hike({
-        title: title,
-        length: length,
-        expectedTime: time,
-        ascent: ascent,
-        difficulty: difficulty,
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
-        description: description,
-        city: city,
-        province: province,
-        track_file: track !== undefined ? track.originalname : null
+    let startPosition = await Position.create({
+        "location.coordinates": [longitude, latitude]
     })
 
-    hike.save((err) => {
+    const parking = new Parking({
+        name: name,
+        description: description,
+        parkingSpaces: parkingSpaces,
+        coordinate: startPosition._id
+    });
+
+    parking.save((err) => {
         if (err) {
             console.log(err);
             throw new TypeError(JSON.stringify(err));
         }
     });
-    return hike._id;
+    return parking._id;
+}
+
+exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
+    let startPosition = undefined
+    let endPosition = undefined
+    try {
+
+        if (track) {
+            fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+
+            const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+            var gpx = new gpxParser()
+            gpx.parse(content)
+            var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            var points = gpx.tracks[0].points
+            var startPoint = points[0]
+            var endPoint = points[points.length - 1]
+
+            startPosition = await Position.create({
+                "location.coordinates": [startPoint.lon, startPoint.lat]
+            })
+
+            endPosition = await Position.create({
+                "location.coordinates": [endPoint.lon, endPoint.lat]
+            })
+        }
+
+        const hike = new Hike({
+            title: title,
+            length: length,
+            expectedTime: time,
+            ascent: ascent,
+            difficulty: difficulty,
+            startPoint: startPosition._id,
+            endPoint: endPosition._id,
+            description: description,
+            city: city,
+            province: province,
+            track_file: track !== undefined ? track.originalname : null
+        })
+
+        hike.save((err) => {
+            if (err) {
+                console.log(err);
+                throw new TypeError(JSON.stringify(err));
+            }
+        });
+        return hike._id;
+    } catch (e) {
+        throw 400;
+    }
 }
 
 /* Util function to generate random 6 digit activation code */
@@ -262,6 +289,7 @@ exports.getHikeTrack = async (id) => {
         console.log(e.message)
     }
 }
+
 
 exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
     if(name === undefined || description === undefined)

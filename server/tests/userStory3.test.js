@@ -52,6 +52,10 @@ describe('Test API for visitor to register', () => {
     })
 });
 
+beforeAll(() => {
+    jest.setTimeout(15000);
+});
+
 afterAll(async () => {
     app.close();
     await mongoose.disconnect();

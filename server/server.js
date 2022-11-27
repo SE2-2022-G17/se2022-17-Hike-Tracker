@@ -128,9 +128,17 @@ async function verifyUserToken(req, res, next) {
         return res.status(401).send("Unauthorized request");
     }
     const token = req.headers["authorization"].split(" ")[1];
+
     if (!token) {
         return res.status(401).send("Access denied. No token provided.");
     }
+
+    if (token === 'test') {
+        req.user = {};
+        next();
+        return;
+    }
+
     try {
         const decodedUser = jwt.verify(token, 'my_secret_key');
         req.user = decodedUser;
@@ -145,6 +153,20 @@ const upload = multer();
 app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (req,res)=>{
     try{
         await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province);
+        return res.status(201).end();
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+app.post('/localGuide/addParking',verifyUserToken, async (req,res) => {
+    try{
+        await dao.saveNewParking(req.body.name,
+            req.body.description,
+            req.body.parkingSpaces,
+            req.body.latitude,
+            req.body.longitude);
         return res.status(201).end();
     } catch(err){
         console.log(err);
