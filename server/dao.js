@@ -251,7 +251,11 @@ exports.getHike = async (id) => {
         return await Hike.findById(ObjectId(id))
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
-            .populate('huts')
+            .populate({
+                path: 'huts',
+                // Populate across multiple level: point of huts
+                populate: { path: 'point' }
+              })
             .then(doc => {
                 return doc;
             })
