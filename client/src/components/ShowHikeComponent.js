@@ -10,6 +10,8 @@ import Axios from "axios";
 import { useParams } from "react-router-dom";
 import LinkHut from './LinkHut';
 import API from "../API";
+import ReferencePointsForm from "./ReferencePointsForm";
+
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
 
@@ -23,7 +25,6 @@ function ShowHike(props) {
     const [zoom, setZoom] = useState(11);
     const [linkHut, setLinkHut] = useState(false);
     let { id } = useParams();
-
 
     useEffect(() => {
         if (id !== null && hike === null) {
@@ -206,8 +207,17 @@ function ShowHike(props) {
                 <LinkHut hike={hike} setShow={setLinkHut} />
                 : <></>}
 
+            {
+                //props.role === "localGuide" => shows form to link the end/start point to hut/parking
+                props.role === "localGuide" ? <>
+                <br/><br/>
+                <ReferencePointsForm hikeId={id}/>
+                </>
+                : <></>
+            }
         </Container>
     );
+    
 }
 
 export default ShowHike;

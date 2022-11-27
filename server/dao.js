@@ -311,6 +311,20 @@ exports.getAllHuts = async () => {
     }
 }
 
+exports.getAllHuts = async () => {
+    try {
+        return await Hut.find()
+            .then(huts => {
+                return huts;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (e) {
+        console.log(e.message);
+    }
+}
+
 exports.getHikeTrack = async (id) => {
     try {
         return await Hike.findById(ObjectId(id), { _id: 0, track_file: 1 })
@@ -363,5 +377,51 @@ exports.linkHutToHike = async (hutId, hike) => {
         });
     } catch (err) {
         return err;
+    }
+}
+
+exports.modifyStartArrivalLinkToHutParking = async (point,reference,id,hikeId)=>{
+    const updateHike = {};
+    if(point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")){
+        point === "start" ? 
+            reference === "huts" ?
+                updateHike.startPointHut_id=id
+            :
+                updateHike.startPointParking_id=id
+        :
+            reference === "huts" ?
+                updateHike.endPointHut_id=id
+            :
+                updateHike.endPointParking_id=id
+        try{
+            const hike = await Hike.findByIdAndUpdate(hikeId,updateHike,(err,docs)=>{
+                if(err){
+                    console.log("line "+console.trace()+" "+err)
+                } else {
+                    return docs;
+                }
+            }).clone();
+            return hike._id;
+        } catch (err){
+            console.log("line "+console.trace()+" "+err)
+            throw new TypeError("DB error");
+        }
+    } else {
+        console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: "+point+" - "+reference+" - "+ id +" - "+ hikeId);
+        throw new TypeError("DB error");
+    }
+}
+
+exports.getAllParking = async () => {
+    try{
+        return await Parking.find(null,(err,docs)=>{
+            if(err){
+                console.log(err);
+            } else {
+                return docs;
+            }
+        }).clone();
+    } catch (e) {
+        console.log(e.message);
     }
 }
