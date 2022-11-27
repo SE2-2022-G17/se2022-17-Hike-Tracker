@@ -13,6 +13,8 @@ import VerifyAccount from './components/VerifyAccount';
 import CreateParking from './components/CreateParking';
 import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
+import SearchHut from './components/SearchHut'
+
 
 import API from './API';
 
@@ -151,6 +153,7 @@ function MainApp() {
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
         <Route path="/parking/create" element={<CreateParking />}/>
         <Route path="/huts/create" element={<CreateHut />} />
+        <Route path="/huts/searchHut" element={<SearchHut />} />
       </Routes>
     </>
   );

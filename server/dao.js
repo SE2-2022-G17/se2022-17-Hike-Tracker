@@ -53,7 +53,34 @@ exports.getVisitorHikes = async (
     } catch (e) {
         console.log(e.message)
     }
+}
 
+exports.getHuts = async (
+    bedsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    city,
+    province
+) => {
+
+    try {
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+
+        const huts = await Hut.find()
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('beds', bedsMin)
+            .filterByCityAndProvince(city, province)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+            return huts
+
+    } catch (e) {
+        console.log(e.message)
+    }
 }
 
 exports.registerUser = async (firstName, lastName, email, password, role) => {
@@ -235,6 +262,20 @@ exports.getHike = async (id) => {
     }
 }
 
+exports.getHut = async (id) => {
+    try {
+        return await Hut.findById(ObjectId(id))
+            .then(doc => {
+                return doc;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
 exports.getHikeTrack = async (id) => {
     try {
         return await Hike.findById(ObjectId(id), { _id: 0, track_file: 1 })
@@ -249,15 +290,25 @@ exports.getHikeTrack = async (id) => {
     }
 }
 
-exports.createHut = async (name, description, beds) => {
-    if (name === undefined || description === undefined)
+
+exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
+    if(name === undefined || description === undefined)
         throw 400
 
+    const position = await Position.create({
+        "location.coordinates": [longitude,latitude]
+    });
+    
     const hut = await Hut.create({
         name: name,
         description: description,
-        beds: beds
+        beds: beds,
+        point: position,
+        altitude: altitude,
+        city: city,
+        province: province
     })
 
     hut.save()
+    position.save()
 }
