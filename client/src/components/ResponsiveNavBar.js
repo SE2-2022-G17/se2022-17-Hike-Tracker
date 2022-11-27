@@ -46,7 +46,7 @@ function ResponsiveNavBar(props) {
                                                 </>
                                                 : <></>
                                             }
-                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
+                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>            
                                 </NavDropdown>
                                 <NavDropdown
                                             title="Parking Lots"

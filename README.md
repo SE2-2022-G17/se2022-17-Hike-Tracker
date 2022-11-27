@@ -16,8 +16,12 @@
 - npm install
 - npm start
 
-## Default user (localguide)
-- test@email.com
+## Default users 
+### Hiker
+- hiker@email.com
+- password
+### Local Guide
+- localguide@email.com
 - password
 
 ## Authentication and Authorization
