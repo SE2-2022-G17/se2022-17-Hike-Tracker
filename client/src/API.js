@@ -253,10 +253,11 @@ async function createHut(name, description, beds, token,longitude,latitude,altit
     return response.status
 }
 
-async function linkHut(hut, hike) {
+async function linkHut(hut, hike, token) {
     const response = await fetch(url + '/hike/linkhut', {
         method: "POST",
         headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
