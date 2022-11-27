@@ -108,6 +108,24 @@ function ShowHike(props) {
                                 .addTo(map.current);
                         }
 
+                        //to show huts in map
+                        /*if (hike.huts[0] !== null) {
+                            hike.huts.array.forEach(hut => {
+                                const el = document.createElement('div');
+                                el.className = 'marker-hut';
+
+                                new mapboxgl.Marker(el)
+                                    .setLngLat([hut.location.coordinates[0], hut.location.coordinates[1]])
+                                    .setPopup(
+                                        new mapboxgl.Popup({ offset: 25 }) // add popups
+                                            .setHTML(
+                                                '<h3>End point</h3>')
+                                    )
+                                    .addTo(map.current);
+
+                            });
+
+                        }*/
                     }
                 });
             });
@@ -185,7 +203,7 @@ function ShowHike(props) {
                     : <></>
             }
             {linkHut === true ?
-                <LinkHut hike={hike} />
+                <LinkHut hike={hike} setShow={setLinkHut} />
                 : <></>}
 
         </Container>

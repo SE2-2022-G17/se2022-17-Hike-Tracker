@@ -220,6 +220,7 @@ exports.getHike = async (id) => {
         return await Hike.findById(ObjectId(id))
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
+            .populate('huts')
             .then(doc => {
                 return doc;
             })
