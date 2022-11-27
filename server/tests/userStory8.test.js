@@ -15,6 +15,7 @@ mongoose.connect("mongodb://localhost/hike_tracker");
 
 
 beforeAll(async () => {
+    jest.setTimeout(10000);
 
     await Parking.deleteOne({ _id: '0000000194e4c1e796231d9a' });
     await Hut.deleteOne({ _id: '0000000194e4c1e796231d9b'});
