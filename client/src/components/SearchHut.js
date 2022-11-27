@@ -35,7 +35,7 @@ function SearchHut(props) {
                 new mapboxgl.Popup({ offset: 25 }) // add popups
                     .setHTML(
                         '<h3>' + hut.name + '</h3>' +
-                        '<h5>Desciption: '+ hut.description +'<h5>'+
+                        '<h5>Description: '+ hut.description +'<h5>'+
                         '<h5>Beds: ' + hut.beds + '<h5>' +
                         '<h5>Altitude: ' + hut.altitude + '<h5>' + 
                         '<h5>Coordinates: (' + hut.point.location.coordinates[1] + ',' + hut.point.location.coordinates[0] + ')<h5>' +
