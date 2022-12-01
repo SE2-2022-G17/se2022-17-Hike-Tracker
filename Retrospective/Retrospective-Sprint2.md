@@ -12,9 +12,9 @@ sections:
 
 ### Macro statistics
 
-- Number of stories committed vs. done: 5 vs 5 
-- Total points committed vs. done: 21 vs 21
-- Nr of hours planned vs. spent (as a team): 62h vs 65h 5m
+- Number of stories committed vs. done: 6 vs 5 
+- Total points committed vs. done: 29 vs 21
+- Nr of hours planned vs. spent (as a team): 77h vs 65h 50m
 
 **Remember**a story is done ONLY if it fits the Definition of Done:
  
@@ -29,31 +29,32 @@ sections:
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| _#0_   |    6    |   5    |  8h 15m    |     7h 45m   |
+| _#0_   |    6    |        |  8h 15m    |     7h 45m   |
 | #5     |    6    |   5    |    9h      |     10h      |
-| #6     |     5   |   5    |  10h 30m   |    10h 5m    |
+| #6     |    5    |   5    |  10h 30m   |    10h 5m    |
 | #7     |    8    |   5    |     9h     |    8h 30m    |
 | #8     |    7    |   3    |    14h     |     16h      |
 | #9     |    7    |   3    |  11h 20m   |   13h 30m    |
+| #33    |    5    |   8    |   15h      |     0h       |
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
-- Hours per task average: 1h 38m vs 1h 43m, standard deviation (estimate and actual):  55m vs 1h 4m
-- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent - 1: (62h / 65.8h ) - 1 = - 0.05 %
+- Hours per task average: 1h 48m vs 1h 31m, standard deviation (estimate and actual):  1h 4m vs 1h 10m
+- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent - 1: (77h / 65.8h ) - 1 = 17 %
 
   
 ## QUALITY MEASURES 
 
 - Unit Testing:
-  - Total hours estimated: 6h 
+  - Total hours estimated: 8h 
   - Total hours spent:  7h 15m
   - Nr of automated unit test cases: 15
   - Coverage (if available)
 - E2E testing:
-  - Total hours estimated: 5h 30m
+  - Total hours estimated: 7h 30m
   - Total hours spent: 8h 
 - Code review 
-  - Total hours estimated: 5h
+  - Total hours estimated: 7h
   - Total hours spent: 5h
   
 
