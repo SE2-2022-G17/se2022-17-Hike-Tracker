@@ -25,7 +25,7 @@ after(async () => {
     app.close();
 });
 
-describe('...', () => {
+describe('Test API for visitor to register', () => {
     it('test visitor registration', async () => {
         const response = await request(app).post("/user/register")
             .send({

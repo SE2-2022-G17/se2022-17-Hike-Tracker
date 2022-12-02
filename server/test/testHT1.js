@@ -23,7 +23,7 @@ after(async () => {
   app.close();
 });
 
-describe('...', () => {
+describe('Test API for getting hikes', () => {
   it('test visitor hikes difficulty,length,ascent and time filters', async () => {
     let query = "?minAscent=1000&maxAscent=3000"
       + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50&minLength=15";
