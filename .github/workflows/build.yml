@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - feat/coverage
+      - td/fix/unitTests
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
