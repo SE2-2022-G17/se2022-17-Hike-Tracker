@@ -8,16 +8,20 @@ var expect = chai.expect;
 let mongoServer;
 
 before(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
+  // if readyState is 0, mongoose is not connected
+  if (mongoose.connection.readyState === 0) {
+    mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+    await mongoose.connect(mongoUri);
+  }
 });
 
 after(async () => {
   await mongoose.disconnect();
-  await mongoServer.stop();
+  if (mongoServer !== undefined)
+    await mongoServer.stop();
   app.close();
-})
+});
 
 describe('...', () => {
   it('test visitor hikes difficulty,length,ascent and time filters', async () => {
@@ -34,5 +38,27 @@ describe('...', () => {
         .to.be.true;
     }
     expect(response.statusCode).to.equal(200);
-  })
+  });
+
+  it('test visitor hikes filters with unvalid time values', async () => {
+    let query = "?minTime=-3&maxTime=-7";
+    let response = await request(app).get("/visitor/hikes" + query);
+    expect(response.body.length).to.equal(0);
+    expect(response.statusCode).to.equal(200);
+    query = "?minTime=7&maxTime=3";
+    response = await request(app).get("/visitor/hikes" + query);
+    expect(response.body.length).to.equal(0);
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes filters with unvalid length values', async () => {
+    let query = "?maxLength=-30&minLength=-15";
+    let response = await request(app).get("/visitor/hikes" + query);
+    expect(response.body.length).to.equal(0);
+    expect(response.statusCode).to.equal(200);
+    query = "?maxLength=15&minLength=30";
+    response = await request(app).get("/visitor/hikes" + query);
+    expect(response.body.length).to.equal(0);
+    expect(response.statusCode).to.equal(200);
+  });
 });
