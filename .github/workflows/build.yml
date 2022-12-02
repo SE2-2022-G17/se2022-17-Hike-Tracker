@@ -14,12 +14,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Get convenience script
-        run: curl -fsSL https://get.docker.com -o get-docker.sh
-      - name: Run convenience script
-        run: sudo sh get-docker.sh
-      - name: Run MongoDB container
-        run: sudo docker container run -d -p 27017:27017 mongo
       - name: Install dependencies
         run: npm install --prefix server
       - name: Test and coverage

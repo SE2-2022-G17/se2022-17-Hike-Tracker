@@ -12,10 +12,12 @@ const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
+const dotenv = require('dotenv');
+dotenv.config();
 
-
-
-mongoose.connect("mongodb://localhost/hike_tracker");
+if (process.env.NODE_ENV === "development") {
+    mongoose.connect("mongodb://localhost/hike_tracker");
+}
 
 exports.getVisitorHikes = async (
     difficulty,
@@ -76,7 +78,7 @@ exports.getHuts = async (
             .filterByCityAndProvince(city, province)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            return huts
+        return huts
 
     } catch (e) {
         console.log(e.message)
@@ -255,7 +257,7 @@ exports.getHike = async (id) => {
                 path: 'huts',
                 // Populate across multiple level: point of huts
                 populate: { path: 'point' }
-              })
+            })
             .then(doc => {
                 return doc;
             })
@@ -289,14 +291,14 @@ exports.getHuts = async (
             .filterByCityAndProvince(city, province)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            return huts
+        return huts
 
     } catch (e) {
         console.log(e.message)
     }
 }
 
-        
+
 exports.getAllHuts = async () => {
     try {
         return await Hut.find()
@@ -340,13 +342,13 @@ exports.getHikeTrack = async (id) => {
 }
 
 exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
-    if(name === undefined || description === undefined)
+    if (name === undefined || description === undefined)
         throw 400
 
     const position = await Position.create({
-        "location.coordinates": [longitude,latitude]
+        "location.coordinates": [longitude, latitude]
     });
-    
+
     const hut = await Hut.create({
         name: name,
         description: description,
@@ -368,54 +370,54 @@ exports.linkHutToHike = async (hutId, hike) => {
 
     hike.huts.push(hutId);
     try {
-        return await Hike.findByIdAndUpdate(hike._id, {huts: hike.huts})
-        .then(doc => {
-            return doc;
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        return await Hike.findByIdAndUpdate(hike._id, { huts: hike.huts })
+            .then(doc => {
+                return doc;
+            })
+            .catch(err => {
+                console.log(err);
+            });
     } catch (err) {
         return err;
     }
 }
 
-exports.modifyStartArrivalLinkToHutParking = async (point,reference,id,hikeId)=>{
+exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId) => {
     const updateHike = {};
-    if(point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")){
-        point === "start" ? 
+    if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
+        point === "start" ?
             reference === "huts" ?
-                updateHike.startPointHut_id=id
+                updateHike.startPointHut_id = id
+                :
+                updateHike.startPointParking_id = id
             :
-                updateHike.startPointParking_id=id
-        :
             reference === "huts" ?
-                updateHike.endPointHut_id=id
-            :
-                updateHike.endPointParking_id=id
-        try{
-            const hike = await Hike.findByIdAndUpdate(hikeId,updateHike,(err,docs)=>{
-                if(err){
-                    console.log("line "+console.trace()+" "+err)
+                updateHike.endPointHut_id = id
+                :
+                updateHike.endPointParking_id = id
+        try {
+            const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
+                if (err) {
+                    console.log("line " + console.trace() + " " + err)
                 } else {
                     return docs;
                 }
             }).clone();
             return hike._id;
-        } catch (err){
-            console.log("line "+console.trace()+" "+err)
+        } catch (err) {
+            console.log("line " + console.trace() + " " + err)
             throw new TypeError("DB error");
         }
     } else {
-        console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: "+point+" - "+reference+" - "+ id +" - "+ hikeId);
+        console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: " + point + " - " + reference + " - " + id + " - " + hikeId);
         throw new TypeError("DB error");
     }
 }
 
 exports.getAllParking = async () => {
-    try{
-        return await Parking.find(null,(err,docs)=>{
-            if(err){
+    try {
+        return await Parking.find(null, (err, docs) => {
+            if (err) {
                 console.log(err);
             } else {
                 return docs;
