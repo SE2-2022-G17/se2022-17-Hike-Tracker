@@ -9,7 +9,7 @@ const Hike = require('../models/Hike.js');
 const Hut = require('../models/Hut.js');
 const Parking = require('../models/Parking.js');
 const Position = require('../models/Position.js');
-const Difficulty = require('../models/Difficulty.js');
+const Difficulty = require('../constants/Difficulty');
 
 
 let mongoServer;

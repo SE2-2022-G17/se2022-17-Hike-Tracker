@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 
-const Difficulty = require("./Difficulty")
+const Difficulty = require("../constants/Difficulty")
 
 // https://mongoosejs.com/docs/geojson.html
 // https://www.mongodb.com/docs/manual/reference/geojson/
