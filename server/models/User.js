@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const Type = require("./UserType")
+const Type = require("../constants/UserType")
 const ValidationType = require("./ValidationType")
 
 const userSchema = new mongoose.Schema({

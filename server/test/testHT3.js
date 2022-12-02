@@ -4,7 +4,7 @@ const request = require('supertest');
 const app = require("../server.js");
 var chai = require('chai');
 var expect = chai.expect;
-const Type = require('../models/UserType.js');
+const Type = require('../constants/UserType.js');
 
 
 let mongoServer;

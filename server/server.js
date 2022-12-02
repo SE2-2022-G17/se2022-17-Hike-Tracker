@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const dao = require('./dao');
 const http = require('http');
 const jwt = require('jsonwebtoken');
-const Type = require('./models/UserType');
+const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
 
