@@ -32,7 +32,7 @@ function MapPicker(props) {
     return (
         <div>
             <div className="sidebar">
-                Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+                Longitude: {lng} | Latitude: {lat}
             </div>
             <div ref={mapContainer} className="map-container-picker" />
         </div>

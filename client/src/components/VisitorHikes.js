@@ -7,6 +7,7 @@ import Difficulty from '../constants/Difficulty';
 import HikeCard from './HikeCard';
 import { useNavigate } from "react-router-dom";
 import MapPicker from './MapPicker';
+import Modal from 'react-bootstrap/Modal';
 
 
 function VisitorHikes() {
@@ -22,9 +23,10 @@ function VisitorHikes() {
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
-    const [showMap, setShowMap] = useState(false);
+    const [show, setShow] = useState(false);
 
-    const toggleMap = () => setShowMap(prev => !prev);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
         API.getVisitorHikes()
@@ -92,8 +94,7 @@ function VisitorHikes() {
                         <TextField filter="City" setFilter={setCity} />
                         <TextField filter="Province" setFilter={setProvince} />
                         <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
-                        <SelectPointFromMap toggleMap={toggleMap} />
-                        {showMap === true ? <MapPicker /> : undefined}
+                        <SelectPointFromMap handleShow={handleShow} />
                         <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
                     </Container>
                 </Col>
@@ -101,6 +102,17 @@ function VisitorHikes() {
                     <HikesList hikes={hikes} />
                 </Col>
             </Row>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select a point from map</Modal.Title>
+                </Modal.Header>
+                <Modal.Body> <MapPicker /> </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleClose}>
+                        Select point
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }
@@ -242,7 +254,7 @@ function SelectPointFromMap(props) {
             <Col>
                 <Button
                     variant="outline-primary"
-                    onClick={props.toggleMap}
+                    onClick={props.handleShow}
                 >
                     Select a point from map
                 </Button>
