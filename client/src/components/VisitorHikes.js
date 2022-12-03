@@ -230,25 +230,6 @@ function HikesList(props) {
     );
 }
 
-function TextField(props) {
-    const { filter, setFilter } = props;
-
-    return (
-        <Row className='basic-filter'>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{filter + ": "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={(ev) => setFilter(ev.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-        </Row>
-    );
-}
 
 function SelectPointFromMap(props) {
 
