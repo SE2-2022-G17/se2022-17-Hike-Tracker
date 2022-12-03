@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import MapPicker from './MapPicker';
 import Modal from 'react-bootstrap/Modal';
 import { GeoAlt } from 'react-bootstrap-icons';
+import CityProvince from './CityProvince';
 
 const polito = {
     lng: "7.65991",
@@ -96,8 +97,11 @@ function VisitorHikes() {
                         <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />
                         <MinMaxPicker filter="ascent" setMinFilter={setMinAscent} setMaxFilter={setMaxAscent} />
                         <MinMaxPicker filter="time" setMinFilter={setMinTime} setMaxFilter={setMaxTime} />
-                        <TextField filter="City" setFilter={setCity} />
-                        <TextField filter="Province" setFilter={setProvince} />
+                        <CityProvince
+                            province={province}
+                            setProvince={setProvince}
+                            setCity={setCity}
+                        />
                         <SelectPointFromMap handleShow={handleShow} />
                         <Coordinates lng={longitude} lat={latitude} />
                         <Button

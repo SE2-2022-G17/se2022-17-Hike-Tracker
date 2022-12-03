@@ -247,3 +247,8 @@
 .search-button {
   margin-top: 1rem;
 }
+
+.form-select {
+  margin: 1rem 0rem;
+  max-width: 370px;
+}
