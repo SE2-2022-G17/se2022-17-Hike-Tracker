@@ -91,11 +91,6 @@
   max-width: 75%;
 }
 
-.two-options-filter {
-  width: 30%;
-  width: 100%;
-  padding-bottom: 1rem;
-}
 
 .difficulty-picker {
   padding: 1rem 0rem;
@@ -241,4 +236,14 @@
 
 .hike-filters {
   padding-bottom: 3rem;
+}
+
+.coordinates {
+  width: inherit;
+  font-size: 11px;
+  color: grey;
+}
+
+.search-button {
+  margin-top: 1rem;
 }

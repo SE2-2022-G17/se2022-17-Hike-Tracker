@@ -8,6 +8,7 @@ import HikeCard from './HikeCard';
 import { useNavigate } from "react-router-dom";
 import MapPicker from './MapPicker';
 import Modal from 'react-bootstrap/Modal';
+import { GeoAlt } from 'react-bootstrap-icons';
 
 const polito = {
     lng: "7.65991",
@@ -98,8 +99,13 @@ function VisitorHikes() {
                         <TextField filter="City" setFilter={setCity} />
                         <TextField filter="Province" setFilter={setProvince} />
                         <SelectPointFromMap handleShow={handleShow} />
-                        <CoordinatesPicker lng={longitude} lat={latitude} />
-                        <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
+                        <Coordinates lng={longitude} lat={latitude} />
+                        <Button
+                            className="search-button"
+                            onClick={(ev) => { getVisitorHikes(ev) }}
+                        >
+                            Searchs
+                        </Button>
                     </Container>
                 </Col>
                 <Col xl={9}>
@@ -185,36 +191,16 @@ function MinMaxPicker(props) {
     );
 }
 
-function CoordinatesPicker(props) {
+function Coordinates(props) {
     const { lng, lat } = props;
 
     return (
-        <Row className='two-options-filter'>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{"Longitude "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            disabled
-                            placeholder={lng}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{"Latitude "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            disabled
-                            placeholder={lat}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-        </Row>
+        lng !== undefined && lat !== undefined ?
+            <Row>
+                <p className='coordinates'>{"Longitude: " + lng}</p>
+                <p className='coordinates'>{"Latitude: " + lat}</p>
+            </Row>
+            : undefined
     );
 }
 
@@ -269,7 +255,7 @@ function SelectPointFromMap(props) {
                     variant="outline-primary"
                     onClick={props.handleShow}
                 >
-                    Select a point from map
+                    Select a point from map <GeoAlt />
                 </Button>
             </Col>
         </Row>
