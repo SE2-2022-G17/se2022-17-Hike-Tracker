@@ -91,10 +91,6 @@
   max-width: 75%;
 }
 
-.two-options-filter {
-  width: 30%;
-  width: 100%;
-}
 
 .difficulty-picker {
   padding: 1rem 0rem;
@@ -197,6 +193,11 @@
   max-width: 75px;
 }
 
+.basic-link {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .feat-icon {
   width: 16px;
 }
@@ -216,4 +217,33 @@
 
 .map-margin {
   margin-bottom: 3rem;
+}
+
+.map-container-picker {
+  height: 400px;
+}
+
+.sidebar {
+  background-color: rgba(35, 55, 75, 0.9);
+  color: #fff;
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  margin: 12px;
+  border-radius: 4px;
+}
+
+.hike-filters {
+  padding-bottom: 3rem;
+}
+
+.coordinates {
+  width: inherit;
+  font-size: 11px;
+  color: grey;
+}
+
+.search-button {
+  margin-top: 1rem;
 }
