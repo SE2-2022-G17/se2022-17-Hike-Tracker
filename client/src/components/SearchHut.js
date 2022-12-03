@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Col, Row, Container, Button} from 'react-bootstrap';
+import { Col, Row, Container, Button } from 'react-bootstrap';
 import mapboxgl from 'mapbox-gl'
 import toGeoJson from '@mapbox/togeojson'
-import {faLayerGroup, faMountainSun, faPersonRunning} from "@fortawesome/free-solid-svg-icons";
+import { faLayerGroup, faMountainSun, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 import API from "../API";
 import Form from 'react-bootstrap/Form';
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
@@ -14,62 +14,55 @@ function SearchHut(props) {
     const map = useRef(null);
     const [huts, setHuts] = useState(null);
     const [zoom, setZoom] = useState(11);
-    const [bedsMin,setBedsMin] = useState('');
-    const [altitudeMin,setAltitudeMin] = useState('');
-    const [altitudeMax,setAltitudeMax] = useState('');
-    const [longitude,setLongitude] = useState('');
-    const [latitude,setLatitude] = useState('');
-    const [city,setCity] = useState('');
-    const [province,setProvince] = useState('');
+    const [bedsMin, setBedsMin] = useState('');
+    const [altitudeMin, setAltitudeMin] = useState('');
+    const [altitudeMax, setAltitudeMax] = useState('');
+    const [longitude, setLongitude] = useState('');
+    const [latitude, setLatitude] = useState('');
     const [lng, setLng] = useState(7.662);      // Used to center the map on loading
     const [lat, setLat] = useState(45.062);
-    const [refresh,setRefresh] = useState(false); // Do the not operation on this state to refresh huts
-    const [markers,setMarkers] = useState([]);
-    
+    const [refresh, setRefresh] = useState(false); // Do the not operation on this state to refresh huts
+    const [markers, setMarkers] = useState([]);
+
     function updateMarkers(huts) {
         markers.forEach(marker => marker.remove());
         huts.forEach(hut => {
             const marker = new mapboxgl.Marker()
-            .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]])
-            .setPopup(
-                new mapboxgl.Popup({ offset: 25 }) // add popups
-                    .setHTML(
-                        '<h3>' + hut.name + '</h3>' +
-                        '<h5>Description: '+ hut.description +'<h5>'+
-                        '<h5>Beds: ' + hut.beds + '<h5>' +
-                        '<h5>Altitude: ' + hut.altitude + '<h5>' + 
-                        '<h5>Coordinates: (' + hut.point.location.coordinates[1] + ',' + hut.point.location.coordinates[0] + ')<h5>' +
-                        '<h5>City: ' + hut.city + '<h5>' + 
-                        '<h5>Province: ' + hut.province + '<h5>' 
-                    )
-            );
-            if(map.current)marker.addTo(map.current);
-            setMarkers(old=>[...old,marker]);
+                .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]])
+                .setPopup(
+                    new mapboxgl.Popup({ offset: 25 }) // add popups
+                        .setHTML(
+                            '<h3>' + hut.name + '</h3>' +
+                            '<h5>Description: ' + hut.description + '<h5>' +
+                            '<h5>Beds: ' + hut.beds + '<h5>' +
+                            '<h5>Altitude: ' + hut.altitude + '<h5>' +
+                            '<h5>Coordinates: (' + hut.point.location.coordinates[1] + ',' + hut.point.location.coordinates[0] + ')<h5>'
+                        )
+                );
+            if (map.current) marker.addTo(map.current);
+            setMarkers(old => [...old, marker]);
         });
     }
 
-    useEffect(()=>{
-            const authToken = localStorage.getItem('token');
-            if(latitude.trim().length !=0 && longitude.trim().length !=0 && longitude>=-180 && longitude<=180 && latitude>=-90 && latitude<=90)
-            {
-                if(map.current)map.current.flyTo({center: [longitude, latitude], zoom: 11});
-            }
-            API.getHuts(
-                    bedsMin,
-                    altitudeMin,
-                    altitudeMax,
-                    longitude,
-                    latitude,
-                    city,
-                    province,
-                    authToken)
-                    .then(RetrievedHuts => {
-                        setHuts(RetrievedHuts);
-                        updateMarkers(RetrievedHuts);
-                    })
-                    .catch(err => console.log(err));
-    },[refresh]);
-    
+    useEffect(() => {
+        const authToken = localStorage.getItem('token');
+        if (latitude.trim().length != 0 && longitude.trim().length != 0 && longitude >= -180 && longitude <= 180 && latitude >= -90 && latitude <= 90) {
+            if (map.current) map.current.flyTo({ center: [longitude, latitude], zoom: 11 });
+        }
+        API.getHuts(
+            bedsMin,
+            altitudeMin,
+            altitudeMax,
+            longitude,
+            latitude,
+            authToken)
+            .then(RetrievedHuts => {
+                setHuts(RetrievedHuts);
+                updateMarkers(RetrievedHuts);
+            })
+            .catch(err => console.log(err));
+    }, [refresh]);
+
     useEffect(() => {
         if (huts !== null) {
             if (map.current) return; // initialize map only once
@@ -93,12 +86,10 @@ function SearchHut(props) {
                     <Container fluid>
                         <Row>
                             <Col>
-                                    <MinPicker filter="beds" setMinFilter={setBedsMin} />
-                                    <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
-                                    <TextField filter="City" setFilter={setCity} />
-                                    <TextField filter="Province" setFilter={setProvince} />
-                                    <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
-                                    <Button onClick={(ev) => { setRefresh(oldValue=>!oldValue) }}>Search</Button>
+                                <MinPicker filter="beds" setMinFilter={setBedsMin} />
+                                <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
+                                <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
+                                <Button onClick={(ev) => { setRefresh(oldValue => !oldValue) }}>Search</Button>
                             </Col>
                         </Row>
                     </Container>

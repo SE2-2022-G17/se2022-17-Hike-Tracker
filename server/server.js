@@ -17,7 +17,7 @@ const port = 3001;
 const corsOptions = {
     origin: 'http://localhost:3000',
     credentials: true,
-    someSite:'None'
+    someSite: 'None'
 };
 app.use(cors(corsOptions));
 
@@ -57,26 +57,22 @@ app.get('/visitor/hikes', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
-app.get('/getHuts', verifyUserToken,(req, res) => {
+app.get('/getHuts', verifyUserToken, (req, res) => {
     let bedsMin = req.query.bedsMin
     let altitudeMin = req.query.altitudeMin
     let altitudeMax = req.query.altitudeMax
     let longitude = req.query.longitude
     let latitude = req.query.latitude
-    let city = req.query.city
-    let province = req.query.province
 
     dao.getHuts(
         bedsMin,
         altitudeMin,
         altitudeMax,
         longitude,
-        latitude,
-        city,
-        province
+        latitude
     )
-        .then((hikes) => {return res.json(hikes); })
-        .catch((error) => {return res.status(500).json(error); });
+        .then((hikes) => { return res.json(hikes); })
+        .catch((error) => { return res.status(500).json(error); });
 });
 
 app.post('/user/register', (req, res) => {
@@ -86,17 +82,17 @@ app.post('/user/register', (req, res) => {
     const password = req.body.password;
     const role = req.body.role;
 
-    return dao.registerUser(firstName, lastName, email, password,role)
-    .then(() => { res.status(201).end(); })
-    .catch((error) => { res.status(400).json(error); });
+    return dao.registerUser(firstName, lastName, email, password, role)
+        .then(() => { res.status(201).end(); })
+        .catch((error) => { res.status(400).json(error); });
 });
 
-app.post('/user/validateEmail',(req,res)=>{
+app.post('/user/validateEmail', (req, res) => {
     const email = req.body.email;
     const verificationCode = req.body.verificationCode;
 
-    return dao.validateUser(email,verificationCode)
-        .then(()=>{res.status(201).end(); })
+    return dao.validateUser(email, verificationCode)
+        .then(() => { res.status(201).end(); })
         .catch((error) => { res.status(400).json(error); })
 });
 
@@ -116,7 +112,7 @@ app.post('/user/login', (req, res) => {
 /* Bearer <token> */
 app.get('/example/protected', verifyUserToken, async (req, res) => {
     const user = req.user;
-    if(user.role === Type.hiker){
+    if (user.role === Type.hiker) {
         console.log("USER is an hiker");
     }
     res.status(201).end();
@@ -150,25 +146,25 @@ async function verifyUserToken(req, res, next) {
 
 const upload = multer();
 
-app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (req,res)=>{
-    try{
+app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
+    try {
         await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province);
         return res.status(201).end();
-    } catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(500).json(err);
     }
 });
 
-app.post('/localGuide/addParking',verifyUserToken, async (req,res) => {
-    try{
+app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
+    try {
         await dao.saveNewParking(req.body.name,
             req.body.description,
             req.body.parkingSpaces,
             req.body.latitude,
             req.body.longitude);
         return res.status(201).end();
-    } catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(500).json(err);
     }
@@ -203,8 +199,8 @@ app.get('/hiker/hike-track/:id', (req, res) => {
                 (err) => {
                     if (err) {
                         res.send({
-                            error : err,
-                            msg   : "Problem downloading the file"
+                            error: err,
+                            msg: "Problem downloading the file"
                         })
                     }
                 });
@@ -229,20 +225,31 @@ app.post('/huts', verifyUserToken, async (req, res) => {
     const longitude = req.body.longitude;
     const latitude = req.body.latitude;
     const altitude = req.body.altitude;
-    const city = req.body.city;
-    const province = req.body.province;
+    const phone = req.body.phone;
+    const email = req.body.email;
+    const website = req.body.website;
 
-    if(user.role !== Type.localGuide){
+    if (user.role !== Type.localGuide) {
         res.sendStatus(403);
         return;
     }
 
-    if ( longitude === '' || latitude === ''){
+    if (longitude === '' || latitude === '') {
         res.sendStatus(500);
     }
 
     try {
-        await dao.createHut(name, description, beds, longitude, latitude, altitude,city,province);
+        await dao.createHut(
+            name,
+            description,
+            beds,
+            longitude,
+            latitude,
+            altitude,
+            phone,
+            email,
+            website
+        );
         res.sendStatus(201);
     } catch (error) {
         res.sendStatus(error);
@@ -253,50 +260,50 @@ app.post('/huts', verifyUserToken, async (req, res) => {
 //to get all huts
 app.get('/huts', (req, res) => {
     dao.getAllHuts()
-    .then ((huts)=> { res.json(huts); })
-    .catch((error) => { res.status(500).json(error); });
+        .then((huts) => { res.json(huts); })
+        .catch((error) => { res.status(500).json(error); });
 })
 
 //link hut to the hike
-app.post('/hike/linkhut', verifyUserToken, (req,res)=>{
+app.post('/hike/linkhut', verifyUserToken, (req, res) => {
     const hike = req.body.hike;
     const hutId = req.body.hut;
     const user = req.user; // this is received from verifyUserToken middleware
-    
-    if(user.role !== Type.localGuide){
+
+    if (user.role !== Type.localGuide) {
         res.sendStatus(403);
         return;
     }
 
     return dao.linkHutToHike(hutId, hike)
-        .then(()=>{res.status(201).end(); })
+        .then(() => { res.status(201).end(); })
         .catch((error) => { res.status(400).json(error); })
 });
 
-app.put('/linkStartArrival',async (req,res) => {
-    try{
-        const result=await dao.modifyStartArrivalLinkToHutParking(req.body.point,req.body.reference,req.body.id,req.body.hikeId)
-        if(result){
+app.put('/linkStartArrival', async (req, res) => {
+    try {
+        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId)
+        if (result) {
             return res.status(201).json(result);
-        }else{
+        } else {
             return res.status(500).json(result);
         }
-    } catch (err){
+    } catch (err) {
         return res.status(500).json(err)
     }
 })
 
-app.get('/parking',async (req,res) => {
-    try{
+app.get('/parking', async (req, res) => {
+    try {
         const result = await dao.getAllParking();
         return res.status(200).json(result);
-    } catch(e){
+    } catch (e) {
         console.log(e.message);
         return res.status(500);
     }
 })
 
-const server=http.createServer(app);
+const server = http.createServer(app);
 
 
 // activate the server

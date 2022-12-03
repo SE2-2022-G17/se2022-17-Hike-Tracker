@@ -61,7 +61,7 @@ function LocationForm(props){
         const authToken = localStorage.getItem('token');
         (async()=>
             props.type==="hut" ?
-                setLocOpt(await API.getHuts(undefined,undefined,undefined,undefined,undefined,undefined,undefined,authToken))
+                setLocOpt(await API.getHuts(undefined,undefined,undefined,undefined,undefined,authToken))
             :
                 setLocOpt(await API.getAllParking())
         )();

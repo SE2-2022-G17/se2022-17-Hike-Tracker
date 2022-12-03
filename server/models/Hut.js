@@ -14,14 +14,15 @@ const hutSchema = new Schema({
         type: Number,
         default: 0
     },
-    city: {
+    phone: {
         type: String,
         default: ''
     },
-    province: {
+    email: {
         type: String,
         default: ''
-    }
+    },
+    website: String
 })
 
 
@@ -52,22 +53,6 @@ hutSchema.query.filterByPositions = function (longitude, latitude, positionRefs)
     return this.where('point').in(positionRefs)
 }
 
-hutSchema.query.filterByCityAndProvince = function (city, province) {
-    if (city === undefined && province === undefined) {
-        return this
-    }
-
-    if (city === undefined && province !== undefined) {
-        return this.where({ province: province }) // regex for case insensitive
-    }
-
-    if (city !== undefined && province === undefined) {
-        return this.where({ city: city })
-    }
-
-    return this.where({ city: city })
-        .where({ province: province })
-}
 
 //discriminator is used to extend schema
 const Hut = Location.discriminator("Hut", hutSchema)

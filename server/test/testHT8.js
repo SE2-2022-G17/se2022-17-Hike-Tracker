@@ -63,8 +63,6 @@ before(async () => {
             _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'),
             beds: 6,
             altitude: 40,
-            city: 'Torino',
-            province: 'Torino',
             point: startPosition._id,
             name: "hut",
             description: 'hut test'
