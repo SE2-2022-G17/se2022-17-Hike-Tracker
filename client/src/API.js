@@ -127,8 +127,6 @@ async function getHuts(
     maxAltitude,
     longitude,
     latitude,
-    city,
-    province,
     token
 ) {
     let query = "?"
@@ -145,10 +143,6 @@ async function getHuts(
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
-    if (city !== undefined && city.trim().length !== 0)
-        parametes.push("city=" + city)
-    if (province !== undefined && province.trim().length !== 0)
-        parametes.push("province=" + province)
 
     query += parametes.join("&")
     const response = await fetch(url + '/getHuts' + query, {
@@ -231,7 +225,7 @@ async function getAllHuts() {
     return await response.json()
 }
 
-async function createHut(name, description, beds, token,longitude,latitude,altitude,city,province) {
+async function createHut(name, description, beds, token,longitude,latitude,altitude, phone, email, website) {
     const response = await fetch(url + '/huts', {
         method: "POST",
         headers: {
@@ -245,8 +239,9 @@ async function createHut(name, description, beds, token,longitude,latitude,altit
             longitude: longitude,
             latitude: latitude,
             altitude: altitude,
-            city: city,
-            province: province
+            phone: phone,
+            email: email,
+            website: website
         })
     })
 

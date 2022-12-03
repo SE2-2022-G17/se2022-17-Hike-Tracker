@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {Container, Form, Button, Alert, Row, Col} from "react-bootstrap";
+import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
 import API from '../API';
 
 
@@ -13,8 +13,9 @@ function CreateHut(props) {
     const [longitude, setLongitude] = useState(0);
     const [latitude, setLatitude] = useState(0);
     const [altitude, setAltitude] = useState(0);
-    const [city,setCity] = useState('');
-    const [province,setProvince] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+    const [website, setWebsite] = useState('');
 
     // this is used to validate data and activate button
     useEffect(() => {
@@ -27,36 +28,36 @@ function CreateHut(props) {
         }
 
 
-        if ( longitude< -180 || longitude > 180 ){
+        if (longitude < -180 || longitude > 180) {
             setDisabled(true);
         }
 
-        if ( latitude < -90 || latitude > 90 ){
+        if (latitude < -90 || latitude > 90) {
             setDisabled(true);
         }
 
-        if ( city.trim().length === 0 || province.trim().length === 0 ) {
+        if (phone.trim().length === 0 || email.trim().length === 0) {
             setDisabled(true)
         }
 
-        if ( name.trim().length !== 0 && description.trim().length !== 0 && 
-            longitude >= -180 && longitude <= 180 && latitude >= -90 && latitude <= 90 
-            && city.trim().length !== 0 && province.trim().length !== 0 ) {
+        if (name.trim().length !== 0 && description.trim().length !== 0 &&
+            longitude >= -180 && longitude <= 180 && latitude >= -90 && latitude <= 90
+            && phone.trim().length !== 0 && email.trim().length !== 0) {
             setDisabled(false)
         }
 
-    }, [name, description, beds, longitude, latitude, altitude, city, province])
+    }, [name, description, beds, longitude, latitude, altitude, phone, email, website])
 
     const handleSubmit = async (event) => {
         event.preventDefault()
         const authToken = localStorage.getItem('token');
 
-        if ( longitude === '' || latitude === '') {         // Control necessary to not send null values to the server
+        if (longitude === '' || latitude === '') {         // Control necessary to not send null values to the server
             setVariant('danger');
             setMessage('Latitude or longitude values not valid.');
         }
-        else{
-            const response = await API.createHut(name, description, beds, authToken, longitude, latitude, altitude,city,province);
+        else {
+            const response = await API.createHut(name, description, beds, authToken, longitude, latitude, altitude, phone, email, website);
 
             if (response === 201) {
                 //HTTP status code 201 means Created (successful)
@@ -72,11 +73,8 @@ function CreateHut(props) {
 
     return (
         <Container className="form-container">
-            {
-                message === '' ? undefined :
-                <Alert variant={variant}>{message}</Alert>
-            }
             <Form>
+                <Form.Label><h3>Create new hut</h3></Form.Label>
                 <Form.Group className="mb-3">
                     <Form.Label>Hut name</Form.Label>
                     <Form.Control
@@ -135,23 +133,33 @@ function CreateHut(props) {
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>City</Form.Label>
+                    <Form.Label>Phone</Form.Label>
                     <Form.Control
-                        as="textarea"
                         type="text"
-                        placeholder="Enter city"
-                        onChange={event => setCity(event.target.value)}
+                        placeholder="Enter phone number"
+                        onChange={event => setPhone(event.target.value)}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Province</Form.Label>
+                    <Form.Label>Email</Form.Label>
                     <Form.Control
-                        as="textarea"
-                        type="text"
-                        placeholder="Enter province"
-                        onChange={event => setProvince(event.target.value)}
+                        type="email"
+                        placeholder="Enter email address"
+                        onChange={event => setEmail(event.target.value)}
                     />
                 </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Website</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Enter your website"
+                        onChange={event => setWebsite(event.target.value)}
+                    />
+                </Form.Group>
+                {
+                    message === '' ? undefined :
+                        <Alert variant={variant}>{message}</Alert>
+                }
                 <Button
                     variant="primary"
                     type="submit"

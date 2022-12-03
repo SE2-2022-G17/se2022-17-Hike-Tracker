@@ -35,7 +35,10 @@ describe('Test API for creating huts (US5)', () => {
             .send({
                 name: "hut_name",
                 description: "hut_descr",
-                beds: 6
+                beds: 6,
+                phone: "123456789",
+                email: "hut@email.com",
+                website: "optional.com"
             });
 
         expect(response.statusCode).to.equal(401);
@@ -54,8 +57,9 @@ describe('Test API for creating huts (US5)', () => {
                 longitude: 7.662,
                 latitude: 45.062,
                 altitude: 239,
-                city: 'Turin',
-                province: 'TO'
+                phone: "123456789",
+                email: "hut@email.com",
+                website: "optional.com"
             });
 
         expect(response.statusCode).to.equal(403);
@@ -69,7 +73,10 @@ describe('Test API for creating huts (US5)', () => {
             .set('Authorization', "Bearer " + token)
             .send({
                 description: "hut_descr",
-                beds: 4
+                beds: 4,
+                phone: "123456789",
+                email: "hut@email.com",
+                website: "optional.com"
             });
 
         expect(response.statusCode).to.equal(400);
@@ -83,7 +90,10 @@ describe('Test API for creating huts (US5)', () => {
             .set('Authorization', "Bearer " + token)
             .send({
                 name: "hut_name",
-                beds: 4
+                beds: 4,
+                phone: "123456789",
+                email: "hut@email.com",
+                website: "optional.com"
             });
 
         expect(response.statusCode).to.equal(400);
@@ -103,8 +113,9 @@ describe('Test API for creating huts (US5)', () => {
                 longitude: 7.662,
                 latitude: 45.062,
                 altitude: 239,
-                city: 'Turin',
-                province: 'TO'
+                phone: "123456789",
+                email: "hut@email.com",
+                website: "optional.com"
             });
 
         expect(response.statusCode).to.equal(201);

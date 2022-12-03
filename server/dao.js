@@ -62,9 +62,7 @@ exports.getHuts = async (
     altitudeMin,
     altitudeMax,
     longitude,
-    latitude,
-    city,
-    province
+    latitude
 ) => {
 
     try {
@@ -75,7 +73,6 @@ exports.getHuts = async (
         const huts = await Hut.find()
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('beds', bedsMin)
-            .filterByCityAndProvince(city, province)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
         return huts
@@ -89,23 +86,26 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
 
-    var transporter = nodemailer.createTransport({
-        service: "hotmail",
-        auth: {
-            user: "se2g17@outlook.com",
-            pass: "c1cl@m1n0"
+    if (process.env.NODE_ENV === "development") {
+
+        var transporter = nodemailer.createTransport({
+            service: "hotmail",
+            auth: {
+                user: "se2g17@outlook.com",
+                pass: "c1cl@m1n0"
+            }
+        })
+
+        var mailOptions = {
+            from: "se2g17@outlook.com",
+            to: email,
+            subject: "Activation Code",
+            text: activationCode
         }
-    })
 
-    var mailOptions = {
-        from: "se2g17@outlook.com",
-        to: email,
-        subject: "Activation Code",
-        text: activationCode
+        await transporter.sendMail(mailOptions)
     }
-
-    await transporter.sendMail(mailOptions)
-
+    
     const user = await User.create({
         firstName: firstName,
         lastName: lastName,
@@ -275,9 +275,7 @@ exports.getHuts = async (
     altitudeMin,
     altitudeMax,
     longitude,
-    latitude,
-    city,
-    province
+    latitude
 ) => {
 
     try {
@@ -288,7 +286,6 @@ exports.getHuts = async (
         const huts = await Hut.find()
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('beds', bedsMin)
-            .filterByCityAndProvince(city, province)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
         return huts
@@ -341,8 +338,18 @@ exports.getHikeTrack = async (id) => {
     }
 }
 
-exports.createHut = async (name, description, beds, longitude, latitude, altitude, city, province) => {
-    if (name === undefined || description === undefined)
+exports.createHut = async (
+    name,
+    description,
+    beds,
+    longitude,
+    latitude,
+    altitude,
+    phone,
+    email,
+    website
+) => {
+    if (name === undefined || description === undefined || phone === undefined || email === undefined)
         throw 400
 
     const position = await Position.create({
@@ -355,8 +362,9 @@ exports.createHut = async (name, description, beds, longitude, latitude, altitud
         beds: beds,
         point: position,
         altitude: altitude,
-        city: city,
-        province: province
+        phone: phone,
+        email: email,
+        website: website
     })
 
     hut.save()
