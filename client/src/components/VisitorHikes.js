@@ -9,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 import MapPicker from './MapPicker';
 import Modal from 'react-bootstrap/Modal';
 
+const polito = {
+    lng: "7.65991",
+    lat: "45.06355"
+}
 
 function VisitorHikes() {
     const [difficulty, setDifficulty] = useState(undefined);
@@ -85,7 +89,7 @@ function VisitorHikes() {
         <Container className='visitor-hike'>
             <Row>
                 <Col xl={3}>
-                    <Container fluid>
+                    <Container fluid className='hike-filters'>
                         <h5>Search for hikes!</h5>
                         <DifficultyPicker difficulty={difficulty} setDifficulty={setDifficulty} />
                         <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />
@@ -93,8 +97,8 @@ function VisitorHikes() {
                         <MinMaxPicker filter="time" setMinFilter={setMinTime} setMaxFilter={setMaxTime} />
                         <TextField filter="City" setFilter={setCity} />
                         <TextField filter="Province" setFilter={setProvince} />
-                        <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
                         <SelectPointFromMap handleShow={handleShow} />
+                        <CoordinatesPicker lng={longitude} lat={latitude} />
                         <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
                     </Container>
                 </Col>
@@ -106,7 +110,14 @@ function VisitorHikes() {
                 <Modal.Header closeButton>
                     <Modal.Title>Select a point from map</Modal.Title>
                 </Modal.Header>
-                <Modal.Body> <MapPicker /> </Modal.Body>
+                <Modal.Body>
+                    <MapPicker
+                        lng={longitude === undefined ? polito.lng : longitude}
+                        setLng={setLongitude}
+                        lat={latitude === undefined ? polito.lat : latitude}
+                        setLat={setLatitude}
+                    />
+                </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={handleClose}>
                         Select point
@@ -175,7 +186,7 @@ function MinMaxPicker(props) {
 }
 
 function CoordinatesPicker(props) {
-    const { setLongitude, setLatitude } = props;
+    const { lng, lat } = props;
 
     return (
         <Row className='two-options-filter'>
@@ -185,7 +196,8 @@ function CoordinatesPicker(props) {
                         <Form.Label>{"Longitude "}</Form.Label>
                         <Form.Control
                             type="text"
-                            onChange={(ev) => setLongitude(ev.target.value)}
+                            disabled
+                            placeholder={lng}
                         />
                     </Form.Group>
                 </Form>
@@ -196,7 +208,8 @@ function CoordinatesPicker(props) {
                         <Form.Label>{"Latitude "}</Form.Label>
                         <Form.Control
                             type="text"
-                            onChange={(ev) => setLatitude(ev.target.value)}
+                            disabled
+                            placeholder={lat}
                         />
                     </Form.Group>
                 </Form>

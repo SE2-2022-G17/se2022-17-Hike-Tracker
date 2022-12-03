@@ -4,11 +4,9 @@ import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-load
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 
 function MapPicker(props) {
+    const { lng, setLng, lat, setLat } = props;
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const [lng, setLng] = useState(7.65991);
-    const [lat, setLat] = useState(45.06355);
-    const [zoom, setZoom] = useState(14);
 
     useEffect(() => {
         if (map.current) return; // initialize map only once
@@ -16,17 +14,25 @@ function MapPicker(props) {
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v12',
             center: [lng, lat],
-            zoom: zoom
+            zoom: 14
         });
-    });
 
-    useEffect(() => {
-        if (!map.current) return; // wait for map to initialize
-        map.current.on('move', () => {
-            setLng(map.current.getCenter().lng.toFixed(4));
-            setLat(map.current.getCenter().lat.toFixed(4));
-            setZoom(map.current.getZoom().toFixed(2));
+        map.current.on('load', () => {
+            const marker = new mapboxgl.Marker({
+                color: "red",
+                draggable: true
+            })
+                .setLngLat([lng, lat])
+
+            if (map.current) marker.addTo(map.current);
+
+            marker.on('dragend', function (e) {
+                var lngLat = e.target.getLngLat();
+                setLng(lngLat['lng'].toFixed(5));
+                setLat(lngLat['lat'].toFixed(5));
+            })
         });
+
     });
 
     return (

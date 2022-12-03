@@ -94,6 +94,7 @@
 .two-options-filter {
   width: 30%;
   width: 100%;
+  padding-bottom: 1rem;
 }
 
 .difficulty-picker {
@@ -199,7 +200,7 @@
 
 .basic-link {
   padding-top: 1rem;
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
 .feat-icon {
@@ -236,4 +237,8 @@
   position: absolute;
   margin: 12px;
   border-radius: 4px;
+}
+
+.hike-filters {
+  padding-bottom: 3rem;
 }
