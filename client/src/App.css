@@ -197,6 +197,11 @@
   max-width: 75px;
 }
 
+.basic-link {
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
 .feat-icon {
   width: 16px;
 }
@@ -216,4 +221,20 @@
 
 .map-margin {
   margin-bottom: 3rem;
+}
+
+.map-container-picker {
+  height: 400px;
+}
+
+.sidebar {
+  background-color: rgba(35, 55, 75, 0.9);
+  color: #fff;
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  margin: 12px;
+  border-radius: 4px;
+  width: 200px;
 }

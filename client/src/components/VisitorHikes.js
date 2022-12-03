@@ -6,6 +6,7 @@ import API from '../API';
 import Difficulty from '../constants/Difficulty';
 import HikeCard from './HikeCard';
 import { useNavigate } from "react-router-dom";
+import MapPicker from './MapPicker';
 
 
 function VisitorHikes() {
@@ -21,6 +22,9 @@ function VisitorHikes() {
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
+    const [showMap, setShowMap] = useState(false);
+
+    const toggleMap = () => setShowMap(prev => !prev);
 
     useEffect(() => {
         API.getVisitorHikes()
@@ -74,7 +78,7 @@ function VisitorHikes() {
         );
         setHikes(retrivedHikes);
     }
-    
+
     return (
         <Container className='visitor-hike'>
             <Row>
@@ -88,6 +92,8 @@ function VisitorHikes() {
                         <TextField filter="City" setFilter={setCity} />
                         <TextField filter="Province" setFilter={setProvince} />
                         <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
+                        <SelectPointFromMap toggleMap={toggleMap} />
+                        {showMap === true ? <MapPicker /> : undefined}
                         <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
                     </Container>
                 </Col>
@@ -228,5 +234,22 @@ function TextField(props) {
         </Row>
     );
 }
+
+function SelectPointFromMap(props) {
+
+    return (
+        <Row className='basic-link'>
+            <Col>
+                <Button
+                    variant="outline-primary"
+                    onClick={props.toggleMap}
+                >
+                    Select a point from map
+                </Button>
+            </Col>
+        </Row>
+    );
+}
+
 
 export default VisitorHikes;

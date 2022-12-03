@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Col, Row, Container, Button } from 'react-bootstrap';
 import mapboxgl from 'mapbox-gl'
-import toGeoJson from '@mapbox/togeojson'
-import { faLayerGroup, faMountainSun, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 import API from "../API";
 import Form from 'react-bootstrap/Form';
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
