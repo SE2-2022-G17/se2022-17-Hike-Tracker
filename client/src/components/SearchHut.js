@@ -187,8 +187,9 @@ function SearchHut(props) {
                             setLatitude("");
                             setLongitude("");
                             setSearchRadius("");
+                            setRefresh(old=>!old);
                         }}>Remove search marker</Button>:
-                        <></>
+                        <h4>Double click on the map to search for the huts.</h4>
                     }  
                 </Col>
             </Row>
