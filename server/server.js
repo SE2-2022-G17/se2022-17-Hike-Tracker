@@ -64,7 +64,6 @@ app.get('/getHuts', verifyUserToken, (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
     let searchRadius = req.query.searchRadius
-
     dao.getHuts(
         bedsMin,
         altitudeMin,
@@ -73,7 +72,7 @@ app.get('/getHuts', verifyUserToken, (req, res) => {
         latitude,
         searchRadius
     )
-        .then((hikes) => { return res.json(hikes); })
+        .then((huts) => { return res.json(huts); })
         .catch((error) => { return res.status(500).json(error); });
 });
 
