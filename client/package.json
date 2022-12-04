@@ -16,6 +16,7 @@
     "bootstrap-icons": "^1.10.1",
     "font-awesome": "^4.7.0",
     "mapbox-gl": "^2.10.0",
+    "mapbox-gl-circle": "^1.6.7",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
     "react-bootstrap-icons": "^1.9.1",

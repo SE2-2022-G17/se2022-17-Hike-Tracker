@@ -62,21 +62,24 @@ exports.getHuts = async (
     altitudeMin,
     altitudeMax,
     longitude,
-    latitude
+    latitude,
+    searchRadius
 ) => {
 
     try {
+        
         let nearPositions = await Position
             .find()
-            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+            .filterByDistance(longitude, latitude, searchRadius)
 
         const huts = await Hut.find()
+            .select({ "__v": 0})
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
+            
         return huts
-
     } catch (e) {
         console.log(e.message)
     }
@@ -264,32 +267,6 @@ exports.getHike = async (id) => {
             .catch(err => {
                 console.log(err);
             });
-    } catch (e) {
-        console.log(e.message)
-    }
-}
-
-
-exports.getHuts = async (
-    bedsMin,
-    altitudeMin,
-    altitudeMax,
-    longitude,
-    latitude
-) => {
-
-    try {
-        let nearPositions = await Position
-            .find()
-            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
-
-        const huts = await Hut.find()
-            .filterBy('altitude', altitudeMin, altitudeMax)
-            .filterBy('beds', bedsMin)
-            .filterByPositions(longitude, latitude, nearPositions)
-            .populate('point')
-        return huts
-
     } catch (e) {
         console.log(e.message)
     }

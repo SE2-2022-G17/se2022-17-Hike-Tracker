@@ -3,6 +3,7 @@ import { Col, Row, Container, Button } from 'react-bootstrap';
 import mapboxgl from 'mapbox-gl'
 import API from "../API";
 import Form from 'react-bootstrap/Form';
+import MapboxCircle from 'mapbox-gl-circle';
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 
 
@@ -21,6 +22,12 @@ function SearchHut(props) {
     const [lat, setLat] = useState(45.062);
     const [refresh, setRefresh] = useState(false); // Do the not operation on this state to refresh huts
     const [markers, setMarkers] = useState([]);
+    const [searchRadius,setSearchRadius] = useState('');
+    const [doFlyTo,setDoFlyTo] = useState(true);
+    const [firstRender,setFirstRender] = useState(true);
+    const [center,setCenter] = useState(null);
+    const [searchMarker,setSearchMarker] = useState(null);
+    const [circles,setCircles] = useState(0);
 
     function updateMarkers(huts) {
         markers.forEach(marker => marker.remove());
@@ -42,10 +49,21 @@ function SearchHut(props) {
         });
     }
 
+    useEffect(()=>{
+        if(huts!==null)
+            updateMarkers(huts);
+    },[huts]);
+
     useEffect(() => {
         const authToken = localStorage.getItem('token');
-        if (latitude.trim().length != 0 && longitude.trim().length != 0 && longitude >= -180 && longitude <= 180 && latitude >= -90 && latitude <= 90) {
-            if (map.current) map.current.flyTo({ center: [longitude, latitude], zoom: 11 });
+        if (latitude.trim().length != 0 && longitude.trim().length != 0 && longitude >= -180 && longitude <= 180 
+        && latitude >= -90 && latitude <= 90) {
+            if (map.current) {
+                if(doFlyTo)
+                    map.current.flyTo({ center: [longitude, latitude], zoom: 11 });
+                else
+                    setDoFlyTo(true);
+            }
         }
         API.getHuts(
             bedsMin,
@@ -53,13 +71,70 @@ function SearchHut(props) {
             altitudeMax,
             longitude,
             latitude,
+            searchRadius,
             authToken)
             .then(RetrievedHuts => {
                 setHuts(RetrievedHuts);
-                updateMarkers(RetrievedHuts);
             })
             .catch(err => console.log(err));
     }, [refresh]);
+
+    
+    useEffect(()=>{
+        if(!firstRender && searchRadius!=="")
+            setDoFlyTo(false);
+        else
+            setFirstRender(false);
+    },[searchRadius]);
+
+    useEffect(()=>{
+        if(center!==null)
+            setDoFlyTo(false);
+    },[center]);
+
+    useEffect(()=>{
+        if(!doFlyTo){
+            setRefresh(old=>!old);
+        }
+    },[doFlyTo]);
+
+    useEffect(()=>{
+        if(searchMarker!=null && circles>0){
+            setDoFlyTo(false);
+        }
+    },[searchMarker]);
+
+    useEffect(()=>{
+        if(circles==1){
+            const marker = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 10000, {
+                editable: true,
+                fillColor: '#29AB87',
+            });
+            setSearchRadius((marker.getRadius()/1000).toString());
+
+            marker.on('radiuschanged', (circleObj) => {
+                setSearchRadius((circleObj.getRadius()/1000).toString());
+            });
+
+            marker.on('centerchanged', (circleObj) => {
+                setLatitude(circleObj.getCenter().lat.toFixed(5).toString());
+                setLongitude(circleObj.getCenter().lng.toFixed(5).toString());
+                setCenter(circleObj.getCenter());
+            });
+            
+            marker.addTo(map.current);
+            setSearchMarker(marker);
+        }
+        else{
+            if(circles>1){
+                searchMarker.remove();
+                setCircles(old=>old-1);
+            }
+            if(circles==0 && searchMarker!==null){
+                searchMarker.remove();
+            }    
+        }
+    },[circles]);
 
     useEffect(() => {
         if (huts !== null) {
@@ -74,6 +149,16 @@ function SearchHut(props) {
             map.current.on('load', () => {
                 updateMarkers(huts);
             });
+            
+            map.current.doubleClickZoom.disable();
+
+            map.current.on('dblclick', (e) => {
+                setLongitude(e.lngLat.lng.toFixed(5).toString());
+                setLatitude(e.lngLat.lat.toFixed(5).toString());
+                if(circles==0){
+                    setCircles(old=>old+1);
+                }
+            });
         }
     });
 
@@ -86,7 +171,7 @@ function SearchHut(props) {
                             <Col>
                                 <MinPicker filter="beds" setMinFilter={setBedsMin} />
                                 <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
-                                <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
+                                <CoordinatesPicker longitude={longitude} latitude={latitude} setLongitude={setLongitude} setLatitude={setLatitude} />
                                 <Button onClick={(ev) => { setRefresh(oldValue => !oldValue) }}>Search</Button>
                             </Col>
                         </Row>
@@ -94,6 +179,18 @@ function SearchHut(props) {
                 </Col>
                 <Col xl={9}>
                     <div ref={mapContainer} className="map-container" />
+                    <br></br>
+                    {
+                        circles==1 ?
+                        <Button onClick={()=>{
+                            setCircles(old=>old-1);
+                            setLatitude("");
+                            setLongitude("");
+                            setSearchRadius("");
+                            setRefresh(old=>!old);
+                        }}>Remove search marker</Button>:
+                        <h4>Double click on the map to search for the huts.</h4>
+                    }  
                 </Col>
             </Row>
         </Container>
@@ -172,7 +269,7 @@ function TextField(props) {
 }
 
 function CoordinatesPicker(props) {
-    const { setLongitude, setLatitude } = props;
+    const { setLongitude, setLatitude, latitude, longitude } = props;
 
     return (
         <Row className='two-options-filter'>
@@ -182,6 +279,7 @@ function CoordinatesPicker(props) {
                         <Form.Label>{"Longitude "}</Form.Label>
                         <Form.Control
                             type="text"
+                            value={longitude}
                             onChange={(ev) => setLongitude(ev.target.value)}
                         />
                     </Form.Group>
@@ -193,6 +291,7 @@ function CoordinatesPicker(props) {
                         <Form.Label>{"Latitude "}</Form.Label>
                         <Form.Control
                             type="text"
+                            value={latitude}
                             onChange={(ev) => setLatitude(ev.target.value)}
                         />
                     </Form.Group>
