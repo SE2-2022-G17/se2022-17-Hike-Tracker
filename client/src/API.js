@@ -127,6 +127,7 @@ async function getHuts(
     maxAltitude,
     longitude,
     latitude,
+    searchRadius,
     token
 ) {
     let query = "?"
@@ -143,6 +144,8 @@ async function getHuts(
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
+    if (searchRadius !== undefined && searchRadius.trim().length !== 0)
+        parametes.push("searchRadius=" + searchRadius)
 
     query += parametes.join("&")
     const response = await fetch(url + '/getHuts' + query, {

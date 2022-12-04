@@ -62,15 +62,17 @@ exports.getHuts = async (
     altitudeMin,
     altitudeMax,
     longitude,
-    latitude
+    latitude,
+    searchRadius
 ) => {
 
     try {
         let nearPositions = await Position
             .find()
-            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+            .filterByDistance(longitude, latitude, searchRadius) 
 
         const huts = await Hut.find()
+            .select({ "__v": 0})
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
@@ -281,7 +283,7 @@ exports.getHuts = async (
     try {
         let nearPositions = await Position
             .find()
-            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+            .filterByDistance(longitude, latitude, 20) // finds positions close to 20km
 
         const huts = await Hut.find()
             .filterBy('altitude', altitudeMin, altitudeMax)
