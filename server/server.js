@@ -64,6 +64,8 @@ app.get('/getHuts', verifyUserToken, (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
     let searchRadius = req.query.searchRadius
+    if(searchRadius==undefined)
+        searchRadius="40075";
     dao.getHuts(
         bedsMin,
         altitudeMin,
