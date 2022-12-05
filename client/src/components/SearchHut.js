@@ -172,6 +172,11 @@ function SearchHut(props) {
                                 <MinPicker filter="beds" setMinFilter={setBedsMin} />
                                 <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
                                 <CoordinatesPicker longitude={longitude} latitude={latitude} setLongitude={setLongitude} setLatitude={setLatitude} />
+                                {
+                                    searchRadius === ''?
+                                    <h6>Search radius: unlimited</h6>:
+                                    <h6>Search radius: {searchRadius.replace(".",",")} km</h6>
+                                }                             
                                 <Button onClick={(ev) => { setRefresh(oldValue => !oldValue) }}>Search</Button>
                             </Col>
                         </Row>
@@ -182,13 +187,15 @@ function SearchHut(props) {
                     <br></br>
                     {
                         circles==1 ?
+                        <>
                         <Button onClick={()=>{
                             setCircles(old=>old-1);
                             setLatitude("");
                             setLongitude("");
                             setSearchRadius("");
                             setRefresh(old=>!old);
-                        }}>Remove search marker</Button>:
+                        }}>Remove search marker</Button>
+                        </>:
                         <h4>Double click on the map to search for the huts.</h4>
                     }  
                 </Col>
