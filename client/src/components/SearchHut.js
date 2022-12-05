@@ -24,8 +24,6 @@ function SearchHut(props) {
     const [refresh, setRefresh] = useState(false); // Do the not operation on this state to refresh huts
     const [markers, setMarkers] = useState([]);
     const [searchRadius,setSearchRadius] = useState('');
-    const [doFlyTo,setDoFlyTo] = useState(true);
-    const [firstRender,setFirstRender] = useState(true);
     const [center,setCenter] = useState(null);
     const [searchMarker,setSearchMarker] = useState(null);
     const [circles,setCircles] = useState(0);
@@ -69,6 +67,10 @@ function SearchHut(props) {
     }
 
     useEffect(()=>{
+        setRefresh(old=>!old);
+    },[altitudeMin,altitudeMax,bedsMin,searchRadius,center,searchMarker]);
+
+    useEffect(()=>{
         if(huts!==null)
             updateMarkers(huts);
     },[huts]);
@@ -84,15 +86,6 @@ function SearchHut(props) {
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
-        if (latitude.trim().length != 0 && longitude.trim().length != 0 && longitude >= -180 && longitude <= 180 
-        && latitude >= -90 && latitude <= 90) {
-            if (map.current) {
-                if(doFlyTo)
-                    map.current.flyTo({ center: [longitude, latitude], zoom: 11 });
-                else
-                    setDoFlyTo(true);
-            }
-        }
         API.getHuts(
             bedsMin,
             altitudeMin,
@@ -107,30 +100,6 @@ function SearchHut(props) {
             .catch(err => console.log(err));
     }, [refresh]);
 
-    
-    useEffect(()=>{
-        if(!firstRender && searchRadius!=="")
-            setDoFlyTo(false);
-        else
-            setFirstRender(false);
-    },[searchRadius]);
-
-    useEffect(()=>{
-        if(center!==null)
-            setDoFlyTo(false);
-    },[center]);
-
-    useEffect(()=>{
-        if(!doFlyTo){
-            setRefresh(old=>!old);
-        }
-    },[doFlyTo]);
-
-    useEffect(()=>{
-        if(searchMarker!=null && circles>0){
-            setDoFlyTo(false);
-        }
-    },[searchMarker]);
 
     useEffect(()=>{
         if(circles==1){
@@ -206,7 +175,6 @@ function SearchHut(props) {
                                     <h6>Search radius: unlimited</h6>:
                                     <h6>Search radius: {searchRadius.replace(".",",")} km</h6>
                                 }                             
-                                <Button onClick={(ev) => { setRefresh(oldValue => !oldValue) }}>Search</Button>
                             </Col>
                         </Row>
                     </Container>
@@ -335,7 +303,7 @@ function CoordinatesPicker(props) {
                                     setCircles(old=>old-1);
                                     setSearchRadius("");
                                 }            
-                            }}
+                            }} disabled
                         />
                     </Form.Group>
                 </Form>
@@ -353,7 +321,7 @@ function CoordinatesPicker(props) {
                                     setCircles(old=>old-1);
                                     setSearchRadius("");
                                 }  
-                            }}
+                            }} disabled
                         />
                     </Form.Group>
                 </Form>
