@@ -13,7 +13,7 @@ function SearchHut(props) {
     const mapContainer = useRef(null);
     const map = useRef(null);
     const [huts, setHuts] = useState(null);
-    const [zoom, setZoom] = useState(11);
+    const [zoom, setZoom] = useState(7);
     const [bedsMin, setBedsMin] = useState('');
     const [altitudeMin, setAltitudeMin] = useState('');
     const [altitudeMax, setAltitudeMax] = useState('');
@@ -134,7 +134,7 @@ function SearchHut(props) {
 
     useEffect(()=>{
         if(circles==1){
-            const marker = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 10000, {
+            const marker = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 50000, {
                 editable: true,
                 fillColor: '#29AB87',
             });
