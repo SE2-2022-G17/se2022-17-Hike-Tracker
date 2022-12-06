@@ -9,10 +9,6 @@ var ParkingSchema = new Schema({
         min: 1,
         default: 1
     },
-    coordinate: {
-        type: Schema.Types.ObjectId,
-        ref: 'Position'
-    }
 })
 
 //discriminator is used to extend schema

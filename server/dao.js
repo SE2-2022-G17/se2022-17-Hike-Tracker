@@ -168,7 +168,7 @@ exports.validateUser = async (email, activationCode) => {
 
 exports.saveNewParking = async (name, description, parkingSpaces, latitude, longitude) => {
 
-    let startPosition = await Position.create({
+    let position = await Position.create({
         "location.coordinates": [longitude, latitude]
     })
 
@@ -176,7 +176,7 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
         name: name,
         description: description,
         parkingSpaces: parkingSpaces,
-        coordinate: startPosition._id
+        point: position._id
     });
 
     parking.save((err) => {
