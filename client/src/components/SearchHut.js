@@ -25,7 +25,7 @@ function SearchHut(props) {
     const [markers, setMarkers] = useState([]);
     const [searchRadius,setSearchRadius] = useState('');
     const [center,setCenter] = useState(null);
-    const [searchMarker,setSearchMarker] = useState(null);
+    const [searchCircle,setsearchCircle] = useState(null);
     const [circles,setCircles] = useState(0);
     const [hutCardShow,setHutCardShow] = useState(false);
     const [selectedHut,setSelectedHut] = useState(null);
@@ -68,7 +68,7 @@ function SearchHut(props) {
     useEffect(()=>{
         setRefresh(old=>!old);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[altitudeMin,altitudeMax,bedsMin,searchRadius,center,searchMarker]);
+    },[altitudeMin,altitudeMax,bedsMin,searchRadius,center,searchCircle]);
 
 
     useEffect(()=>{
@@ -106,32 +106,32 @@ function SearchHut(props) {
 
     useEffect(()=>{
         if(circles===1){
-            const marker = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 50000, {
+            const circle = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 50000, {
                 editable: true,
                 fillColor: '#29AB87',
             });
-            setSearchRadius((marker.getRadius()/1000).toString());
+            setSearchRadius((circle.getRadius()/1000).toString());
 
-            marker.on('radiuschanged', (circleObj) => {
+            circle.on('radiuschanged', (circleObj) => {
                 setSearchRadius((circleObj.getRadius()/1000).toString());
             });
 
-            marker.on('centerchanged', (circleObj) => {
+            circle.on('centerchanged', (circleObj) => {
                 setLatitude(circleObj.getCenter().lat.toFixed(5).toString());
                 setLongitude(circleObj.getCenter().lng.toFixed(5).toString());
                 setCenter(circleObj.getCenter());
             });
-            
-            marker.addTo(map.current);
-            setSearchMarker(marker);
+
+            circle.addTo(map.current);
+            setsearchCircle(circle);
         }
         else{
             if(circles>1){
-                searchMarker.remove();
+                searchCircle.remove();
                 setCircles(old=>old-1);
             }
-            if(circles===0 && searchMarker!==null){
-                searchMarker.remove();
+            if(circles===0 && searchCircle!==null){
+                searchCircle.remove();
             }    
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,7 +161,8 @@ function SearchHut(props) {
                 }
             });
         }
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
 
     return (
         <Container>
