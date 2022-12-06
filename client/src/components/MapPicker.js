@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
@@ -27,7 +27,7 @@ function MapPicker(props) {
             if (map.current) marker.addTo(map.current);
 
             marker.on('dragend', function (e) {
-                var lngLat = e.target.getLngLat();
+                let lngLat = e.target.getLngLat();
                 setLng(lngLat['lng'].toFixed(5));
                 setLat(lngLat['lat'].toFixed(5));
             })

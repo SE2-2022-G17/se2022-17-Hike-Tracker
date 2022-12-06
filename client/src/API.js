@@ -17,8 +17,6 @@ async function validateEmail(email, verificationCode) {
     if (response.ok) {
         return "OK"
     } else {
-        const errDetail = await response.json();
-        //throw errDetail.message;
         return "Error"
     }
 
@@ -44,7 +42,6 @@ async function signUp(credentials) {
     if (response.ok) {
         return "OK";
     } else {
-        //const errDetail = await response.json();
         return "Error";
     }
 }
@@ -134,7 +131,7 @@ async function getHuts(
 
     let parametes = []
 
-    if (bedsMin !== undefined && bedsMin.trim().length!=0)
+    if (bedsMin !== undefined && bedsMin.trim().length!==0)
         parametes.push("bedsMin=" + bedsMin)
     if (minAltitude !== undefined && minAltitude.trim().length !== 0)
         parametes.push("altitudeMin=" + minAltitude)
@@ -194,21 +191,7 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
         },
         credentials: 'include',
-        body: body/*JSON.stringify({
-            "title": title,
-            "length": length,
-            "time": time,
-            "ascent": ascent,
-            "difficulty": difficulty,
-            "startPoint": startPoint,
-            "endPoint": endPoint,
-            "referencePoints": referencePoints,
-            "description": description,
-            "city": city,
-            "province": province,
-            "track_file":track
-        })*/
-
+        body: body
     })
     const resp = await response;
     if (resp.ok) {
@@ -290,7 +273,7 @@ async function getAllParking(){
 }
 
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getAllHuts};
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut};
 
 export default API;
 

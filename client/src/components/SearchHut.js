@@ -9,18 +9,18 @@ mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhd
 
 
 function SearchHut(props) {
+    const startZoom = 7;
+    const startLng = 7.662;
+    const startLat = 45.062;
 
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const [huts, setHuts] = useState(null);
-    const [zoom, setZoom] = useState(7);
+    const [huts, setHuts] = useState([]);
     const [bedsMin, setBedsMin] = useState('');
     const [altitudeMin, setAltitudeMin] = useState('');
     const [altitudeMax, setAltitudeMax] = useState('');
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
-    const [lng, setLng] = useState(7.662);      // Used to center the map on loading
-    const [lat, setLat] = useState(45.062);
     const [refresh, setRefresh] = useState(false); // Do the not operation on this state to refresh huts
     const [markers, setMarkers] = useState([]);
     const [searchRadius,setSearchRadius] = useState('');
@@ -30,35 +30,34 @@ function SearchHut(props) {
     const [hutCardShow,setHutCardShow] = useState(false);
     const [selectedHut,setSelectedHut] = useState(null);
 
+    function newMarker(lng,lat,hut,color){
+        const marker = new mapboxgl.Marker({color:color})
+            .setLngLat([lng, lat]);
+            marker.getElement().addEventListener('click', () => {
+            setSelectedHut(hut);
+        });
+        return marker;
+    }
+
     function updateMarkers(huts) {
         markers.forEach(marker => marker.remove());
         huts.forEach(hut => {
-            if(selectedHut==null){
-                const marker = new mapboxgl.Marker()
-                .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]]);
-                  marker.getElement().addEventListener('click', () => {
-                  setSelectedHut(hut);
-            });
-            if (map.current) marker.addTo(map.current);
-            setMarkers(old => [...old, marker]);
+            const lng = hut.point.location.coordinates[0];
+            const lat = hut.point.location.coordinates[1];
+            if(selectedHut===null){
+                const marker = newMarker(lng,lat,hut,'blue');
+                if (map.current) marker.addTo(map.current);
+                setMarkers(old => [...old, marker]);
             } 
             else{
-                if(selectedHut.point.location.coordinates[0] === hut.point.location.coordinates[0] &&
-                    selectedHut.point.location.coordinates[1] === hut.point.location.coordinates[1]){
-                    const marker = new mapboxgl.Marker({color:'red'})
-                    .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]]);
-                      marker.getElement().addEventListener('click', () => {
-                        setSelectedHut(hut);
-                    });
+                if(selectedHut.point.location.coordinates[0] === lng &&
+                    selectedHut.point.location.coordinates[1] === lat){
+                    const marker = newMarker(lng,lat,hut,'red');
                     if (map.current) marker.addTo(map.current);
                     setMarkers(old => [...old, marker]);
                 }
                 else{
-                    const marker = new mapboxgl.Marker()
-                    .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]]);
-                    marker.getElement().addEventListener('click', () => {
-                    setSelectedHut(old=>hut);
-                    });
+                    const marker = newMarker(lng,lat,hut,'blue');
                     if (map.current) marker.addTo(map.current);
                     setMarkers(old => [...old, marker]);
                 }
@@ -68,12 +67,14 @@ function SearchHut(props) {
 
     useEffect(()=>{
         setRefresh(old=>!old);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[altitudeMin,altitudeMax,bedsMin,searchRadius,center,searchMarker]);
 
+
     useEffect(()=>{
-        if(huts!==null)
             updateMarkers(huts);
-    },[huts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[huts.length]);
 
     useEffect(()=>{
         if(huts!==null)
@@ -82,6 +83,7 @@ function SearchHut(props) {
             setHutCardShow(true);
         else
             setHutCardShow(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[selectedHut]);
 
     useEffect(() => {
@@ -98,11 +100,12 @@ function SearchHut(props) {
                 setHuts(RetrievedHuts);
             })
             .catch(err => console.log(err));
+            // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refresh]);
 
 
     useEffect(()=>{
-        if(circles==1){
+        if(circles===1){
             const marker = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 50000, {
                 editable: true,
                 fillColor: '#29AB87',
@@ -127,10 +130,11 @@ function SearchHut(props) {
                 searchMarker.remove();
                 setCircles(old=>old-1);
             }
-            if(circles==0 && searchMarker!==null){
+            if(circles===0 && searchMarker!==null){
                 searchMarker.remove();
             }    
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[circles]);
 
     useEffect(() => {
@@ -139,8 +143,8 @@ function SearchHut(props) {
             map.current = new mapboxgl.Map({
                 container: mapContainer.current,
                 style: 'mapbox://styles/mapbox/streets-v11',
-                center: [lng, lat],
-                zoom: zoom
+                center: [startLng, startLat],
+                zoom: startZoom
             });
 
             map.current.on('load', () => {
@@ -152,7 +156,7 @@ function SearchHut(props) {
             map.current.on('dblclick', (e) => {
                 setLongitude(e.lngLat.lng.toFixed(5).toString());
                 setLatitude(e.lngLat.lat.toFixed(5).toString());
-                if(circles==0){
+                if(circles === 0){
                     setCircles(old=>old+1);
                 }
             });
@@ -181,7 +185,7 @@ function SearchHut(props) {
                 </Col>
                 <Col xl={9}>
                     {
-                        circles==1 ?
+                        circles === 1 ?
                         <>
                         <Button variant="success"
                             onClick={()=>{
@@ -257,26 +261,6 @@ function MinMaxPicker(props) {
                         <Form.Control
                             type="text"
                             onChange={(ev) => setMaxFilter(ev.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-        </Row>
-    );
-}
-
-function TextField(props) {
-    const { filter, setFilter } = props;
-
-    return (
-        <Row className='basic-filter'>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{filter + ": "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={(ev) => setFilter(ev.target.value)}
                         />
                     </Form.Group>
                 </Form>

@@ -41,17 +41,17 @@ app.get('/visitor/hikes', (req, res) => {
     let latitude = req.query.latitude
 
     dao.getVisitorHikes(
-        difficulty = difficulty,
-        minLength = minLength,
-        maxLength = maxLength,
-        minAscent = minAscent,
-        maxAscent = maxAscent,
-        minTime = minTime,
-        maxTime = maxTime,
-        city = city,
-        province = province,
-        longitude = longitude,
-        latitude = latitude
+        difficulty,
+        minLength,
+        maxLength,
+        minAscent,
+        maxAscent,
+        minTime,
+        maxTime,
+        city,
+        province,
+        longitude,
+        latitude
     )
         .then((hikes) => { res.json(hikes); })
         .catch((error) => { res.status(500).json(error); });
