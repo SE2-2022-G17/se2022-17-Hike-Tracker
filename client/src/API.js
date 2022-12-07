@@ -248,7 +248,7 @@ async function linkStartArrival(point,reference,id,hikeId,token){
             hikeId:hikeId
         })
     })
-    return await response.json();
+    return response.json();
 }
 
 async function linkHut(hut, hike, token) {
@@ -266,6 +266,43 @@ async function linkHut(hut, hike, token) {
     return response.status;
 }
 
+async function getParking(
+    lotsMin,
+    minAltitude,
+    maxAltitude,
+    longitude,
+    latitude,
+    searchRadius,
+    token
+) {
+    let query = "?"
+
+    let parametes = []
+
+    if (lotsMin !== undefined && lotsMin.trim().length!==0)
+        parametes.push("lotsMin=" + lotsMin)
+    if (minAltitude !== undefined && minAltitude.trim().length !== 0)
+        parametes.push("altitudeMin=" + minAltitude)
+    if (maxAltitude !== undefined && maxAltitude.trim().length !== 0)
+        parametes.push("altitudeMax=" + maxAltitude)
+    if (longitude !== undefined && longitude.trim().length !== 0)
+        parametes.push("longitude=" + longitude)
+    if (latitude !== undefined && latitude.trim().length !== 0)
+        parametes.push("latitude=" + latitude)
+    if (searchRadius !== undefined && searchRadius.trim().length !== 0)
+        parametes.push("searchRadius=" + searchRadius)
+
+    query += parametes.join("&")
+    const response = await fetch(url + '/getParking' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    const parking = await response.json()
+    return parking
+}
 
 async function getAllParking(){
     const result = await fetch(url + '/parking');
@@ -273,7 +310,7 @@ async function getAllParking(){
 }
 
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut};
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getParking};
 
 export default API;
 

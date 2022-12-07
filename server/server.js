@@ -285,6 +285,8 @@ app.post('/hike/linkhut', verifyUserToken, (req, res) => {
 
 app.put('/linkStartArrival', async (req, res) => {
     try {
+        if(!req.body.point || !req.body.reference || !req.body.id || !req.body.hikeId)
+            return res.status(422).end();
         const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId)
         if (result) {
             return res.status(201).json(result);
@@ -305,6 +307,27 @@ app.get('/parking', async (req, res) => {
         return res.status(500);
     }
 })
+
+app.get('/getParking', verifyUserToken, (req, res) => {
+    let lotsMin = req.query.lotsMin
+    let altitudeMin = req.query.altitudeMin
+    let altitudeMax = req.query.altitudeMax
+    let longitude = req.query.longitude
+    let latitude = req.query.latitude
+    let searchRadius = req.query.searchRadius
+    if(searchRadius==undefined)
+        searchRadius="40075";
+    dao.getParking(
+        lotsMin,
+        altitudeMin,
+        altitudeMax,
+        longitude,
+        latitude,
+        searchRadius
+    )
+        .then((parking) => { return res.json(parking); })
+        .catch((error) => { return res.status(500).json(error); });
+});
 
 const server = http.createServer(app);
 

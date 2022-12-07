@@ -398,3 +398,31 @@ exports.getAllParking = async () => {
         console.log(e.message);
     }
 }
+
+exports.getParking = async (
+    lotsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    searchRadius
+) => {
+
+    try {
+        
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, searchRadius)
+        console.log("ey: "+nearPositions)
+        const parking = await Parking.find()
+            .select({ "__v": 0})
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('parkingSpaces', lotsMin)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+            
+        return parking
+    } catch (e) {
+        console.log(e.message)
+    }
+}
