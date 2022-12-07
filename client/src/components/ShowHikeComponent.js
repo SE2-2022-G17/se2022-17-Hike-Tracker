@@ -35,6 +35,7 @@ function ShowHike(props) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
                 }
+                
             }).catch(function (error) {
                 console.log(error);
             })
@@ -209,9 +210,9 @@ function ShowHike(props) {
 
             {
                 //props.role === "localGuide" => shows form to link the end/start point to hut/parking
-                props.role === "localGuide" ? <>
+                props.role === "localGuide" && hike !== null ? <>
                 <br/><br/>
-                <ReferencePointsForm hikeId={id}/>
+                <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]}/>
                 </>
                 : <></>
             }
