@@ -161,4 +161,58 @@ describe('Test API for adding huts or parking as startPoint/arrivals', () => {
 
         expect(response.statusCode).to.equal(201);
     });
+
+    it('test wrong parameters as input',async()=>{
+        const token = localGuide.token;
+
+        const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
+        const parkHut = await Hut.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'));
+
+        const response = await request(app)
+        .put("/linkStartArrival")
+        .set('Authorization', "Bearer " + token)
+        .send({
+            point: "end",
+            reference: undefined,
+            id: parkHut._id,
+            hikeId: hike.id
+        });
+        expect(response.statusCode).to.equal(422);
+    });
+
+    it('test unauthorized acces',async()=>{
+        const token = -1;
+
+        const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
+        const parkHut = await Hut.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'));
+
+        const response = await request(app)
+        .put("/linkStartArrival")
+        .set('Authorization', "Bearer " + token)
+        .send({
+            point: "end",
+            reference: "parking",
+            id: parkHut._id,
+            hikeId: hike.id
+        });
+        expect(response.statusCode).to.equal(400);
+    });
+
+    it('test causing db error',async()=>{
+        const token = localGuide.token;
+
+        const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
+        const parkHut = true;
+
+        const response = await request(app)
+        .put("/linkStartArrival")
+        .set('Authorization', "Bearer " + token)
+        .send({
+            point: "end",
+            reference: "parking",
+            id: parkHut,
+            hikeId: hike.id
+        });
+        expect(response.statusCode).to.equal(500);
+    });
 });

@@ -283,9 +283,9 @@ app.post('/hike/linkhut', verifyUserToken, (req, res) => {
         .catch((error) => { res.status(400).json(error); })
 });
 
-app.put('/linkStartArrival', async (req, res) => {
+app.put('/linkStartArrival',verifyUserToken, async (req, res) => {
     try {
-        if(!req.body.point || !req.body.reference || !req.body.id || !req.body.hikeId)
+        if(!req || !req.body || !req.body.point || !req.body.reference || req.body.point!=="end" && req.body.point!=="start" || req.body.reference!=="parking" && req.body.reference!=="huts" || !req.body.id || !req.body.hikeId)
             return res.status(422).end();
         const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId)
         if (result) {
