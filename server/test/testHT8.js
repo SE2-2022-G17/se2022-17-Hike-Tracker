@@ -198,21 +198,4 @@ describe('Test API for adding huts or parking as startPoint/arrivals', () => {
         expect(response.statusCode).to.equal(400);
     });
 
-    it('test causing db error',async()=>{
-        const token = localGuide.token;
-
-        const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
-        const parkHut = true;
-
-        const response = await request(app)
-        .put("/linkStartArrival")
-        .set('Authorization', "Bearer " + token)
-        .send({
-            point: "end",
-            reference: "parking",
-            id: parkHut,
-            hikeId: hike.id
-        });
-        expect(response.statusCode).to.equal(500);
-    });
 });
