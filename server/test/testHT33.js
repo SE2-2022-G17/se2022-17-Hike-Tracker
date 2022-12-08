@@ -6,10 +6,13 @@ var chai = require('chai');
 var expect = chai.expect;
 const localGuide = require('./mocks/localGuideToken.js');
 const hiker = require('./mocks/hikerToken');
-
+const Hike = require('../models/Hike.js');
+const Position = require('../models/Position.js');
+const Difficulty = require('../constants/Difficulty');
 
 
 let mongoServer;
+const objectId = "0000000194e4c1e796231d9f"
 
 before(async () => {
     // if readyState is 0, mongoose is not connected
@@ -18,6 +21,34 @@ before(async () => {
         const mongoUri = mongoServer.getUri();
         await mongoose.connect(mongoUri);
     }
+
+    await Hike.deleteMany();
+
+    const startPosition = await Position.create({
+        "location.coordinates": [3, 5]
+    })
+
+    const endPosition = await Position.create({
+        "location.coordinates": [4, 6]
+    })
+
+
+    const hike = await Hike.create({
+        _id: new mongoose.Types.ObjectId(objectId),
+        title: 'prova',
+        expectedTime: 20,
+        difficulty: Difficulty.Hiker,
+        city: 'Torino',
+        province: 'Torino',
+        description: 'test',
+        track_file: "rocciamelone.gpx",
+        length: 2,
+        ascent: 5,
+        startPoint: startPosition._id,
+        endPoint: endPosition._id
+    });
+
+    await hike.save();
 });
 
 after(async () => {
@@ -116,5 +147,37 @@ describe('Test API to define reference points (US33)', () => {
             });
 
         expect(response.statusCode).to.equal(201);
+    });
+
+    it('test get trace from hike - unauthorized', async () => {
+
+        const response = await request(app)
+            .get("/hikes/" + undefined + "/trace")
+
+        expect(response.statusCode).to.equal(401);
+    });
+
+    it('test get trace from hike - non existent hike id', async () => {
+        const token = hiker.token;
+        const hikeId = "123456789fedcba987654321";
+
+        const response = await request(app)
+            .get("/hikes/" + hikeId + "/trace")
+            .set('Authorization', "Bearer " + token)
+
+        expect(response.statusCode).to.equal(404);
+    });
+
+    it('test get trace from hike - existent hike id', async () => {
+        const token = hiker.token;
+        const hikeId = objectId;
+
+        const response = await request(app)
+            .get("/hikes/" + hikeId + "/trace")
+            .set('Authorization', "Bearer " + token)
+
+        expect(response.body).to.be.an('array').that.is.not.empty;
+
+        expect(response.statusCode).to.equal(200);
     });
 });

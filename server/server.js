@@ -368,10 +368,7 @@ app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
     if (!user) {
         res.sendStatus(401);
     }
-    if (!hikeId) {
-        res.sendStatus(400);
-    }
-
+    
     dao.getHikeTrace(hikeId)
         .then((trace) => { res.json(trace); })
         .catch((error) => { res.status(error.status).json(error.description); });

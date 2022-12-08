@@ -450,15 +450,19 @@ exports.createReferencePoint = async (name, description, longitude, latitude) =>
 }
 
 exports.getHikeTrace = async (hikeId) => {
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw { description: "Hike not found", status: 404 }
+
 
     try {
-        const hike = await Hike.findById(hikeId);
-
         const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
         var gpx = new gpxParser()
         gpx.parse(file)
         return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
+
     } catch (e) {
-        throw { description: "Hike or trace not found", status: 404 };
+        throw { description: "Trace not found", status: 404 };
     }
 }
