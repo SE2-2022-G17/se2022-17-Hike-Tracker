@@ -333,6 +333,7 @@ app.get('/getParking', verifyUserToken, (req, res) => {
 
 
 app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
+    // #swagger.description = 'Creates a new reference point and associates it to the hike specified in the path'
     const hikeId = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
@@ -360,8 +361,12 @@ app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
 
 });
 
-//this endpoint returns an array of coordinates [(lng, lat), ...] which are part of the hike trace
 app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
+    // #swagger.description = 'Returns an array of coordinates that are part of the hike trace'
+    /* #swagger.responses[200] = {
+            description: 'Coordinates associated to this hike trace',
+            schema: [ {"lng": 9.69364, "lat": 39.99496} ]
+    } */
     const hikeId = req.params.id;
     const user = req.user; // this is received from verifyUserToken middleware
 

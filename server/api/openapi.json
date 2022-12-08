@@ -757,7 +757,7 @@
     },
     "/hikes/{id}/reference-points": {
       "post": {
-        "description": "",
+        "description": "Creates a new reference point and associates it to the hike specified in the path",
         "parameters": [
           {
             "name": "id",
@@ -816,7 +816,7 @@
     },
     "/hikes/{id}/trace": {
       "get": {
-        "description": "",
+        "description": "Returns an array of coordinates that are part of the hike trace",
         "parameters": [
           {
             "name": "id",
@@ -836,7 +836,51 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Coordinates associated to this hike trace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "lng": {
+                        "type": "number",
+                        "example": 9.69364
+                      },
+                      "lat": {
+                        "type": "number",
+                        "example": 39.99496
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "lng": {
+                        "type": "number",
+                        "example": 9.69364
+                      },
+                      "lat": {
+                        "type": "number",
+                        "example": 39.99496
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
