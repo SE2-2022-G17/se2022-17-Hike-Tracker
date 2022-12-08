@@ -360,6 +360,19 @@ app.post('/reference-points', verifyUserToken, async (req, res) => {
 
 });
 
+//this endpoint returns an array of coordinates [(lng, lat), ...] which are part of the hike trace
+app.get('/hikes/:id/trace', (req, res) => {
+    const hikeId = req.params.id;
+
+    if (!hikeId) {
+        res.sendStatus(400);
+    }
+
+    dao.getHikeTrace(hikeId)
+        .then((trace) => { res.json(trace); })
+        .catch((error) => { res.status(error.status).json(error.description); });
+});
+
 const server = http.createServer(app);
 
 
