@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
+const swaggerUi = require('swagger-ui-express');
+const openapiFile = require('./api/openapi.json');
 
 
 // init express
@@ -23,7 +25,7 @@ app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use(express.json());
-
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(openapiFile));
 
 /*** APIs ***/
 

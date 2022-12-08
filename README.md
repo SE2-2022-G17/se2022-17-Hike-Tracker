@@ -1,3 +1,8 @@
+## New!!
+### Now you can visualize our REST API.
+### After running the server go to http://localhost:3001/doc
+### To update the REST API run ``npm run swagger-autogen``
+#
 ## How to run the app:
 ### Run the server:
 - ``cd server``
