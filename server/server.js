@@ -64,8 +64,8 @@ app.get('/getHuts', verifyUserToken, (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
     let searchRadius = req.query.searchRadius
-    if(searchRadius==undefined)
-        searchRadius="40075";
+    if (searchRadius == undefined)
+        searchRadius = "40075";
     dao.getHuts(
         bedsMin,
         altitudeMin,
@@ -283,9 +283,9 @@ app.post('/hike/linkhut', verifyUserToken, (req, res) => {
         .catch((error) => { res.status(400).json(error); })
 });
 
-app.put('/linkStartArrival',verifyUserToken, async (req, res) => {
+app.put('/linkStartArrival', verifyUserToken, async (req, res) => {
     try {
-        if(!req || !req.body || !req.body.point || !req.body.reference || req.body.point!=="end" && req.body.point!=="start" || req.body.reference!=="parking" && req.body.reference!=="huts" || !req.body.id || !req.body.hikeId)
+        if (!req || !req.body || !req.body.point || !req.body.reference || req.body.point !== "end" && req.body.point !== "start" || req.body.reference !== "parking" && req.body.reference !== "huts" || !req.body.id || !req.body.hikeId)
             return res.status(422).end();
         const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId)
         if (result) {
@@ -315,8 +315,8 @@ app.get('/getParking', verifyUserToken, (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
     let searchRadius = req.query.searchRadius
-    if(searchRadius==undefined)
-        searchRadius="40075";
+    if (searchRadius == undefined)
+        searchRadius = "40075";
     dao.getParking(
         lotsMin,
         altitudeMin,
@@ -327,6 +327,37 @@ app.get('/getParking', verifyUserToken, (req, res) => {
     )
         .then((parking) => { return res.json(parking); })
         .catch((error) => { return res.status(500).json(error); });
+});
+
+
+app.post('/reference-points', verifyUserToken, async (req, res) => {
+    const name = req.body.name;
+    const description = req.body.description;
+    const user = req.user; // this is received from verifyUserToken middleware
+    const longitude = req.body.longitude;
+    const latitude = req.body.latitude;
+
+    if (user.role !== Type.localGuide) {
+        res.sendStatus(403);
+        return;
+    }
+
+    if (!longitude || !latitude || !name || !description) {
+        res.sendStatus(400);
+    }
+
+    try {
+        await dao.createReferencePoint(
+            name,
+            description,
+            longitude,
+            latitude,
+        );
+        res.sendStatus(201);
+    } catch (error) {
+        res.sendStatus(error.status);
+    }
+
 });
 
 const server = http.createServer(app);

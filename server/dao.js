@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const { prependOnceListener } = require('./models/Hike')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
+const Location = require('./models/Location');
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
@@ -67,18 +68,18 @@ exports.getHuts = async (
 ) => {
 
     try {
-        
+
         let nearPositions = await Position
             .find()
             .filterByDistance(longitude, latitude, searchRadius)
 
         const huts = await Hut.find()
-            .select({ "__v": 0})
+            .select({ "__v": 0 })
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            
+
         return huts
     } catch (e) {
         console.log(e.message)
@@ -108,7 +109,7 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
 
         await transporter.sendMail(mailOptions)
     }
-    
+
     const user = await User.create({
         firstName: firstName,
         lastName: lastName,
@@ -409,20 +410,41 @@ exports.getParking = async (
 ) => {
 
     try {
-        
+
         let nearPositions = await Position
             .find()
             .filterByDistance(longitude, latitude, searchRadius)
-        console.log("ey: "+nearPositions)
+        console.log("ey: " + nearPositions)
         const parking = await Parking.find()
-            .select({ "__v": 0})
+            .select({ "__v": 0 })
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('parkingSpaces', lotsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            
+
         return parking
     } catch (e) {
         console.log(e.message)
     }
+}
+
+exports.createReferencePoint = async (name, description, longitude, latitude) => {
+
+    if (!longitude || !latitude || !name || !description) {
+        throw { description: "wrong parameters", status: 400 };
+    }
+
+    const position = await Position.create({
+        "location.coordinates": [longitude, latitude]
+    });
+
+    const referencePoint = await Location.create({
+        name: name,
+        description: description,
+        point: position
+    });
+
+    referencePoint.save()
+    position.save()
+
 }
