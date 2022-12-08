@@ -48,8 +48,7 @@ exports.getVisitorHikes = async (
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
-
-
+        
         return hikes
 
     } catch (e) {
@@ -78,7 +77,7 @@ exports.getHuts = async (
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            
+        
         return huts
     } catch (e) {
         console.log(e.message)
@@ -350,6 +349,24 @@ exports.linkHutToHike = async (hutId, hike) => {
             });
     } catch (err) {
         return err;
+    }
+}
+
+exports.getHikeTrace = async (hikeId) => {
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw { description: "Hike not found", status: 404 }
+
+
+    try {
+        const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+        var gpx = new gpxParser()
+        gpx.parse(file)
+        return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
+
+    } catch (e) {
+        throw { description: "Trace not found", status: 404 };
     }
 }
 

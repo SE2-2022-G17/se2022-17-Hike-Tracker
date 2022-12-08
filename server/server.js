@@ -173,6 +173,31 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
     }
 });
 
+
+app.get('/hutsCloseTo/:id', async (req, res) => {
+    const hikeId = req.params.id;
+    let huts = [];
+
+    try{
+        const trace = await dao.getHikeTrace(hikeId);
+        for(let i=0;i<trace.length;i++){
+            const hutsNearPoint = await dao.getHuts(undefined,undefined,undefined,trace[i].lng,trace[i].lat,"5");
+            hutsNearPoint.forEach(hutNearPoint => {
+                const res = huts.find((hut) =>{ 
+                    return hutNearPoint._id.toString() === hut._id.toString();
+                });
+                if(res===undefined) {
+                    huts.push(hutNearPoint);
+                }
+            })   
+        }
+        res.json(huts);
+    }catch (err) {
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
 

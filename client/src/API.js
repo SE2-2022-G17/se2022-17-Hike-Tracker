@@ -64,6 +64,12 @@ async function logIn(credentials) {
     }
 }
 
+async function getHutsCloseToHike(hikeId) {
+    const response = await fetch(url + '/hutsCloseTo/' + hikeId)
+    const huts = await response.json()
+    return huts
+}
+
 async function getHut(hutId) {
     const response = await fetch(url + '/huts/hut/' + hutId)
     const hut = await response.json()
@@ -310,7 +316,7 @@ async function getAllParking(){
 }
 
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getParking};
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getParking, getHutsCloseToHike};
 
 export default API;
 
