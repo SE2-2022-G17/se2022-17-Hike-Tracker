@@ -8,9 +8,11 @@ function LinkHut(props) {
 
     const [hut, setHut] = useState("");
     const [hutsList, setHutsList] = useState([]);
+    const [searching,setSearching] = useState(false);
 
     useEffect(() => {
-        API.getAllHuts()
+        setSearching(true);
+        API.getHutsCloseToHike(props.hike._id)
             .then((huts) => {
                 if (props.hike.huts[0] !== null) {
                     props.hike.huts.forEach(id => {
@@ -18,6 +20,7 @@ function LinkHut(props) {
                     });
                 }
                 setHutsList(huts);
+                setSearching(false);
             })
             .catch(err => console.log(err))
         console.log(hutsList);
@@ -43,6 +46,11 @@ function LinkHut(props) {
                             <option value=""></option>
                             {
                                 hutsList.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
+                            }
+                            {
+                                searching ? 
+                                    <option value="">Searching huts...</option>
+                                :<></>
                             }
                         </Form.Select>
                     </Col>
