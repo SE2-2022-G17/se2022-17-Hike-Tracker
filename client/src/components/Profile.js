@@ -34,7 +34,19 @@ function ProfileModal(props) {
                 <p className="mb-0">Role</p>
               </div>
               <div className="col-sm-9">
-                <p className="text-muted mb-0">{loggedUser.role}</p>
+                <p className="text-muted mb-0">{
+                  loggedUser.role === "hiker"? "Hiker"
+                  :
+                  loggedUser.role === "friend"? "Friend"
+                  :
+                  loggedUser.role === "localGuide"? "Local guide"
+                  :
+                  loggedUser.role === "hutWorker"? "Hut worker"
+                  :
+                  loggedUser.role === "emergencyOperator"? "Emergency operator"
+                  :<></>
+
+                }</p>
               </div>
             </div>
             <hr />

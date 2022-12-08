@@ -91,7 +91,7 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
 
     if (process.env.NODE_ENV === "development") {
 
-        var transporter = nodemailer.createTransport({
+        let transporter = nodemailer.createTransport({
             service: "hotmail",
             auth: {
                 user: "se2g17@outlook.com",
@@ -99,7 +99,7 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
             }
         })
 
-        var mailOptions = {
+        let mailOptions = {
             from: "se2g17@outlook.com",
             to: email,
             subject: "Activation Code",
@@ -197,13 +197,13 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
 
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
-            var gpx = new gpxParser()
+            let gpx = new gpxParser()
             gpx.parse(content)
-            var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
-            var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
-            var points = gpx.tracks[0].points
-            var startPoint = points[0]
-            var endPoint = points[points.length - 1]
+            let length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            let points = gpx.tracks[0].points
+            let startPoint = points[0]
+            let endPoint = points[points.length - 1]
 
             startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
@@ -356,16 +356,22 @@ exports.linkHutToHike = async (hutId, hike) => {
 exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId) => {
     const updateHike = {};
     if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
-        point === "start" ?
-            reference === "huts" ?
+        if(point=="start"){
+            if(reference=="huts"){
                 updateHike.startPointHut_id = id
-                :
+            }
+            else{
                 updateHike.startPointParking_id = id
-            :
-            reference === "huts" ?
+            }
+        }
+        else{
+            if(reference=="huts"){
                 updateHike.endPointHut_id = id
-                :
+            }
+            else{
                 updateHike.endPointParking_id = id
+            }
+        }
         try {
             const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
                 if (err) {
