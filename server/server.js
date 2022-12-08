@@ -361,9 +361,13 @@ app.post('/reference-points', verifyUserToken, async (req, res) => {
 });
 
 //this endpoint returns an array of coordinates [(lng, lat), ...] which are part of the hike trace
-app.get('/hikes/:id/trace', (req, res) => {
+app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
     const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
 
+    if (!user) {
+        res.sendStatus(401);
+    }
     if (!hikeId) {
         res.sendStatus(400);
     }
