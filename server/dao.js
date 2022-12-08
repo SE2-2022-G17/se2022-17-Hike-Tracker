@@ -428,15 +428,22 @@ exports.getParking = async (
     }
 }
 
-exports.createReferencePoint = async (name, description, longitude, latitude) => {
+exports.createReferencePoint = async (hikeId, name, description, longitude, latitude) => {
 
-    if (!longitude || !latitude || !name || !description) {
+    if (!hikeId || !longitude || !latitude || !name || !description) {
         throw { description: "wrong parameters", status: 400 };
     }
+
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw { description: "Hike not found", status: 404 }
 
     const position = await Position.create({
         "location.coordinates": [longitude, latitude]
     });
+
+    hike.referencePoints.push(position._id);
 
     const referencePoint = await Location.create({
         name: name,
@@ -444,9 +451,9 @@ exports.createReferencePoint = async (name, description, longitude, latitude) =>
         point: position
     });
 
-    referencePoint.save()
-    position.save()
-
+    hike.save();
+    referencePoint.save();
+    position.save();
 }
 
 exports.getHikeTrace = async (hikeId) => {

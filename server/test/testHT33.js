@@ -62,7 +62,7 @@ describe('Test API to define reference points (US33)', () => {
     it('test create reference point - unauthorized', async () => {
 
         const response = await request(app)
-            .post("/reference-points")
+            .post("/hikes/" + objectId + "/reference-points")
             .send({
                 name: "fountain",
                 description: "beautiful fountain",
@@ -77,7 +77,7 @@ describe('Test API to define reference points (US33)', () => {
         const token = hiker.token;
 
         const response = await request(app)
-            .post("/reference-points")
+            .post("/hikes/" + objectId + "/reference-points")
             .set('Authorization', "Bearer " + token)
             .send({
                 name: "fountain",
@@ -93,7 +93,7 @@ describe('Test API to define reference points (US33)', () => {
         const token = localGuide.token;
 
         const response = await request(app)
-            .post("/reference-points")
+            .post("/hikes/" + objectId + "/reference-points")
             .set('Authorization', "Bearer " + token)
             .send({
                 description: "beautiful fountain",
@@ -108,7 +108,7 @@ describe('Test API to define reference points (US33)', () => {
         const token = localGuide.token;
 
         const response = await request(app)
-            .post("/reference-points")
+            .post("/hikes/" + objectId + "/reference-points")
             .set('Authorization', "Bearer " + token)
             .send({
                 name: "fountain",
@@ -123,7 +123,7 @@ describe('Test API to define reference points (US33)', () => {
         const token = localGuide.token;
 
         const response = await request(app)
-            .post("/reference-points")
+            .post("/hikes/" + objectId + "/reference-points")
             .set('Authorization', "Bearer " + token)
             .send({
                 name: "fountain",
@@ -133,11 +133,12 @@ describe('Test API to define reference points (US33)', () => {
         expect(response.statusCode).to.equal(400);
     })
 
-    it('test create correct reference point', async () => {
+    it('test create reference point - non existent hike id', async () => {
         const token = localGuide.token;
+        const hikeId = "123456789fedcba987654321";
 
         const response = await request(app)
-            .post("/reference-points")
+            .post("/hikes/" + hikeId + "/reference-points")
             .set('Authorization', "Bearer " + token)
             .send({
                 name: "fountain",
@@ -145,6 +146,25 @@ describe('Test API to define reference points (US33)', () => {
                 longitude: 7.662,
                 latitude: 45.062,
             });
+
+        expect(response.statusCode).to.equal(404);
+    });
+
+    it('test create correct reference point', async () => {
+        const token = localGuide.token;
+
+        const response = await request(app)
+            .post("/hikes/" + objectId + "/reference-points")
+            .set('Authorization', "Bearer " + token)
+            .send({
+                name: "fountain",
+                description: "beautiful fountain",
+                longitude: 7.662,
+                latitude: 45.062,
+            });
+
+        const hike = await Hike.findById(objectId);
+        expect(hike.referencePoints).to.be.an('array').that.is.not.empty;
 
         expect(response.statusCode).to.equal(201);
     });

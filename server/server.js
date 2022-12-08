@@ -330,7 +330,8 @@ app.get('/getParking', verifyUserToken, (req, res) => {
 });
 
 
-app.post('/reference-points', verifyUserToken, async (req, res) => {
+app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
     const user = req.user; // this is received from verifyUserToken middleware
@@ -342,12 +343,9 @@ app.post('/reference-points', verifyUserToken, async (req, res) => {
         return;
     }
 
-    if (!longitude || !latitude || !name || !description) {
-        res.sendStatus(400);
-    }
-
     try {
         await dao.createReferencePoint(
+            hikeId,
             name,
             description,
             longitude,
@@ -368,7 +366,7 @@ app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
     if (!user) {
         res.sendStatus(401);
     }
-    
+
     dao.getHikeTrace(hikeId)
         .then((trace) => { res.json(trace); })
         .catch((error) => { res.status(error.status).json(error.description); });
