@@ -5,6 +5,10 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Button from 'react-bootstrap/Button';
 import UserType from '../models/UserType';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChartLine, faArrowRightFromBracket, faInfo} from "@fortawesome/free-solid-svg-icons";
+import {Card} from "react-bootstrap";
+import React from "react";
 
 
 function ResponsiveNavBar(props) {
@@ -68,16 +72,24 @@ function ResponsiveNavBar(props) {
                                             <NavDropdown
                                                 title="Account"
                                                 id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                                align={'end'}
                                             >
                                                 <NavDropdown.Item
                                                     onClick={() => props.setModalShow(true)}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faInfo} />
                                                     User Info
+                                                </NavDropdown.Item>
+                                                <NavDropdown.Item
+                                                    onClick={() => props.setPerformanceModal(true)}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faChartLine} />
+                                                    Performance
                                                 </NavDropdown.Item>
                                                 <NavDropdown.Item 
                                                     href="/" 
                                                     onClick={props.doLogOut}
                                                     className="danger"
                                                 >
+                                                    <FontAwesomeIcon className={'me-1'} icon={faArrowRightFromBracket} />
                                                     Logout
                                                 </NavDropdown.Item>
                                             </NavDropdown>

@@ -32,6 +32,14 @@ const userSchema = new mongoose.Schema({
     },
     activationCode: {
         type: String
+    },
+    preferenceAltitude: {
+        type: Number,
+        default: null
+    },
+    preferenceDuration: {
+        type: Number,
+        default: null
     }
 })
 

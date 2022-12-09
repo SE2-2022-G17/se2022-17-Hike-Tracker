@@ -46,6 +46,27 @@ async function signUp(credentials) {
     }
 }
 
+async function getUserByEmail(email, token) {
+    let response = await fetch('/user?' + new URLSearchParams({
+        email: email
+    }),
+        {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        }
+    });
+
+    if (response.ok) {
+        const user = await response.json();
+        return user;
+    } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+    }
+}
+
 async function logIn(credentials) {
     let response = await fetch(new URL('/user/login', url), {
         method: 'POST',
@@ -174,6 +195,19 @@ async function createParking(name, description, parkingSpaces, token, latitude, 
     });
     const resp = await response;
     return resp.status;
+}
+
+async function storePerformance(data, token) {
+    const response = fetch(url + '/user/store-performance', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+    });
+    return (await response).json();
 }
 
 async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
@@ -310,7 +344,9 @@ async function getAllParking(){
 }
 
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getParking};
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike,
+    getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,
+    getAllParking, linkHut, getParking, storePerformance, getUserByEmail};
 
 export default API;
 
