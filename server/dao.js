@@ -191,7 +191,7 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
     let startPosition = undefined
     let endPosition = undefined
     try {
-
+        console.log(track)
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
 
@@ -211,31 +211,33 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
+        
+
+            const hike = new Hike({
+                title: title,
+                length: length,
+                expectedTime: time,
+                ascent: ascent,
+                difficulty: difficulty,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                description: description,
+                city: city,
+                province: province,
+                track_file: track !== undefined ? track.originalname : null
+            })
+
+            hike.save((err) => {
+                if (err) {
+                    console.log(err);
+                    throw new TypeError(JSON.stringify(err));
+                }
+            });
+            return hike._id;
         }
-
-        const hike = new Hike({
-            title: title,
-            length: length,
-            expectedTime: time,
-            ascent: ascent,
-            difficulty: difficulty,
-            startPoint: startPosition._id,
-            endPoint: endPosition._id,
-            description: description,
-            city: city,
-            province: province,
-            track_file: track !== undefined ? track.originalname : null
-        })
-
-        hike.save((err) => {
-            if (err) {
-                console.log(err);
-                throw new TypeError(JSON.stringify(err));
-            }
-        });
-        return hike._id;
+        throw new TypeError("No track inserted!");
     } catch (e) {
-        throw 400;
+        throw new TypeError(e);
     }
 }
 
