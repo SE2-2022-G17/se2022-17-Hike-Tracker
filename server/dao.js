@@ -12,8 +12,8 @@ const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
+const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
-const crypto = require('crypto');
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
@@ -88,7 +88,7 @@ exports.getHuts = async (
 exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
-
+    
     if (process.env.NODE_ENV === "development") {
 
         let transporter = nodemailer.createTransport({
@@ -246,9 +246,8 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
 /* Util function to generate random 6 digit activation code */
 function generateActivationCode(length = 6) {
     let activationCode = ""
-    const randomArray = new Uint8Array(1);
     for (let i = 0; i < length; i++) {
-        crypto.getRandomValues(randomArray);
+        const randomArray = randomBytes(1);
         activationCode += (Math.floor( (randomArray[0] * 9)/255) + 1)
     }
 
