@@ -23,8 +23,7 @@ function LinkHut(props) {
                 setSearching(false);
             })
             .catch(err => console.log(err))
-        console.log(hutsList);
-    }, []);
+    }, [props.hike._id,props.hike.huts.length]);
 
 
     function handleConfirm() {
