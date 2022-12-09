@@ -125,12 +125,12 @@ exports.loginUser = async (email, password) => {
     const user = await User.findOne({ email: email })
 
     if (user === null)
-        throw 404
-
+        throw new TypeError(404)
+    console.error(password,user)
     const result = await bcrypt.compare(password, user.hash)
 
     if (result === false)
-        throw 401
+        throw new TypeError(401)
 
     const token = jwt.sign({
         'fullName': user.firstName + " " + user.lastName,
@@ -155,10 +155,10 @@ exports.validateUser = async (email, activationCode) => {
     const user = await User.findOne({ email: email })
 
     if (user === null)
-        throw 404
+        throw new TypeError(404)
 
     if (user.activationCode !== activationCode)
-        throw 404
+        throw new TypeError(404)
 
     user.active = validationType.mailOnly; //activate account if codes are equal
     await user.save()
@@ -312,7 +312,7 @@ exports.createHut = async (
     website
 ) => {
     if (name === undefined || description === undefined || phone === undefined || email === undefined)
-        throw 400
+        throw new TypeError(400)
 
     const position = await Position.create({
         "location.coordinates": [longitude, latitude]
@@ -336,7 +336,7 @@ exports.createHut = async (
 exports.linkHutToHike = async (hutId, hike) => {
 
     if (hutId === undefined || hike === undefined)
-        throw 400;
+        throw new TypeError(400);
 
     hike.huts.push(hutId);
     try {
@@ -356,17 +356,17 @@ exports.getHikeTrace = async (hikeId) => {
     const hike = await Hike.findById(hikeId);
 
     if (hike === null)
-        throw { description: "Hike not found", status: 404 }
+        throw new TypeError({ description: "Hike not found", status: 404 })
 
 
     try {
         const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
-        var gpx = new gpxParser()
+        const gpx = new gpxParser()
         gpx.parse(file)
         return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
 
     } catch (e) {
-        throw { description: "Trace not found", status: 404 };
+        throw new TypeError({ description: "Trace not found", status: 404 });
     }
 }
 
