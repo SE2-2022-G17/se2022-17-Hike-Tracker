@@ -22,7 +22,7 @@ function ShowHike(props) {
     const [hike, setHike] = useState(null);
     const [lat, setLat] = useState(0);
     const [lng, setLng] = useState(0);
-    const [zoom, setZoom] = useState(11);
+    const zoom = 11;
     const [linkHut, setLinkHut] = useState(false);
     let { id } = useParams();
 

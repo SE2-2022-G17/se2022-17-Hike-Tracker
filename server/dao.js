@@ -12,6 +12,7 @@ const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
+const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -87,7 +88,7 @@ exports.getHuts = async (
 exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
-
+    
     if (process.env.NODE_ENV === "development") {
 
         let transporter = nodemailer.createTransport({
@@ -190,11 +191,12 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
 exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
     let startPosition = undefined
     let endPosition = undefined
+    
     try {
 
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
-
+            
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
             let gpx = new gpxParser()
             gpx.parse(content)
@@ -203,7 +205,7 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             let points = gpx.tracks[0].points
             let startPoint = points[0]
             let endPoint = points[points.length - 1]
-
+            
             startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
             })
@@ -211,40 +213,42 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
+        
+        
+            const hike = new Hike({
+                title: title,
+                length: length,
+                expectedTime: time,
+                ascent: ascent,
+                difficulty: difficulty,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                description: description,
+                city: city,
+                province: province,
+                track_file: track !== undefined ? track.originalname : null
+            })
+            
+            hike.save((err) => {
+                if (err) {
+                    console.log(err);
+                    throw new TypeError(JSON.stringify(err));
+                }
+            });
+            return hike._id;
         }
-
-        const hike = new Hike({
-            title: title,
-            length: length,
-            expectedTime: time,
-            ascent: ascent,
-            difficulty: difficulty,
-            startPoint: startPosition._id,
-            endPoint: endPosition._id,
-            description: description,
-            city: city,
-            province: province,
-            track_file: track !== undefined ? track.originalname : null
-        })
-
-        hike.save((err) => {
-            if (err) {
-                console.log(err);
-                throw new TypeError(JSON.stringify(err));
-            }
-        });
-        return hike._id;
+        throw new TypeError(500);
     } catch (e) {
-        throw 400;
+        throw new TypeError(400);
     }
 }
 
 /* Util function to generate random 6 digit activation code */
 function generateActivationCode(length = 6) {
     let activationCode = ""
-
     for (let i = 0; i < length; i++) {
-        activationCode += (Math.floor(Math.random() * 9) + 1)
+        const randomArray = randomBytes(1);
+        activationCode += (Math.floor( (randomArray[0] * 9)/255) + 1)
     }
 
     return activationCode

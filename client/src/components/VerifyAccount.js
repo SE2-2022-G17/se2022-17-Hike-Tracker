@@ -16,7 +16,7 @@ function VerifyAccount(){
 
         console.log(email);
         // validation that forms are not empty
-        if (code == "") {
+        if (!code) {
             setValid(false);
             setMessageVisible(true);
         }
@@ -24,7 +24,7 @@ function VerifyAccount(){
             setValid(true);
             API.validateEmail(email,code)
             .then((response)=>{
-                if(response=='OK'){
+                if(response==='OK'){
                     setMessageVisible(true);
                     setValid(true);
                 }
