@@ -12,6 +12,7 @@ import LinkHut from './LinkHut';
 import API from "../API";
 import ReferencePointsForm from "./ReferencePointsForm";
 import Accordion from 'react-bootstrap/Accordion';
+import AddReferencePoint from "./AddReferencePoint";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -215,7 +216,7 @@ function ShowHike(props) {
                     <Accordion.Item eventKey="2">
                         <Accordion.Header>Add reference point to this hike</Accordion.Header>
                         <Accordion.Body>
-                            <LinkHut hike={hike} />
+                            <AddReferencePoint hike={hike} />
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
