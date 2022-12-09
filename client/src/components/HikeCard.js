@@ -23,7 +23,7 @@ function HikeCard(props) {
                     </Card.Text>
                     <Row>
                         <Col className="hike-detail" lg={2}>
-                            <img src={DistanceIcon} className="feat-icon"/>
+                            <img src={DistanceIcon} className="feat-icon" alt=""/>
                             <p className="hike-feature">{hike.length + " km"}</p>
                         </Col>
                         <Col className="hike-detail" lg={2}>

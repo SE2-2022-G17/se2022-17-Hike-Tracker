@@ -15,7 +15,7 @@ function VerCard(props){
 
         // validation that forms are not empty
         
-        if (code == "") {
+        if (!code) {
             setValid(false);
             setMessageVisible(true);
         }
@@ -23,7 +23,7 @@ function VerCard(props){
             setValid(true);
             API.validateEmail(props.email,code)
             .then((response)=>{
-                if(response=='OK'){
+                if(response==='OK'){
                     props.setEmailIsValidated(true);
                     setMessageVisible(true);
                     setValid(true);

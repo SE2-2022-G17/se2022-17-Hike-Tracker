@@ -78,7 +78,7 @@ app.get('/getHuts', verifyUserToken, (req, res) => {
         .catch((error) => { return res.status(500).json(error); });
 });
 
-app.post('/user/register', (req, res) => {
+app.post('/user/register', async (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const email = req.body.email;
@@ -86,8 +86,8 @@ app.post('/user/register', (req, res) => {
     const role = req.body.role;
 
     return dao.registerUser(firstName, lastName, email, password, role)
-        .then(() => { res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); });
+        .then(() => {return res.status(201).end(); })
+        .catch((error) => {console.log(error); return res.status(400).json(error); });
 });
 
 app.post('/user/validateEmail', (req, res) => {
@@ -95,8 +95,8 @@ app.post('/user/validateEmail', (req, res) => {
     const verificationCode = req.body.verificationCode;
 
     return dao.validateUser(email, verificationCode)
-        .then(() => { res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); })
+        .then(() => {return res.status(201).end(); })
+        .catch((error) => {return res.status(400).json(error); })
 });
 
 app.post('/user/login', (req, res) => {
@@ -147,7 +147,10 @@ async function verifyUserToken(req, res, next) {
     }
 };
 
-const upload = multer();
+const upload = multer({
+    limits: {
+        fileSize: 8000000 // Compliant: 8MB
+ }});
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
