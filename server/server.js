@@ -177,7 +177,6 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
 app.get('/hutsCloseTo/:id', async (req, res) => {
     const hikeId = req.params.id;
     let huts = [];
-
     try{
         const trace = await dao.getHikeTrace(hikeId);
         for(let i=0;i<trace.length;i++){
