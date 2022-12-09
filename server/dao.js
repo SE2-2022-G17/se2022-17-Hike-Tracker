@@ -237,9 +237,9 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             });
             return hike._id;
         }
-        throw 500;
+        throw new TypeError(500);
     } catch (e) {
-        throw 400;
+        throw new TypeError(400);
     }
 }
 
