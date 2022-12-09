@@ -3,9 +3,8 @@ import Utils from '../Utils';
 import Button from "react-bootstrap/Button";
 import React, {useState} from "react";
 import {Form, Alert} from "react-bootstrap";
-import {faChartLine, faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import API from "../API";
 
 function ProfileModal(props) {
   let loggedUser = undefined
@@ -95,8 +94,8 @@ function PerformanceModal(props) {
 
     let Save = () => {
 
-      if (altitude !== '' && altitude !== 0 &&
-          duration !== '' && duration !== 0)
+      if (altitude !== '' && altitude !== 0 && altitude !== '0' &&
+          duration !== '' && duration !== 0 && duration !== '0')
       {
         const data = {
           altitude: altitude,
@@ -105,23 +104,26 @@ function PerformanceModal(props) {
 
         const result = props.SavePreferenceUser(data);
         result.then(res => {
-          if (res)
+          if (res) {
             setShowAlert(true);
+            setShowType(type.show);
+          }
         });
       }
     }
 
+    if (showAlert)
+      setTimeout(() => setShowAlert(false), 2000)
+
     let preferenceDuration = props.user.preferenceDuration;
     let preferenceAltitude = props.user.preferenceAltitude;
     let button = '', body = '', alert = '';
-    if (preferenceDuration === undefined && preferenceAltitude === undefined) {
-      button = <Button onClick={() => setShowType(type.create)}>Add parameters</Button>
-    }
 
     if (showAlert)
       alert = <Alert show={showAlert} onClose={() => setShowAlert(false)} key={'success'} variant={'success'} dismissible>Saved</Alert>
 
-    if ( showType === type.notSet && ( preferenceDuration !== undefined || preferenceAltitude !== undefined ) ) {
+    if ( showType === type.notSet && ( validateValue(preferenceAltitude) || validateValue(preferenceDuration) ) ) {
+
       setShowType(type.show);
       setDuration(preferenceDuration)
       setAltitude(preferenceAltitude)
@@ -181,6 +183,7 @@ function PerformanceModal(props) {
       body = <div className={'text-center text-muted'}>
         <FontAwesomeIcon className={'me-1'} icon={faMagnifyingGlass} />Not set
       </div>
+      button = <Button onClick={() => setShowType(type.create)}>Add parameters</Button>
     }
 
       return (
@@ -205,6 +208,11 @@ function PerformanceModal(props) {
         </Modal>
     );
   }
+}
+
+function validateValue(value)
+{
+  return (value !== undefined && value !== null);
 }
 
 export { ProfileModal, PerformanceModal }
