@@ -147,7 +147,10 @@ async function verifyUserToken(req, res, next) {
     }
 };
 
-const upload = multer();
+const upload = multer({
+    limits: {
+        fileSize: 8000000 // Compliant: 8MB
+ }});
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
