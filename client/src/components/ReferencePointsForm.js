@@ -16,8 +16,8 @@ function ReferencePointsForm(props){
     }
 
     return <>
-    <Form style={{border: '2px solid rgba(0, 0, 0, 0.10)'}} className="block-example mb-0 form-border form-padding" onSubmit={handleSubmit}>
-        <Form.Group className="mb-3 normal-padding-form" as={Row}>
+    <Form style={{border: '1px solid rgba(0, 0, 0, 0.10)'}} className="block-example mb-2 form-border form-padding" onSubmit={handleSubmit}>
+        <Form.Group className="m-3" as={Row}>
             <Col lg={3}>
                 <Form.Label>Do you want to link a reference point to:</Form.Label>
             </Col>
@@ -31,7 +31,7 @@ function ReferencePointsForm(props){
         </Form.Group>
         {
             pointOpt ? <>
-                <Form.Group className="normal-padding-form">
+                <Form.Group className="m-3">
                 <Form.Label>Do you want to insert:</Form.Label>
                 <Form.Select onChange={event => setReferenceOpt(event.target.value)}>
                     <option value="huts">huts</option>
@@ -73,7 +73,7 @@ function LocationForm(props){
     },[locOpt.length, locOpt[0]])
 
     return <>
-        <Form.Group className="normal-padding-form">
+        <Form.Group className="m-3">
             <Form.Label>
                 Select the {props.type==="hut" ? "hut" : "parking"}:
             </Form.Label>

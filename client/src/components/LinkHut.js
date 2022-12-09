@@ -28,14 +28,14 @@ function LinkHut(props) {
         if (hut !== "") {
             const authToken = localStorage.getItem('token');
             API.linkHut(hut, props.hike, authToken)
-                .then((res) => { console.log(res); props.setShow(false); })
+                .then((res) => { console.log(res); setHut("")})
                 .catch(err => console.log(err))
         }
     }
 
     return (
         <>
-            <Form style={{ border: '2px solid rgba(0, 0, 0, 0.10)' }} className="block-example m-3 form-border form-padding">
+            <Form style={{ border: '1px solid rgba(0, 0, 0, 0.10)' }} className="block-example m-2 form-border form-padding">
                 <Form.Group as={Row} className="m-3">
                     <Form.Label column sm="3">Which hut do you want to link?</Form.Label>
                     <Col sm="9">
