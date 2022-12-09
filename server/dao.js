@@ -126,7 +126,6 @@ exports.loginUser = async (email, password) => {
 
     if (user === null)
         throw new TypeError(404)
-    console.error(password,user)
     const result = await bcrypt.compare(password, user.hash)
 
     if (result === false)
@@ -191,7 +190,6 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
     let startPosition = undefined
     let endPosition = undefined
     try {
-        console.log(track)
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
 
