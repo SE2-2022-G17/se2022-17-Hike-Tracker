@@ -9,6 +9,8 @@ function LinkHut(props) {
     const [hut, setHut] = useState("");
     const [hutsList, setHutsList] = useState([]);
     const [searching,setSearching] = useState(false);
+    const [hutsFilter,setHutsFilter] = useState("");
+    const [hutsFiltered,setHutsFiltered] = useState([]);
 
     useEffect(() => {
         setSearching(true);
@@ -35,24 +37,48 @@ function LinkHut(props) {
         }
     }
 
+    useEffect(()=>{
+        setHutsFiltered(hutsList.filter((hut)=>hut.name.toLowerCase()===hutsFilter.toLowerCase()));
+    },[hutsFilter]);
+
     return (
         <>
             <Form style={{ border: '2px solid rgba(0, 0, 0, 0.10)' }} className="block-example m-3 form-border form-padding">
                 <Form.Group as={Row} className="m-3">
+                    <Row>
                     <Form.Label column sm="3">Which hut do you want to link?</Form.Label>
                     <Col sm="9">
                         <Form.Select onChange={event => setHut(event.target.value)}>
                             <option value=""></option>
                             {
-                                hutsList.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
+                                hutsFilter === "" ?
+                                    hutsList.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
+                                    :
+                                    hutsFiltered.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
                             }
                             {
                                 searching ? 
-                                    <option value="">Searching huts...</option>
+                                    <option value="" disabled>Searching huts...</option>
+                                :
+                                hutsList.length === 0 ? 
+                                    <option value="" disabled>No huts found.</option>
                                 :<></>
                             }
                         </Form.Select>
                     </Col>
+                    </Row>
+                    <Row>
+                    <Form.Label column sm="3">Filter search by hut name: </Form.Label> 
+                        <Col sm="4">
+                            <Form.Control
+                                    type="text"
+                                    value={hutsFilter}
+                                    onChange={(ev) => {
+                                        setHutsFilter(ev.target.value.trim()); 
+                                    }}
+                                />
+                        </Col>
+                    </Row>
                 </Form.Group>
                 <Row className="m-3">
                     <Col className="text-center">
