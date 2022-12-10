@@ -76,9 +76,21 @@ function PerformanceModal(props) {
     edit: 4,
   };
 
-  const [showType, setShowType] = useState(type.notSet);
-  const [duration, setDuration] = useState('');
-  const [altitude, setAltitude] = useState('');
+  let defaultShowType = type.notSet;
+  let preferenceDuration = '';
+  let preferenceAltitude = '';
+
+  if (validateValue(props.user)) {
+    if ( defaultShowType === type.notSet && ( validateValue(props.user.preferenceDuration) || validateValue(props.user.preferenceAltitude) ) ) {
+      defaultShowType = type.show;
+      preferenceDuration = props.user.preferenceDuration;
+      preferenceAltitude = props.user.preferenceAltitude;
+    }
+  }
+
+  const [showType, setShowType] = useState(defaultShowType);
+  const [duration, setDuration] = useState(preferenceDuration);
+  const [altitude, setAltitude] = useState(preferenceAltitude);
   const [showAlert, setShowAlert] = useState(false);
 
   const onHide = () => {
@@ -115,19 +127,10 @@ function PerformanceModal(props) {
     if (showAlert)
       setTimeout(() => setShowAlert(false), 2000)
 
-    let preferenceDuration = props.user.preferenceDuration;
-    let preferenceAltitude = props.user.preferenceAltitude;
     let button = '', body = '', alert = '';
 
     if (showAlert)
       alert = <Alert show={showAlert} onClose={() => setShowAlert(false)} key={'success'} variant={'success'} dismissible>Saved</Alert>
-
-    if ( showType === type.notSet && ( validateValue(preferenceAltitude) || validateValue(preferenceDuration) ) ) {
-
-      setShowType(type.show);
-      setDuration(preferenceDuration)
-      setAltitude(preferenceAltitude)
-    }
 
     if (showType === type.create || showType === type.edit)
       button = <>
