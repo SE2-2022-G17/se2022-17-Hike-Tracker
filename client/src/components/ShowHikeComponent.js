@@ -35,7 +35,7 @@ function ShowHike(props) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
                 }
-                
+
             }).catch(function (error) {
                 console.log(error);
             })
@@ -134,6 +134,21 @@ function ShowHike(props) {
         }
     });
 
+    let linkHutBlock = '';
+
+    //only localguide can link hut to a hike, check if this user created this hike
+    if (props.role === "localGuide" && linkHut === false && props.user !== null && hike !== null &&
+        hike.authorId === props.user._id ) {
+        linkHutBlock = <Row className="m-3">
+                        <Col className="text-center">
+                            <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
+                        </Col>
+                    </Row>
+    }
+
+
+    console.log(hike, props.user)
+
     return (
         <Container>
             <h1 className={'my-2'}>{hike !== null ? hike.title : ''}</h1>
@@ -194,15 +209,7 @@ function ShowHike(props) {
                 </Col>
             </Row>
             {
-                //only localguide can link hut to a hike
-                props.role === "localGuide" && linkHut === false ? <>
-                    <Row className="m-3">
-                        <Col className="text-center">
-                            <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
-                        </Col>
-                    </Row>
-                </>
-                    : <></>
+                linkHutBlock
             }
             {linkHut === true ?
                 <LinkHut hike={hike} setShow={setLinkHut} />

@@ -151,6 +151,7 @@ async function verifyUserToken(req, res, next) {
         req.user = decodedUser;
         next();
     } catch (err) {
+        console.log(err);
         res.status(400).send("Invalid token.");
     }
 };
@@ -162,7 +163,8 @@ const upload = multer({
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province);
+        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file,
+            req.body.city, req.body.province, req.body.user);
         return res.status(201).end();
     } catch (err) {
         console.log(err);
@@ -208,7 +210,7 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
 app.get('/user', verifyUserToken, (req, res) => {
     dao.getUserByEmail(req.user.email)
         .then((user) => {
-            console.log(user); res.json(user); })
+             res.json(user); })
         .catch((error) => { res.status(500).json(error); });
 });
 

@@ -77,7 +77,8 @@ function MainApp() {
           navigate('/verifyAccount/' + payload.email);
         }
         else {
-          setUser(user);
+          console.log(user.user);
+          setUser(user.user);
           localStorage.setItem('token', user.token);
           if ((payload.role === Type.platformManager
             || payload.role === Type.emergencyOperator)
@@ -173,9 +174,9 @@ function MainApp() {
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/localGuide" element={<LocalGuide user={user} />}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
-        <Route path="/hiker/hikes/:id" element={<ShowHike role={role}/>} />
+        <Route path="/hiker/hikes/:id" element={<ShowHike role={role} user={user}/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
         <Route path="/parking/create" element={<CreateParking />}/>
         <Route path="/huts/create" element={<CreateHut />} />

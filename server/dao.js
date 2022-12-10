@@ -145,7 +145,8 @@ exports.loginUser = async (email, password) => {
         'lastName': user.lastName,
         'email': user.email,
         'role': user.role,
-        'active': user.active
+        'active': user.active,
+        '_id': user._id
     }
 
     return { token: token, user: res }
@@ -201,10 +202,10 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
     return parking._id;
 }
 
-exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
+exports.saveNewHike = async (title, time, difficulty, description, track, city, province, userId) => {
     let startPosition = undefined
     let endPosition = undefined
-    
+
     try {
 
         if (track) {
@@ -226,8 +227,7 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
-        
-        
+
             const hike = new Hike({
                 title: title,
                 length: length,
@@ -239,19 +239,24 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
                 description: description,
                 city: city,
                 province: province,
-                track_file: track !== undefined ? track.originalname : null
+                track_file: track !== undefined ? track.originalname : null,
+                authorId: userId
             })
-            
-            hike.save((err) => {
+
+            hike.save(function (err, hike) {
+                console.log(err);
                 if (err) {
                     console.log(err);
                     throw new TypeError(JSON.stringify(err));
                 }
+                else
+                    return hike._id;
             });
             return hike._id;
         }
         throw new TypeError(500);
     } catch (e) {
+        console.log(e);
         throw new TypeError(400);
     }
 }

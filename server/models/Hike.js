@@ -41,7 +41,11 @@ const hikeSchema = new mongoose.Schema({
     city: String,
     province: String,
     description: String,
-    track_file: String
+    track_file: String,
+    authorId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }
 })
 
 hikeSchema.query.filterByDifficulty = function (difficulty) {
