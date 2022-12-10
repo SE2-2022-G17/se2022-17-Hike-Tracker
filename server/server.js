@@ -157,12 +157,12 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
         await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province);
         return res.status(201).end();
     } catch (err) {
-        console.log(err);
         return res.status(500).json(err);
     }
 });
 
 app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
+    
     try {
         await dao.saveNewParking(req.body.name,
             req.body.description,

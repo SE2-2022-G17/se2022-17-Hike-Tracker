@@ -190,11 +190,9 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
 exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
     let startPosition = undefined
     let endPosition = undefined
-    
     try {
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
-            
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
             let gpx = new gpxParser()
             gpx.parse(content)
@@ -237,7 +235,6 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
         throw new TypeError("No track inserted!");
     } catch (e) {
         throw new TypeError(e);
-
     }
 }
 
@@ -266,10 +263,10 @@ exports.getHike = async (id) => {
                 return doc;
             })
             .catch(err => {
-                console.log(err);
+                throw new TypeError(err);
             });
     } catch (e) {
-        console.log(e.message)
+        throw new TypeError(e);
     }
 }
 
