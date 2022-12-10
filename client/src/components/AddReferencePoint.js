@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import API from "../API";
-import MapPicker from './MapPicker';
-import Modal from 'react-bootstrap/Modal';
+import ReferencePointPicker from './ReferencePointPicker';
 
-import { GeoAlt } from 'react-bootstrap-icons';
 
 //Link hut to a hike
 //props: hikeId -> the id of the hike
 function AddReferencePoint(props) {
-
-    const polito = {
-        lng: "7.65991",
-        lat: "45.06355"
-    }
 
     const [name, setName] = useState('');
 
@@ -22,21 +15,6 @@ function AddReferencePoint(props) {
     const [hutsList, setHutsList] = useState([]);
     const [longitude, setLongitude] = useState("");
     const [latitude, setLatitude] = useState("");
-
-    useEffect(() => {
-        API.getAllHuts()
-            .then((huts) => {
-                if (props.hike.huts[0] !== null) {
-                    props.hike.huts.forEach(id => {
-                        huts = huts.filter((h) => h._id !== id);
-                    });
-                }
-                setHutsList(huts);
-            })
-            .catch(err => console.log(err))
-        console.log(hutsList);
-    }, []);
-
 
     function handleConfirm() {
         if (hut !== "") {
@@ -69,26 +47,15 @@ function AddReferencePoint(props) {
                 <Form.Group as={Row} className="m-3">
                     <Form.Label column sm="3"> Select a point from map: </Form.Label>
                     <Col sm="9">
-                        <MapPicker
-                            lng={longitude === "" ? polito.lng : longitude}
+                        <ReferencePointPicker
+                            lng={longitude}
                             setLng={setLongitude}
-                            lat={latitude === "" ? polito.lat : latitude}
+                            lat={latitude}
                             setLat={setLatitude}
+                            id={props.id}
                         />
                     </Col>
                 </Form.Group>
-{
-              /*  <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="3" >Latitude:</Form.Label>
-                    <Col sm="1">
-                        <Form.Control value={latitude} readOnly />
-                    </Col>
-                    <Form.Label column sm="3" >Longitude:</Form.Label>
-                    <Col sm="1">
-                        <Form.Control value={longitude} readOnly />
-                    </Col>
-                </Form.Group> */
-}
                 <Row className="m-3">
                     <Col className="text-center">
                         <Button variant="outline-dark" onClick={() => handleConfirm()} disabled={hut === "" ? true : false}>Confirm</Button>

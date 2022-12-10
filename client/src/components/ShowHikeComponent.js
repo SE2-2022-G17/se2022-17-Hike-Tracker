@@ -216,7 +216,7 @@ function ShowHike(props) {
                     <Accordion.Item eventKey="2">
                         <Accordion.Header>Add reference point to this hike</Accordion.Header>
                         <Accordion.Body>
-                            <AddReferencePoint hike={hike} />
+                            <AddReferencePoint hike={hike} id={id}/>
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
