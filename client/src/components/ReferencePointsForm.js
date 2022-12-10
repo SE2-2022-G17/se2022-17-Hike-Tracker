@@ -120,15 +120,16 @@ function LocationForm(props){
         (async()=>
             props.type==="hut" ?
                 props.point==="start" ?
-                    setLocOpt(await API.getHuts(undefined,undefined,undefined,new String(props.startLongitude),new String(props.startLatitude),new String(5),authToken))
+                    setLocOpt(await API.getHuts(undefined,undefined,undefined,props.startLongitude.toString(),props.startLatitude.toString(),"5",authToken))
                 :
-                    setLocOpt(await API.getHuts(undefined,undefined,undefined,new String(props.endLongitude),new String(props.endLatitude),new String(5),authToken))
+                    setLocOpt(await API.getHuts(undefined,undefined,undefined,props.endLongitude.toString(),props.endLatitude.toString(),"5",authToken))
             :
                 props.point==="start" ?
-                    setLocOpt(await API.getParking(undefined,undefined,undefined,new String(props.startLongitude),new String(props.startLatitude),new String(5),authToken))
+                    setLocOpt(await API.getParking(undefined,undefined,undefined,props.startLongitude.toString(),props.startLatitude.toString(),"5",authToken))
                 :
-                    setLocOpt(await API.getParking(undefined,undefined,undefined,new String(props.endLongitude),new String(props.endLatitude),new String(5),authToken))
+                    setLocOpt(await API.getParking(undefined,undefined,undefined,props.endLongitude.toString(),props.endLatitude.toString(),"5",authToken))
         )();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props.type,props.point])
 
     useEffect(()=>{
@@ -137,6 +138,7 @@ function LocationForm(props){
         }else{
             props.setId("");
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[locOpt.length, locOpt[0]])
 
     return <>

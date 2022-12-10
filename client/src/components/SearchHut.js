@@ -7,7 +7,6 @@ import MapboxCircle from 'mapbox-gl-circle';
 import HutCard from '../components/HutCard'
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 
-
 function SearchHut(props) {
     const startZoom = 7;
     const startLng = 7.662;
@@ -151,6 +150,10 @@ function SearchHut(props) {
                 updateMarkers(huts);
             });
             
+            map.current.addControl(new mapboxgl.FullscreenControl());
+
+            map.current.addControl(new mapboxgl.ScaleControl());
+            map.current.addControl(new mapboxgl.NavigationControl());
             map.current.doubleClickZoom.disable();
 
             map.current.on('dblclick', (e) => {

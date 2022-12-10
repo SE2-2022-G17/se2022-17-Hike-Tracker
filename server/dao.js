@@ -12,6 +12,7 @@ const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
+const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -48,8 +49,7 @@ exports.getVisitorHikes = async (
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
-
-
+        
         return hikes
 
     } catch (e) {
@@ -78,7 +78,7 @@ exports.getHuts = async (
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            
+        
         return huts
     } catch (e) {
         console.log(e.message)
@@ -88,10 +88,10 @@ exports.getHuts = async (
 exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
-
+    
     if (process.env.NODE_ENV === "development") {
 
-        var transporter = nodemailer.createTransport({
+        let transporter = nodemailer.createTransport({
             service: "hotmail",
             auth: {
                 user: "se2g17@outlook.com",
@@ -99,7 +99,7 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
             }
         })
 
-        var mailOptions = {
+        let mailOptions = {
             from: "se2g17@outlook.com",
             to: email,
             subject: "Activation Code",
@@ -204,20 +204,21 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
 exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
     let startPosition = undefined
     let endPosition = undefined
+    
     try {
 
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
-
+            
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
-            var gpx = new gpxParser()
+            let gpx = new gpxParser()
             gpx.parse(content)
-            var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
-            var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
-            var points = gpx.tracks[0].points
-            var startPoint = points[0]
-            var endPoint = points[points.length - 1]
-
+            let length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            let points = gpx.tracks[0].points
+            let startPoint = points[0]
+            let endPoint = points[points.length - 1]
+            
             startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
             })
@@ -225,40 +226,42 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
+        
+        
+            const hike = new Hike({
+                title: title,
+                length: length,
+                expectedTime: time,
+                ascent: ascent,
+                difficulty: difficulty,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                description: description,
+                city: city,
+                province: province,
+                track_file: track !== undefined ? track.originalname : null
+            })
+            
+            hike.save((err) => {
+                if (err) {
+                    console.log(err);
+                    throw new TypeError(JSON.stringify(err));
+                }
+            });
+            return hike._id;
         }
-
-        const hike = new Hike({
-            title: title,
-            length: length,
-            expectedTime: time,
-            ascent: ascent,
-            difficulty: difficulty,
-            startPoint: startPosition._id,
-            endPoint: endPosition._id,
-            description: description,
-            city: city,
-            province: province,
-            track_file: track !== undefined ? track.originalname : null
-        })
-
-        hike.save((err) => {
-            if (err) {
-                console.log(err);
-                throw new TypeError(JSON.stringify(err));
-            }
-        });
-        return hike._id;
+        throw new TypeError(500);
     } catch (e) {
-        throw 400;
+        throw new TypeError(400);
     }
 }
 
 /* Util function to generate random 6 digit activation code */
 function generateActivationCode(length = 6) {
     let activationCode = ""
-
     for (let i = 0; i < length; i++) {
-        activationCode += (Math.floor(Math.random() * 9) + 1)
+        const randomArray = randomBytes(1);
+        activationCode += (Math.floor( (randomArray[0] * 9)/255) + 1)
     }
 
     return activationCode
@@ -366,19 +369,43 @@ exports.linkHutToHike = async (hutId, hike) => {
     }
 }
 
+exports.getHikeTrace = async (hikeId) => {
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw { description: "Hike not found", status: 404 }
+
+
+    try {
+        const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+        var gpx = new gpxParser()
+        gpx.parse(file)
+        return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
+
+    } catch (e) {
+        throw { description: "Trace not found", status: 404 };
+    }
+}
+
 exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId) => {
     const updateHike = {};
     if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
-        point === "start" ?
-            reference === "huts" ?
+        if(point=="start"){
+            if(reference=="huts"){
                 updateHike.startPointHut_id = id
-                :
+            }
+            else{
                 updateHike.startPointParking_id = id
-            :
-            reference === "huts" ?
+            }
+        }
+        else{
+            if(reference=="huts"){
                 updateHike.endPointHut_id = id
-                :
+            }
+            else{
                 updateHike.endPointParking_id = id
+            }
+        }
         try {
             const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
                 if (err) {

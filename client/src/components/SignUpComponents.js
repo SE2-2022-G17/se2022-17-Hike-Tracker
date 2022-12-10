@@ -33,11 +33,7 @@ function SignUpForm(props) {
                 setVerificationVisibile(false);
                 setRegButtonDisabled(false);
             }
-          })
-          .catch(err => {
-            //handleError(err, err);
-          }
-          )
+          })    
       }
 
     const handleSubmit = (event) => {
