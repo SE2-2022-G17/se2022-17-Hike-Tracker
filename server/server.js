@@ -182,8 +182,8 @@ app.get('/hutsCloseTo/:id', async (req, res) => {
     let huts = [];
     try{
         const trace = await dao.getHikeTrace(hikeId);
-        for(let i=0;i<trace.length;i++){
-            const hutsNearPoint = await dao.getHuts(undefined,undefined,undefined,trace[i].lng,trace[i].lat,"5");
+        for(let i=0;i<trace.length;i=i+20){
+            const hutsNearPoint = await dao.getHutsFilteredByDistance(trace[i].lng,trace[i].lat,"5");
             hutsNearPoint.forEach(hutNearPoint => {
                 const res = huts.find((hut) =>{ 
                     return hutNearPoint._id.toString() === hut._id.toString();
