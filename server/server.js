@@ -170,6 +170,27 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
     }
 });
 
+app.post('/user/store-performance',  verifyUserToken, (req, res) => {
+    const altitude = req.body.altitude;
+    const duration = req.body.duration;
+    let user = req.user;
+
+    return dao.updateUserPreference(altitude, duration, user.email)
+        .then((response) => {
+
+            if (response.matchedCount > 0) {
+
+                user.preferenceAltitude = altitude;
+                user.preferenceDuration = duration;
+
+                return res.json(user);
+            } else
+                return res.status(500);
+
+        })
+        .catch((error) => { res.status(error).end(); });
+});
+
 app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
     try {
         await dao.saveNewParking(req.body.name,
@@ -182,6 +203,13 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
         console.log(err);
         return res.status(500).json(err);
     }
+});
+
+app.get('/user', verifyUserToken, (req, res) => {
+    dao.getUserByEmail(req.user.email)
+        .then((user) => {
+            console.log(user); res.json(user); })
+        .catch((error) => { res.status(500).json(error); });
 });
 
 

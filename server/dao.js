@@ -152,6 +152,19 @@ exports.loginUser = async (email, password) => {
 
 }
 
+exports.updateUserPreference = async (altitude, duration, email) => {
+    return User.updateOne({email: email}, {
+        $set: {
+            'preferenceAltitude': altitude,
+            'preferenceDuration': duration,
+        }
+    });
+}
+
+exports.getUserByEmail = async (email) => {
+    return User.findOne({email: email});
+}
+
 exports.validateUser = async (email, activationCode) => {
     const user = await User.findOne({ email: email })
 
