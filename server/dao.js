@@ -57,28 +57,6 @@ exports.getVisitorHikes = async (
     }
 }
 
-exports.getHutsFilteredByDistance = async (
-    longitude,
-    latitude,
-    searchRadius
-) => {
-
-    try {
-        let nearPositions = await Position
-            .find()
-            .filterByDistance(longitude, latitude, searchRadius)
-
-        const huts = await Hut.find()
-            .select({ "__v": 0})
-            .filterByPositions(longitude, latitude, nearPositions)
-            .populate('point')
-        
-        return huts
-    } catch (e) {
-        console.log(e.message)
-    }
-}
-
 exports.getHuts = async (
     bedsMin,
     altitudeMin,
