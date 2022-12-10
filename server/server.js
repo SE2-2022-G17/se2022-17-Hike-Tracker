@@ -24,6 +24,14 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());
 
+function distanceCalc(p1,p2) {
+    const ph1 = p1.lat * Math.PI/180;
+    const ph2 = p2.lat * Math.PI/180;
+    const DL = (p2.lng-p1.lng)* Math.PI/180;
+    const R = 6371e3;
+    const d = Math.acos((Math.sin(ph1)*Math.sin(ph2))+(Math.cos(ph1)*Math.cos(ph2))*Math.cos(DL))*R;
+    return d;
+}
 
 /*** APIs ***/
 
@@ -177,22 +185,31 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
 });
 
 
+
 app.get('/hutsCloseTo/:id', async (req, res) => {
     const hikeId = req.params.id;
-    let huts = [];
+    const huts = [];
     try{
         const trace = await dao.getHikeTrace(hikeId);
-        for(let i=0;i<trace.length;i=i+20){
-            const hutsNearPoint = await dao.getHutsFilteredByDistance(trace[i].lng,trace[i].lat,"5");
-            hutsNearPoint.forEach(hutNearPoint => {
-                const res = huts.find((hut) =>{ 
-                    return hutNearPoint._id.toString() === hut._id.toString();
-                });
-                if(res===undefined) {
-                    huts.push(hutNearPoint);
+        const allHuts = await dao.getHuts();
+
+        trace.forEach((point)=>{
+            allHuts.forEach((hut)=>{
+                const p1 = {
+                    lng : point.lng,
+                    lat : point.lat
                 }
-            })   
-        }
+                const p2 = {
+                    lng : hut.point.location.coordinates[0],
+                    lat : hut.point.location.coordinates[1]
+                }
+                if(distanceCalc(p1,p2) <= 5000){
+                    const found =  huts.find((h)=>h._id.toString()===hut._id.toString());
+                    if( found === undefined )
+                        huts.push(hut);
+                }
+            });
+        })
         res.json(huts);
     }catch (err) {
         console.log(err);
