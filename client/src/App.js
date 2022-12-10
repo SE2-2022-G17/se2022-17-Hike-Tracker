@@ -43,6 +43,7 @@ function MainApp() {
   const [modalShow, setModalShow] = useState(false);
   const [performanceModal, setPerformanceModal] = useState(false);
   const [role, setRole] = useState("");
+  const [id, setId] = useState("");
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
@@ -132,6 +133,7 @@ function MainApp() {
         }
       }
     }
+    console.log(user);
   }, []);
 
   return (
@@ -173,7 +175,7 @@ function MainApp() {
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/localGuide" element={<LocalGuide/>}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/hiker/hikes/:id" element={<ShowHike role={role}/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
