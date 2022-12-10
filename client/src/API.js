@@ -289,8 +289,34 @@ async function getAllParking(){
     return await result.json();
 }
 
+async function addReferencePoint(id, token, hikeId, name, description,longitude,latitude) {
+    const response = await fetch(url + '/hikes/'+ id + '/reference-points', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id:hikeId,
+            name: name,
+            description: description,
+            longitude: longitude,
+            latitude: latitude,
+        })
+    })
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getAllHuts};
+    return response.status
+}
+
+async function getHikeTrace(hikeId) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/trace')
+    const hut = await response.json()
+    return hut
+}
+
+
+const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, 
+    getAllHuts,linkStartArrival,getAllParking, linkHut, getAllHuts, addReferencePoint, getHikeTrace};
 
 export default API;
 
