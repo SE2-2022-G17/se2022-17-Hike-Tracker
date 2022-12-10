@@ -368,7 +368,7 @@ const API = {
     linkHut,
     getParking,
     getHutsCloseToHike,
-    storePerformance
+    storePerformance,
     getUserByEmail
 };
 
