@@ -153,11 +153,16 @@ function MainApp() {
         show={modalShow}
         onHide={() => setModalShow(false)}
       />
-      <PerformanceModal performanceModal={performanceModal}
-                        setPerformanceModal={setPerformanceModal}
-                        user={user}
-                        SavePreferenceUser={ SavePreferenceUser }
-      />
+      {
+        user !== null ?
+            <PerformanceModal performanceModal={performanceModal}
+                              setPerformanceModal={setPerformanceModal}
+                              user={user}
+                              SavePreferenceUser={ SavePreferenceUser }
+            />
+            : ''
+      }
+
       <></>
 
 
@@ -179,6 +184,5 @@ function MainApp() {
       </>
   );
 }
-
 
 export default App;

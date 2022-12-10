@@ -81,6 +81,11 @@ function ProfileModal(props) {
 
 function PerformanceModal(props) {
 
+  let validateValue = (value) =>
+  {
+    return (value !== undefined && value !== null);
+  }
+
   const type = {
     show: 1,
     create: 2,
@@ -114,7 +119,7 @@ function PerformanceModal(props) {
     setAltitude('');
   }
 
-  if (props.user !== null) {
+  if (validateValue(props.user)) {
 
     let Save = () => {
 
@@ -223,11 +228,6 @@ function PerformanceModal(props) {
         </Modal>
     );
   }
-}
-
-function validateValue(value)
-{
-  return (value !== undefined && value !== null);
 }
 
 export { ProfileModal, PerformanceModal }
