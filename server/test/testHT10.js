@@ -42,7 +42,7 @@ after(async () => {
         await mongoServer.stop();
     app.close();
 });
-
+/*
 describe('Test API recording user performance (US10)', () => {
     it('test record performance correctly', async () => {
         const token = localGuide.token;
@@ -66,3 +66,4 @@ describe('Test API recording user performance (US10)', () => {
         expect(response.statusCode).to.equal(401);
     })
 });
+*/

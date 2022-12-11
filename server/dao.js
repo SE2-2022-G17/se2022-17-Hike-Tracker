@@ -390,7 +390,11 @@ exports.getHikeTrace = async (hikeId) => {
 
 exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId, userId) => {
     const updateHike = {};
-    if(!(await Hike.findOne({_id:hikeId,localGuide_id:userId}))){
+    console.log(userId)
+    if(!(await Hike.findOne({
+        "_id":hikeId,
+        "localGuide_id":userId
+    }))){
         throw new TypeError(401)
     } else {
         if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {

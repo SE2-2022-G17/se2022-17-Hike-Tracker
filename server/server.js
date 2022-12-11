@@ -362,7 +362,8 @@ app.put('/linkStartArrival',verifyUserToken, async (req, res) => {
     try {
         if(!req || !req.body || !req.body.point || !req.body.reference || req.body.point!=="end" && req.body.point!=="start" || req.body.reference!=="parking" && req.body.reference!=="huts" || !req.body.id || !req.body.hikeId)
             return res.status(422).end();
-        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId, (await dao.getUserByEmail(req.user.email))._id)
+        const userId = (await dao.getUserByEmail(req.user.email))._id
+        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId, userId)
         if (result) {
             return res.status(201).json(result);
         } else {

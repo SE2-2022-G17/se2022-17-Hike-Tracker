@@ -22,7 +22,7 @@ before(async () => {
         const mongoUri = mongoServer.getUri();
         await mongoose.connect(mongoUri);
     }
-    await User.deleteOne({email:"localguide@email.com"})
+    await User.deleteMany({email:"localguide@email.com"})
     await Parking.deleteOne({ _id: '0000000194e4c1e796231d9a' });
     await Hut.deleteOne({ _id: '0000000194e4c1e796231d9b' });
     await Hike.deleteOne({ _id: '0000000194e4c1e796231d9a' });
