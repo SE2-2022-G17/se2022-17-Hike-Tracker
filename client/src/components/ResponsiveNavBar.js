@@ -5,10 +5,18 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Button from 'react-bootstrap/Button';
 import UserType from '../models/UserType';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChartLine, faArrowRightFromBracket, faInfo, faLightbulb} from "@fortawesome/free-solid-svg-icons";
+import { Navigate, useNavigate } from 'react-router-dom';
+import {Card} from "react-bootstrap";
+import React from "react";
 
 
 function ResponsiveNavBar(props) {
+
     const expand = 'lg';
+    const navigate = useNavigate();
+    
 
     return (
         <>
@@ -68,16 +76,31 @@ function ResponsiveNavBar(props) {
                                             <NavDropdown
                                                 title="Account"
                                                 id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                                align={'end'}
                                             >
                                                 <NavDropdown.Item
                                                     onClick={() => props.setModalShow(true)}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faInfo} />
                                                     User Info
                                                 </NavDropdown.Item>
+                                                <NavDropdown.Item
+                                                    onClick={() => props.setPerformanceModal(true)}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faChartLine} />
+                                                    Performance
+                                                </NavDropdown.Item> 
+
+                                                <NavDropdown.Item
+                                                    onClick={() => navigate('/preferredHikes')}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faLightbulb}/>
+                                                    Suggested Hikes
+                                                </NavDropdown.Item> 
+
                                                 <NavDropdown.Item 
                                                     href="/" 
                                                     onClick={props.doLogOut}
                                                     className="danger"
                                                 >
+                                                    <FontAwesomeIcon className={'me-1'} icon={faArrowRightFromBracket} />
                                                     Logout
                                                 </NavDropdown.Item>
                                             </NavDropdown>

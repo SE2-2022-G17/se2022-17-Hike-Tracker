@@ -20,6 +20,9 @@
 ### Local Guide
 - email: localguide@email.com
 - password:password
+### Local Guide
+- email: localguide2@email.com
+- password:password
 
 ## Authentication and Authorization
 ### Client:

@@ -24,7 +24,12 @@ function ShowHike(props) {
     const [hike, setHike] = useState(null);
     const [lat, setLat] = useState(0);
     const [lng, setLng] = useState(0);
+<<<<<<< HEAD
     const [zoom, setZoom] = useState(11);
+=======
+    const zoom = 11;
+    const [linkHut, setLinkHut] = useState(false);
+>>>>>>> main
     let { id } = useParams();
 
     useEffect(() => {
@@ -36,7 +41,7 @@ function ShowHike(props) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
                 }
-                
+
             }).catch(function (error) {
                 console.log(error);
             })
@@ -135,6 +140,20 @@ function ShowHike(props) {
         }
     });
 
+    let linkHutBlock = '';
+
+    //only localguide can link hut to a hike, check if this user created this hike
+    if (props.role === "localGuide" && linkHut === false && hike !== null) {
+        linkHutBlock = <Row className="m-3">
+                        <Col className="text-center">
+                            <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
+                        </Col>
+                    </Row>
+    }
+
+
+    console.log(hike)
+
     return (
         <Container>
             <h1 className={'my-2'}>{hike !== null ? hike.title : ''}</h1>
@@ -194,6 +213,7 @@ function ShowHike(props) {
                     <div ref={mapContainer} className="map-container" />
                 </Col>
             </Row>
+<<<<<<< HEAD
             {               
                 //only localguide can link hut to a hike
                 props.role === "localGuide" ? <>
@@ -217,6 +237,14 @@ function ShowHike(props) {
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
+=======
+            {
+                linkHutBlock
+            }
+            {linkHut === true ?
+                <LinkHut hike={hike} setShow={setLinkHut} />
+                : <></>}
+>>>>>>> main
 
                 <br/>
     

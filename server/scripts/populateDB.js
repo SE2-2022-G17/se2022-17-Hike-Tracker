@@ -32,6 +32,7 @@ function HikeDetail(title, time, difficulty, city, province, description, file) 
     this.province = province;
     this.description = description;
     this.file = file;
+    
 }
 
 
@@ -48,14 +49,14 @@ async function run() {
         new HikeDetail("Chilkoot Trail", 14.2, 2, "Skagway", "Alaska", "With a history dating back to the Klondike Gold Rush, the Chilkoot Trail extends from Alaska to British Columbia and takes you past numerous historical and natural sites. There are three different climate sections on the trail so you’ll get to experience coastal rainforest as well as boreal and high alpine forest.", "Chilkoot Trail.gpx"),
         new HikeDetail("Cinque Terre", 5.2, 1, "Porto Venere", "SP", "Walk the coast of the Italian Riviera while you experience absolutely breathtaking views. While Trail #2 is the most popular, there are a handful of other beautiful trails that you can pick from as well.", "Cinque Terre.gpx"),
         new HikeDetail("Croagh Patrick Mountain", 3.9, 1, "Croaghpatrick", "County Mayo", "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.", "Croagh Patrick Mountain.gpx"),
-        new HikeDetail("Dolomites", 4.7, 1, "Moena", "TN", "The Dolomites are a perfect playground for any hiker. There are countless trails that will guide you through a variety of landscapes from sky-high peaks and alpine meadows to evergreen woods and beautiful lakes.", "Dolomites.gpx"),
+        new HikeDetail("Dolomites", 4.7, 1, "Moena", "TN", "The Dolomites are a perfect playground for any hiker. There are countless trails that will guide you through a  letiety of landscapes from sky-high peaks and alpine meadows to evergreen woods and beautiful lakes.", "Dolomites.gpx"),
         new HikeDetail("Everest Base Camp Trek", 40.7, 2, "Khumjung", "Province 1", "Renowned as one of the best treks in the world, the Everest Base Camp Trek gives you a glimpse of the highest summit on Earth. Not only that, but you can also get to know the Sherpa people and visit ancient Tengboche and Thami monasteries.", "Everest Base Camp Trek.gpx"),
         new HikeDetail("Fitz Roy", 10.2, 2, "El Chaltén", "Santa Cruz", "One of Patagonia’s best-known landmarks, this rugged trek offers some of the most dramatic views in the world. Flora and fauna fill the park while striking rock formations create an amazing landscape.", "Fitz Roy.gpx"),
         new HikeDetail("GR20", 71.5, 2, "Calenzana", "Haute-Corse", "Renowned for some of the best hiking in Europe because of its beautiful mountain trail, it’s also arguably the most difficult GR route. The rugged trail is made more pleasant by the swimming holes and fantastic views along the route.", "GR20.gpx"),
         new HikeDetail("Grand Canyon Rim Trail", 4.5, 0, "Arizona", "US", "There’s no better way to experience one of the greatest wonders in the world. Located in one of the USA’s most beautiful parks, the views are absolutely mesmerizing, just make sure you’re prepared for the challenge.", "Grand Canyon Rim Trail.gpx"),
         new HikeDetail("Great Ocean Walk", 26.5, 1, "Apollo Bay", "Victoria", "One of Australia’s premier trails, hiking the Great Ocean Walk is an experience everyone should have. Experience nature like never before as you come face-to-face with wildlife while you’re admiring the deserted beaches, cliff-top panoramas, forests, and heathlands.", "Great Ocean Walk.gpx"),
         new HikeDetail("Hadrian's Wall Path", 32.5, 1, "Wallsend", "Tyne and Wear", "History is all around you when you walk Hadrian’s Wall Path. While you’re crossing northern England you’ll encounter former Roman forts and settlements, market towns, farms, countryside, and obviously lovely views.", "Hadrian's Wall Path.gpx"),
-        new HikeDetail("Israel National Trail", 267.4, 2, "Dan", "HaZafon", "Stretching the length of the country from north to south, the Israel National Trail boasts a variety of fauna, flora, scenery, and culture. The beauty of Israel’s wilderness will have you in awe as you cross through the biblical landscapes. There’s no wonder why National Geographic ranked it as one of the world’s best hikes.", "Israel National Trail.gpx"),
+        new HikeDetail("Israel National Trail", 267.4, 2, "Dan", "HaZafon", "Stretching the length of the country from north to south, the Israel National Trail boasts a   letiety of fauna, flora, scenery, and culture. The beauty of Israel’s wilderness will have you in awe as you cross through the biblical landscapes. There’s no wonder why National Geographic ranked it as one of the world’s best hikes.", "Israel National Trail.gpx"),
         new HikeDetail("K2", 80, 2, "GILGIT-BALTISTAN", "HIMALAYA", "One of the longest glaciers outside of the polar regions, Baltoro Glacier combines with K2, the world’s second highest mountain, to be one of the best hiking trips in the world for the ultimate adventure seekers. Both challenging and dangerous, only about 300 people have successfully made it to the peak of K2.", "K2.gpx"),
         new HikeDetail("Kalalau Trail", 12.8, 2, "Hanalei", "Kaua'i", "Traverse lush valleys and lofty sea cliffs on this stunning hike. Both thrilling and exhausting, it’s not hard to see why it always makes the list of the world’s best hikes.", "Kalalau Trail.gpx"),
         new HikeDetail("Kungsleden", 124.6, 2, "Abisko", "Norrbotten", "One of the most famous hiking trails in the world, Kungsleden, or the “King’s Trail”, takes you through all types of gorgeous scenery, from alpine terrain to mountain heaths. If you don’t want to hike the entire trail, it’s divided up into four parts and has multiple entry points.", "Kungsleden.gpx"),
@@ -81,57 +82,18 @@ async function run() {
         new HikeDetail("Tongariro Alpine Crossing", 7.0, 2, "Owhango", "Manawatu-Wanganui", "Known for being among the best day hikes in the world, the Tongariro Alpine Crossing gives you a little bit of everything. Dramatic landscapes don’t even begin to describe what you’ll see as you trek past ancient lava flows, steaming vents, crater lakes, glacial valleys, and more.", "Tongariro Alpine Crossing.gpx"),
         new HikeDetail("Tonquin Valley", 13.0, 2, "Jasper", "Alberta", "Located in one of Canada’s best alpine regions, the Tonquin Valley is famous for its views of the stunning Amethyst Lake. It is a backcountry trail so be prepared to meet some caribou, bears, and other wildlife.", "Tonquin Valley.gpx"),
         new HikeDetail("Torres Del Paine Circuito W", 21.9, 2, "Magallanes", "Patagonia", "The W Circuit is one of the most recommended hikes you’ll find. Not only will you appreciate the diverse landscapes and striking granite pillars, but you’ll probably meet some new hiker friends along the way.", "Torres Del Paine Circuito W.gpx"),
-        new HikeDetail("Tour Du Mont Blanc", 4.6, 2, "Courmayeur", "Aosta Valley", "Consistency ranked among the best long distance hiking trails in the world, the Tour du Mont Blanc takes you through three different countries and a variety of lovely terrain. Be prepared to make friends with everything from marmots to wild alpine goats as you admire woodlands, glaciers, meadows, and more along the way.", "Tour Du Mont Blanc.gpx"),
+        new HikeDetail("Tour Du Mont Blanc", 4.6, 2, "Courmayeur", "Aosta Valley", "Consistency ranked among the best long distance hiking trails in the world, the Tour du Mont Blanc takes you through three different countries and a    letiety of lovely terrain. Be prepared to make friends with everything from marmots to wild alpine goats as you admire woodlands, glaciers, meadows, and more along the way.", "Tour Du Mont Blanc.gpx"),
         new HikeDetail("West Coast Trail", 19.2, 2, "Capital Regional District", "British Columbia", "The West Coast Trail is a rite of passage for any true hiker. The trail includes bogs, forests, waterfalls, beach treks, moss-covered ladders, and more. Hike in the footsteps of the First Nation ancestors and support eco-friendly tourism when you take on one of the best hiking trails in the world.", "West Coast Trail.gpx"),
-        new HikeDetail("West Highland Way", 5.0, 0, "Glasgow", "Glasgow", "Beloved by the Scottish and everyone else who’s hiked it, the West Highland Way was Scotland’s first long-distance trail and it still remains the most popular. The amazing variety is a major perk of this hike as you’ll pass the Scottish Highlands, Loch Lomond, Rannoch Moor, and much more.", "West Highland Way.gpx"),
+        new HikeDetail("West Highland Way", 5.0, 0, "Glasgow", "Glasgow", "Beloved by the Scottish and everyone else who’s hiked it, the West Highland Way was Scotland’s first long-distance trail and it still remains the most popular. The amazing  letiety is a major perk of this hike as you’ll pass the Scottish Highlands, Loch Lomond, Rannoch Moor, and much more.", "West Highland Way.gpx"),
         new HikeDetail("Yosemite Grand Traverse", 1.5, 1, "Yosemite Valley", "California", "Known for some of the best hiking in the world, Yosemite National Park is famous for its views and huge sequoia trees. Praised by National Geographic, the Yosemite Grand Traverse will take you through waterfalls, green mountaintops, and meadows on its surreal trail.", "Yosemite Grand Traverse.gpx"),
         new HikeDetail("Traversata Sella Herbetet Gran Paradiso", 9.5, 2, "Cogne", "AO", "Il Parco Nazionale del Gran Paradiso nelle Alpi Graie è uno spettacolo naturale fatto laghi colorati come pietre preziose, foreste e alcune tra le più alte montagne d’Italia, inclusa l’omonima vetta di 4061m. Questa classica escursione di un giorno vi porta dritto nel suo cuore.", "Traversata Sella Herbetet Gran Paradiso.gpx"),
-        new HikeDetail("Tre Cime Lavaredo", 4.0, 1, "Auronzo di Cadore", "BL", "Madre Natura è stata generosa con L’Italia per quanto riguarda la bellezza ma ha superato se stessa nelle Dolomiti. Queste vette che graffiano le nuvole e torri di calcare che si gettano sui prati, laghi e foreste di abeti nel nord-est del paese offrono uno dei punti più interessanti per la camminata d’Europa.", "Tre Cime Lavaredo.gpx"),
+        new HikeDetail("Tre Cime L  letedo", 4.0, 1, "Auronzo di Cadore", "BL", "Madre Natura è stata generosa con L’Italia per quanto riguarda la bellezza ma ha superato se stessa nelle Dolomiti. Queste vette che graffiano le nuvole e torri di calcare che si gettano sui prati, laghi e foreste di abeti nel nord-est del paese offrono uno dei punti più interessanti per la camminata d’Europa.", "Tre Cime L   letedo.gpx"),
         new HikeDetail("Sentiero Degli Dei Costiera Amalfitana", 4.5, 0, "Agerola", "NA", "Fedele al suo nome, il Sentiero degli Dei offre una tela di paesaggi italiani del sud, con straordinarie vedute degli aspri monti Lattari fittamente boscosi che scendono in picchiata fino allo scintillante Mediterraneo e lontane apparizioni di Capri.", "Sentiero Degli Dei Costiera Amalfitana.gpx"),
         new HikeDetail("Corno Grande", 6.5, 2, "Barisciano", "AQ", "Uno dei più grandi parchi nazionali italiani, che domina il paesaggio roccioso del Parco Nazionale del Gran Sasso e i Monti della Laga, il Corno Grande è la vetta più alta degli Appennini. Prendete la via normale: un’arrampicata sorprendentemente semplice lungo i pendii striati di morena fino alla cima con un po’ di semplice arrampicata sui sassi nel tratto finale.", "Corno Grande.gpx"),
         new HikeDetail("Selvaggio Blu", 35.0, 2, "Baunei", "NU", "Spesso additata come l’escursione più faticosa in Italia, il Selvaggio Blu non è per i deboli di cuore. Facendosi strada lungo il Golfo di Orosei sulla costa orientale della Sardegna, questa è una camminata epica fuori dal radar che richiede esperienza alpinistica.", "Selvaggio Blu.gpx"),
         new HikeDetail("Stromboli Sentiero Alto", 5.5, 1, "Stromboli", "ME", "La camminata sul vulcano perfettamente piramidale di Stromboli che si staglia sul mare color cobalto sicuramente fa un effetto wow. Non capita tutti i giorni, dopo tutto, di poter camminare su un cono fumante, sempre attivo. La più incantevole tra le isole Eolie, Stromboli è il giovincello sprezzante dei vulcani, formato solamente 40.000 anni fa.", "Stromboli Sentiero Alto.gpx")
     ]
 
-    for (const h of testDataHikes) {
-        try {
-            const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
-            var gpx = new gpxParser()
-            gpx.parse(content)
-            var length = ((gpx.tracks[0].distance.total)/1000).toFixed(2) //length in kilometers
-            var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
-            var points = gpx.tracks[0].points
-            var startPoint = points[0]
-            var endPoint = points[points.length - 1]
-            
-            const startPosition = await Position.create({
-                "location.coordinates": [startPoint.lon, startPoint.lat]
-            })
-
-            const endPosition = await Position.create({
-                "location.coordinates": [endPoint.lon, endPoint.lat]
-            })
-
-
-            const hike = await Hike.create({
-                title: h.title,
-                expectedTime: h.time,
-                difficulty: Difficulty[difficulties[h.difficulty]],
-                city: h.city,
-                province: h.province,
-                description: h.description,
-                track_file: h.file,
-                length: length,
-                ascent: ascent,
-                startPoint: startPosition._id,
-                endPoint: endPosition._id
-            })
-            await hike.save()
-            console.log(hike)
-        } catch (e) {
-            console.log(e.message)
-        }
-    }
 
     const user = await User.create({
         firstName: "Pietro",
@@ -159,12 +121,61 @@ async function run() {
     await user2.save()
     console.log(user2);
 
+    const user3 = await User.create({
+        firstName: "Pietro",
+        lastName: "Bertorelle",
+        email: "localguide2@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: UserType.localGuide,
+        active: true
+    })
+
+    await user3.save()
+    console.log(user3);
+
+
+    for (const h of testDataHikes) {
+        try {
+            const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
+            let gpx = new gpxParser()
+            gpx.parse(content)
+            let length = ((gpx.tracks[0].distance.total)/1000).toFixed(2) //length in kilometers
+            let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            let points = gpx.tracks[0].points
+            let startPoint = points[0]
+            let endPoint = points[points.length - 1]
+            
+            const startPosition = await Position.create({
+                "location.coordinates": [startPoint.lon, startPoint.lat]
+            })
+
+            const endPosition = await Position.create({
+                "location.coordinates": [endPoint.lon, endPoint.lat]
+            })
+
+
+            const hike = await Hike.create({
+                title: h.title,
+                expectedTime: h.time,
+                difficulty: Difficulty[difficulties[h.difficulty]],
+                city: h.city,
+                province: h.province,
+                description: h.description,
+                track_file: h.file,
+                length: length,
+                ascent: ascent,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                authorId: user._id,
+
+            })
+            await hike.save()
+            console.log(hike)
+        } catch (e) {
+            console.log(e.message)
+        }
+    }
+
     await mongoose.disconnect()
-    return
 }
-
-
-
-
-
-

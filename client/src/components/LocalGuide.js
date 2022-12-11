@@ -8,7 +8,7 @@ function LocalGuide() {
         <Container>
             <Row>
                 <Col>
-                    <MainContent />
+                    <MainContent/>
                 </Col>
             </Row>
         </Container>

@@ -2,17 +2,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Row, Col, Alert } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import VisitorHikes from './components/VisitorHikes';
+//import VisitorHikes from './components/VisitorHikes';
+import HikesView from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import ShowHike from "./components/ShowHikeComponent";
 import ResponsiveNavBar from './components/ResponsiveNavBar';
-import { ProfileModal } from './components/Profile';
+import { ProfileModal, PerformanceModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
 import CreateParking from './components/CreateParking';
 import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
 import SearchHut from './components/SearchHut'
+import PreferredHikes from './components/PreferredHikes'
 
 
 import API from './API';
@@ -41,7 +43,12 @@ function MainApp() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [modalShow, setModalShow] = useState(false);
+  const [performanceModal, setPerformanceModal] = useState(false);
   const [role, setRole] = useState("");
+  const [id, setId] = useState("");
+  const [user, setUser] = useState(null);
+  
+  
 
   const navigate = useNavigate();
 
@@ -54,6 +61,21 @@ function MainApp() {
     return JSON.parse(jsonPayload);
   }
 
+  let SavePreferenceUser = (data) => {
+
+    const authToken = localStorage.getItem('token');
+
+    return API.storePerformance(data, authToken).then(response => {
+      setUser(response);
+      return true;
+    }).catch(error => {
+      console.log(error);
+      return false;
+    })
+  }
+
+ 
+
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
@@ -63,6 +85,8 @@ function MainApp() {
           navigate('/verifyAccount/' + payload.email);
         }
         else {
+          console.log(user.user);
+          setUser(user.user);
           localStorage.setItem('token', user.token);
           if ((payload.role === Type.platformManager
             || payload.role === Type.emergencyOperator)
@@ -84,6 +108,7 @@ function MainApp() {
   const doLogOut = async () => {
     localStorage.clear()
     setLoggedIn(false);
+    setUser(null);
     setRole("");
     navigate('/');
   }
@@ -96,6 +121,9 @@ function MainApp() {
     }
     else {
       const tokenPayload = extractTokenPayload(authToken);
+      API.getUserByEmail(tokenPayload.email, authToken).then(response => {
+        setUser(response);
+      }).catch(error => console.log(error));
       setRole(tokenPayload.role);
       if (tokenPayload.active === ValidationType.notValidated) {
         navigate('/verifyAccount/' + tokenPayload.email);
@@ -113,7 +141,7 @@ function MainApp() {
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log(user);
   }, []);
 
   return (
@@ -123,7 +151,10 @@ function MainApp() {
         doLogOut={doLogOut}
         openLogin={doLogIn}
         setModalShow={setModalShow}
+        setPerformanceModal={setPerformanceModal}
         role={role}
+        
+        
       />
       {errorMessage ?  //Error Alert
         <Row className="justify-content-center"><Col xs={6}>
@@ -134,27 +165,37 @@ function MainApp() {
         show={modalShow}
         onHide={() => setModalShow(false)}
       />
+      {
+        user !== null ?
+            <PerformanceModal performanceModal={performanceModal}
+                              setPerformanceModal={setPerformanceModal}
+                              user={user}
+                              SavePreferenceUser={ SavePreferenceUser }
+            />
+            : ''
+      }
+
       <></>
 
 
       <Routes>
-        <Route path="/" element={<VisitorHikes />} />
-        <Route path="visitor/hikes" element={<VisitorHikes />} />
+        <Route path="/" element={<HikesView.VisitorHikes />} />
+        <Route path="visitor/hikes" element={<HikesView.VisitorHikes />} />
         <Route path='/login' element={
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/localGuide" element={<LocalGuide/>}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/hiker/hikes/:id" element={<ShowHike role={role}/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
         <Route path="/parking/create" element={<CreateParking />}/>
         <Route path="/huts/create" element={<CreateHut />} />
         <Route path="/huts/searchHut" element={<SearchHut />} />
+        <Route path="/preferredHikes" element = {<PreferredHikes/>} />
       </Routes>
-    </>
+      </>
   );
 }
-
 
 export default App;
