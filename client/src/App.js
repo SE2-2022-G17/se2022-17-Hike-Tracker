@@ -141,7 +141,6 @@ function MainApp() {
         }
       }
     }
-    console.log(user);
   }, []);
 
   return (
