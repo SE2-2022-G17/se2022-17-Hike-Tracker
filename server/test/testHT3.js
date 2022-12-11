@@ -73,4 +73,9 @@ describe('Test API for visitor to register', () => {
             });
         expect(response.statusCode).to.equal(400); // Error code to be defined
     });
+
+    it('test validation email API',async ()=>{
+        const response = await request(app).post("/user/validateEmail").send()
+        expect(response.statusCode).to.equal(400);
+    })
 });
