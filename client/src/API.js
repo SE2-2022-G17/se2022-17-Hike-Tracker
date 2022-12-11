@@ -225,6 +225,7 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
     body.append("description", description);
     body.append("city", city);
     body.append("province", province);
+
     const response = fetch(url + '/localGuide/addHike', {
         method: "POST",
         headers: {
@@ -285,7 +286,7 @@ async function linkStartArrival(point, reference, id, hikeId, token) {
             point: point,
             reference: reference,
             id: id,
-            hikeId: hikeId
+            hikeId: hikeId,
         })
     })
     return response.json();

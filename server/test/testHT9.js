@@ -9,6 +9,7 @@ const hiker = require('./mocks/hikerToken.js');
 const Hike = require('../models/Hike.js');
 const Position = require('../models/Position.js');
 const Hut = require('../models/Hut.js');
+const User = require('../models/User.js');
 
 
 let mongoServer;
@@ -26,6 +27,7 @@ before(async () => {
     await Position.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc2") });
     await Position.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc8") });
     await Hut.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc6") });
+    await User.deleteOne({email:"localguide@email.com"})
 
     const startPosition = await Position.create({
         _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0"),
@@ -42,6 +44,18 @@ before(async () => {
         "location.coordinates": [-9.63997, 53.77916] // Hut close to the start point of the hike
     })
 
+    const user = await User.create({
+        _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
+        firstName: "Pietro",
+        lastName: "Bertorelle",
+        email: "localguide@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: "localGuide",
+        active: true
+    })
+    await user.save();
+
     const hike = {
         _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc4"),
         title: "Croagh Patrick Mountain",
@@ -57,7 +71,8 @@ before(async () => {
         province: "County Mayo",
         description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
         track_file: "Croagh Patrick Mountain.gpx",
-        __v: 0
+        __v: 0,
+        authorId: user._id
     }
 
     const hut = {

@@ -43,4 +43,13 @@ describe('Test API for parking lot', () => {
             });
         expect(response.statusCode).to.equal(201);
     });
+
+    it('get parking lot', async () => {
+        const token = localGuide.token;
+
+        const response = await request(app).get("/getParking")
+            .set('Authorization', "Bearer " + token)
+            .send();
+        expect(response.statusCode).to.equal(200);
+    });
 });
