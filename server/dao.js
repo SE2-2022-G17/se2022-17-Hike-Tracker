@@ -547,7 +547,7 @@ exports.getHikeTrace = async (hikeId) => {
 
     try {
         const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
-        var gpx = new gpxParser()
+        const gpx = new gpxParser()
         gpx.parse(file)
         return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
 

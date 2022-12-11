@@ -74,7 +74,7 @@ function ReferencePointPicker(props) {
                         if (map.current) marker.addTo(map.current);
 
                         marker.on('dragend', function (e) {
-                            var lngLat = e.target.getLngLat();
+                            const lngLat = e.target.getLngLat();
                             setLng(lngLat['lng'].toFixed(5));
                             setLat(lngLat['lat'].toFixed(5));
                         })
