@@ -2,7 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Row, Col, Alert } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import VisitorHikes from './components/VisitorHikes';
+//import VisitorHikes from './components/VisitorHikes';
+import HikesView from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import ShowHike from "./components/ShowHikeComponent";
@@ -13,6 +14,7 @@ import CreateParking from './components/CreateParking';
 import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
 import SearchHut from './components/SearchHut'
+import PreferredHikes from './components/PreferredHikes'
 
 
 import API from './API';
@@ -44,6 +46,8 @@ function MainApp() {
   const [performanceModal, setPerformanceModal] = useState(false);
   const [role, setRole] = useState("");
   const [user, setUser] = useState(null);
+  
+  
 
   const navigate = useNavigate();
 
@@ -57,6 +61,7 @@ function MainApp() {
   }
 
   let SavePreferenceUser = (data) => {
+
     const authToken = localStorage.getItem('token');
 
     return API.storePerformance(data, authToken).then(response => {
@@ -67,6 +72,8 @@ function MainApp() {
       return false;
     })
   }
+
+ 
 
   const doLogIn = (credentials) => {
     API.logIn(credentials)
@@ -143,6 +150,8 @@ function MainApp() {
         setModalShow={setModalShow}
         setPerformanceModal={setPerformanceModal}
         role={role}
+        
+        
       />
       {errorMessage ?  //Error Alert
         <Row className="justify-content-center"><Col xs={6}>
@@ -162,8 +171,8 @@ function MainApp() {
 
 
       <Routes>
-        <Route path="/" element={<VisitorHikes />} />
-        <Route path="visitor/hikes" element={<VisitorHikes />} />
+        <Route path="/" element={<HikesView.VisitorHikes />} />
+        <Route path="visitor/hikes" element={<HikesView.VisitorHikes />} />
         <Route path='/login' element={
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
@@ -175,6 +184,7 @@ function MainApp() {
         <Route path="/parking/create" element={<CreateParking />}/>
         <Route path="/huts/create" element={<CreateHut />} />
         <Route path="/huts/searchHut" element={<SearchHut />} />
+        <Route path="/preferredHikes" element = {<PreferredHikes/>} />
       </Routes>
       </>
   );

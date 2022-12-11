@@ -357,6 +357,43 @@ app.get('/getParking', verifyUserToken, (req, res) => {
         .catch((error) => { return res.status(500).json(error); });
 });
 
+
+app.get('/preferredHikes', verifyUserToken, (req, res)=>{
+
+    let difficulty = req.query.difficulty
+    let minLength = req.query.minLength
+    let maxLength = req.query.maxLength
+    let minAscent = req.query.minAscent
+    let maxAscent = req.query.maxAscent
+    let minTime = req.query.minTime
+    let maxTime = req.query.maxTime
+    let city = req.query.city
+    let province = req.query.province
+    let longitude = req.query.longitude
+    let latitude = req.query.latitude
+
+    dao.getVisitorHikes(
+        difficulty,
+        minLength,
+        maxLength,
+        minAscent,
+        maxAscent,
+        minTime,
+        maxTime,
+        city,
+        province,
+        longitude,
+        latitude
+    )
+        .then((hikes) => { res.json(hikes); })
+        .catch((error) => { res.status(500).json(error); });
+
+});
+
+
+
+
+
 const server = http.createServer(app);
 
 

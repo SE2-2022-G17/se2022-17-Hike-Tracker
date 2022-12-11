@@ -343,10 +343,33 @@ async function getAllParking(){
     return await result.json();
 }
 
+async function getPreferredHikes(duration, altitude, token){
+
+    let query = "?";
+    let parametes = [];
+
+    if (duration !== undefined)
+        parametes.push("maxTime=" + duration)
+
+
+    query += parametes.join("&");
+
+    const response = await fetch(url + '/preferredHikes' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const hikes = await response.json();
+    return hikes;
+
+}
+
 
 const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike,
     getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,
-    getAllParking, linkHut, getParking, storePerformance, getUserByEmail};
+    getAllParking, linkHut, getParking, storePerformance, getUserByEmail, getPreferredHikes};
 
 export default API;
 
