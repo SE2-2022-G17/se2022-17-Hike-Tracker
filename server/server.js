@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
+const { stringify } = require('querystring');
 
 
 // init express
@@ -163,11 +164,9 @@ const upload = multer({
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file,
-            req.body.city, req.body.province, req.body.user);
+        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
         return res.status(201).end();
     } catch (err) {
-        console.log(err);
         return res.status(500).json(err);
     }
 });
@@ -194,6 +193,7 @@ app.post('/user/store-performance',  verifyUserToken, (req, res) => {
 });
 
 app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
+    
     try {
         await dao.saveNewParking(req.body.name,
             req.body.description,
@@ -342,7 +342,7 @@ app.get('/huts', (req, res) => {
 })
 
 //link hut to the hike
-app.post('/hike/linkhut', verifyUserToken, (req, res) => {
+app.post('/hike/linkhut', verifyUserToken, async (req, res) => {
     const hike = req.body.hike;
     const hutId = req.body.hut;
     const user = req.user; // this is received from verifyUserToken middleware
@@ -352,22 +352,29 @@ app.post('/hike/linkhut', verifyUserToken, (req, res) => {
         return;
     }
 
-    return dao.linkHutToHike(hutId, hike)
+    const userId = (await dao.getUserByEmail(user.email))._id;
+
+    return dao.linkHutToHike(hutId, hike, userId)
         .then(() => { res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); })
+        .catch((error) => { res.status(parseInt(error.message)).json(error); })
 });
 
 app.put('/linkStartArrival',verifyUserToken, async (req, res) => {
     try {
         if(!req || !req.body || !req.body.point || !req.body.reference || req.body.point!=="end" && req.body.point!=="start" || req.body.reference!=="parking" && req.body.reference!=="huts" || !req.body.id || !req.body.hikeId)
             return res.status(422).end();
-        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId)
+        const userId = (await dao.getUserByEmail(req.user.email))._id
+        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId, userId)
         if (result) {
             return res.status(201).json(result);
         } else {
             return res.status(500).json(result);
         }
     } catch (err) {
+        console.log(typeof(err.message))
+        if(err.message === "401"){
+            return res.status(401).end()
+        }
         return res.status(500).json(err)
     }
 })

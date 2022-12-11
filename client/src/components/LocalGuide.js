@@ -3,19 +3,19 @@ import { useEffect, useState } from 'react';
 import API from "../API";
 import CityProvince from "./CityProvince";
 
-function LocalGuide(props) {
+function LocalGuide() {
     return <>
         <Container>
             <Row>
                 <Col>
-                    <MainContent user={props.user} />
+                    <MainContent/>
                 </Col>
             </Row>
         </Container>
     </>
 }
 
-function MainContent(props) {
+function MainContent() {
     const [title, setTitle] = useState("");
     const [time, setTime] = useState("");
     const [difficulty, setDifficulty] = useState('Tourist');
@@ -39,7 +39,7 @@ function MainContent(props) {
         }
         const authToken = localStorage.getItem('token');
         setLoading(true);
-        const errorMsg = await API.sendHikeDescription(title, time, difficulty, description, track, city, province, authToken, props.user);
+        const errorMsg = await API.sendHikeDescription(title, time, difficulty, description, track, city, province, authToken);
         if (errorMsg !== "") {
             setErr(errorMsg);
         } else {

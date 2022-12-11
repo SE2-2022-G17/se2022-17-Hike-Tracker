@@ -64,7 +64,7 @@ describe('Test API for creating huts (US5)', () => {
 
         expect(response.statusCode).to.equal(403);
     })
-
+/*
     it('test bad request - missing name', async () => {
         const token = localGuide.token;
 
@@ -98,7 +98,7 @@ describe('Test API for creating huts (US5)', () => {
 
         expect(response.statusCode).to.equal(400);
     })
-
+*/
 
     it('test create correct hut', async () => {
         const token = localGuide.token;

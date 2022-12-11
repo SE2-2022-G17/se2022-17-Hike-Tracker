@@ -5,7 +5,7 @@ import React, {useState} from "react";
 import {Form, Alert} from "react-bootstrap";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import ShowType from "../models/PerformanceType";
+import ShowType from "../models/PerformanceType.js";
 
 function ProfileModal(props) {
   let loggedUser = undefined

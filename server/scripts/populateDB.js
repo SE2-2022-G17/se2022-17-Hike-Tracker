@@ -93,6 +93,19 @@ async function run() {
         new HikeDetail("Stromboli Sentiero Alto", 5.5, 1, "Stromboli", "ME", "La camminata sul vulcano perfettamente piramidale di Stromboli che si staglia sul mare color cobalto sicuramente fa un effetto wow. Non capita tutti i giorni, dopo tutto, di poter camminare su un cono fumante, sempre attivo. La più incantevole tra le isole Eolie, Stromboli è il giovincello sprezzante dei vulcani, formato solamente 40.000 anni fa.", "Stromboli Sentiero Alto.gpx")
     ]
 
+    const user = await User.create({
+        firstName: "Pietro",
+        lastName: "Bertorelle",
+        email: "localguide@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: UserType.localGuide,
+        active: true
+    })
+
+    await user.save()
+    console.log(user);
+
     const user2 = await User.create({
         firstName: "Pietro",
         lastName: "Bertorelle",
@@ -105,6 +118,19 @@ async function run() {
 
     await user2.save()
     console.log(user2);
+
+    const user3 = await User.create({
+        firstName: "Pietro",
+        lastName: "Bertorelle",
+        email: "localguide2@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: UserType.localGuide,
+        active: true
+    })
+
+    await user3.save()
+    console.log(user3);
 
     for (const h of testDataHikes) {
         try {
@@ -138,7 +164,7 @@ async function run() {
                 ascent: ascent,
                 startPoint: startPosition._id,
                 endPoint: endPosition._id,
-                authorId: user2._id,
+                authorId: user._id,
             })
             await hike.save()
             console.log(hike)
@@ -147,24 +173,5 @@ async function run() {
         }
     }
 
-    const user = await User.create({
-        firstName: "Pietro",
-        lastName: "Bertorelle",
-        email: "localguide@email.com",
-        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
-        activationCode: "123456",
-        role: UserType.localGuide,
-        active: true
-    })
-
-    await user.save()
-    console.log(user);
-
     await mongoose.disconnect()
 }
-
-
-
-
-
-

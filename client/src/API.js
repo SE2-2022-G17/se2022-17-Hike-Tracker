@@ -216,7 +216,7 @@ async function storePerformance(data, token) {
     return (await response).json();
 }
 
-async function sendHikeDescription(title, time, difficulty, description, track, city, province, token, user) {
+async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
     const body = new FormData();
     body.append("track", track);
     body.append("title", title);
@@ -225,7 +225,6 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
     body.append("description", description);
     body.append("city", city);
     body.append("province", province);
-    body.append("user", user._id);
 
     const response = fetch(url + '/localGuide/addHike', {
         method: "POST",
@@ -287,7 +286,7 @@ async function linkStartArrival(point, reference, id, hikeId, token) {
             point: point,
             reference: reference,
             id: id,
-            hikeId: hikeId
+            hikeId: hikeId,
         })
     })
     return response.json();
