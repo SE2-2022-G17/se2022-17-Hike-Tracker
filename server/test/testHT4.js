@@ -7,6 +7,7 @@ let expect = chai.expect;
 const Hike = require('../models/Hike.js');
 const localGuide = require('./mocks/localGuideToken.js');
 const fs = require('fs');
+const User = require('../models/User.js');
 
 let mongoServer;
 
@@ -20,7 +21,20 @@ before(async () => {
     try{
         fs.unlinkSync("./public/tracks/filename.gpx");
         await Hike.deleteMany({title: 'TestTrack'});
+        await User.deleteOne({
+            email:"localguide@email.com"
+        })
     }catch(e){}
+    const user = await User.create({
+        firstName: "Pietro",
+        lastName: "Bertorelle",
+        email: "localguide@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: "localGuide",
+        active: true
+    })
+    await user.save();
 });
 
 after(async () => {
@@ -60,16 +74,16 @@ describe('Test API for get hike information and insert hike', () => {
         body.append("province", "AT");
         console.log(body)*/
         //myFile = fs.readFileSync("./test/mocks/Yosemite Grand Traverse.gpx")
-        const blob = new Blob(["a"], { type: 'text/html' });
+        /*const blob = new Blob(["a"], { type: 'text/html' });
         blob["lastModifiedDate"] = "";
-        blob["name"] = "filename.gpx";
+        blob["name"] = "filename.gpx";*/
         
   
         const response = await request(app)
             .post('/localGuide/addHike')
             .set('Authorization', "Bearer " + token)
             //.set('Content-Type',"multipart/form-data")
-            .accept('application/json')
+            //.accept('application/json')
             .field("title", "TestTrack")
             .field("time", 46)
             .field("difficulty", "Tourist")
