@@ -341,7 +341,7 @@ app.get('/huts', (req, res) => {
 })
 
 //link hut to the hike
-app.post('/hike/linkhut', verifyUserToken, (req, res) => {
+app.post('/hike/linkhut', verifyUserToken, async (req, res) => {
     const hike = req.body.hike;
     const hutId = req.body.hut;
     const user = req.user; // this is received from verifyUserToken middleware
@@ -351,9 +351,11 @@ app.post('/hike/linkhut', verifyUserToken, (req, res) => {
         return;
     }
 
-    return dao.linkHutToHike(hutId, hike)
+    const userId = (await dao.getUserByEmail(user.email))._id;
+
+    return dao.linkHutToHike(hutId, hike, userId)
         .then(() => { res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); })
+        .catch((error) => { res.status(parseInt(error.message)).json(error); })
 });
 
 app.put('/linkStartArrival',verifyUserToken, async (req, res) => {

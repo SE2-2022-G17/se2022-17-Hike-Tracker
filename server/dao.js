@@ -347,11 +347,15 @@ exports.createHut = async (
     position.save()
 }
 
-exports.linkHutToHike = async (hutId, hike) => {
-
-    if (hutId === undefined || hike === undefined)
+exports.linkHutToHike = async (hutId, hike, userId) => {
+    if (hutId === undefined || hike === undefined || !userId)
         throw new TypeError(400);
-
+    if(! Hike.findOne({
+        _id: hike._id,
+        localGuide_id: userId
+    })){
+        throw new TypeError(401);
+    }
     hike.huts.push(hutId);
     try {
         return await Hike.findByIdAndUpdate(hike._id, { huts: hike.huts })
