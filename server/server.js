@@ -186,7 +186,7 @@ app.post('/user/store-performance',  verifyUserToken, (req, res) => {
 
                 return res.json(user);
             } else
-                return res.status(500);
+                return res.status(500).end();
 
         })
         .catch((error) => { res.status(error).end(); });
