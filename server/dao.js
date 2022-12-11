@@ -85,7 +85,7 @@ exports.getHuts = async (
     }
 }
 
-exports.registerUser = async (firstName, lastName, email, password, role) => {
+exports.registerUser = async (firstName, lastName, email, password, role, phoneNumber) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
     
@@ -115,7 +115,8 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
         email: email,
         hash: hash,
         activationCode: activationCode,
-        role: role
+        role: role,
+        phoneNumber: phoneNumber,
     })
 
     await user.save()
@@ -145,7 +146,9 @@ exports.loginUser = async (email, password) => {
         'email': user.email,
         'role': user.role,
         'active': user.active,
-        '_id': user._id
+        '_id': user._id,
+        'phoneNumber': user.phoneNumber,
+        'approved': user.approved
     }
 
     return { token: token, user: res }
@@ -153,7 +156,7 @@ exports.loginUser = async (email, password) => {
 }
 
 exports.updateUserPreference = async (altitude, duration, email) => {
-    return User.updateOne({email: email}, {
+    return User.findOneAndUpdate({email: email}, {
         $set: {
             'preferenceAltitude': altitude,
             'preferenceDuration': duration,

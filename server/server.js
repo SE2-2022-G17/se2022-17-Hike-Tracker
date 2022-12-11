@@ -93,8 +93,9 @@ app.post('/user/register', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const role = req.body.role;
+    const phoneNumber = req.body.phoneNumber;
 
-    return dao.registerUser(firstName, lastName, email, password, role)
+    return dao.registerUser(firstName, lastName, email, password, role, phoneNumber)
         .then(() => {return res.status(201).end(); })
         .catch((error) => {console.log(error); return res.status(400).json(error); });
 });
@@ -179,13 +180,9 @@ app.post('/user/store-performance',  verifyUserToken, (req, res) => {
     return dao.updateUserPreference(altitude, duration, user.email)
         .then((response) => {
 
-            if (response.matchedCount > 0) {
-
-                user.preferenceAltitude = altitude;
-                user.preferenceDuration = duration;
-
-                return res.json(user);
-            } else
+            if (Object.keys(response).length > 0)
+                return res.json(response);
+            else
                 return res.status(500).end();
 
         })
