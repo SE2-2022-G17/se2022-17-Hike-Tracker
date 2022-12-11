@@ -439,3 +439,30 @@ exports.getParking = async (
         console.log(e.message)
     }
 }
+
+exports.getPreferredHikes = async (
+    maxAscent,
+    maxTime,
+) => {
+
+   
+    if(maxAscent === undefined && maxTime === undefined){
+         throw new TypeError(400);
+    }
+
+    try {
+        
+        const hikes = await Hike.find()
+            .select({ "__v": 0, "referencePoints": 0 })
+            .filterBy("ascent", undefined, maxAscent)
+            .filterBy("expectedTime", undefined, maxTime)
+            .populate('startPoint') // populate is basically a join
+            .populate('endPoint')
+
+
+        return hikes
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}

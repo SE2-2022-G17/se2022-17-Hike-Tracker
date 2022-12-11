@@ -345,11 +345,12 @@ async function getAllParking(){
 
 async function getPreferredHikes(duration, altitude, token){
 
+    const hourDuration = (duration/60).toFixed(1);
     let query = "?";
     let parametes = [];
 
     if (duration !== undefined)
-        parametes.push("maxTime=" + duration)
+        parametes.push("maxTime=" + hourDuration)
     if (altitude !== undefined)
         parametes.push("maxAscent=" + altitude)
 
