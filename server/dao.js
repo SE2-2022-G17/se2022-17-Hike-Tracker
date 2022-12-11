@@ -151,6 +151,19 @@ exports.loginUser = async (email, password) => {
 
 }
 
+exports.updateUserPreference = async (altitude, duration, email) => {
+    return User.updateOne({email: email}, {
+        $set: {
+            'preferenceAltitude': altitude,
+            'preferenceDuration': duration,
+        }
+    });
+}
+
+exports.getUserByEmail = async (email) => {
+    return User.findOne({email: email});
+}
+
 exports.validateUser = async (email, activationCode) => {
     const user = await User.findOne({ email: email })
 
@@ -187,9 +200,10 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
     return parking._id;
 }
 
-exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
+exports.saveNewHike = async (title, time, difficulty, description, track, city, province, userId) => {
     let startPosition = undefined
     let endPosition = undefined
+
     try {
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
@@ -221,7 +235,8 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
                 description: description,
                 city: city,
                 province: province,
-                track_file: track !== undefined ? track.originalname : null
+                track_file: track !== undefined ? track.originalname : null,
+                localGuide_id: userId
             })
 
             hike.save((err) => {
@@ -369,41 +384,45 @@ exports.getHikeTrace = async (hikeId) => {
     }
 }
 
-exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId) => {
+exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId, userId) => {
     const updateHike = {};
-    if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
-        if(point=="start"){
-            if(reference=="huts"){
-                updateHike.startPointHut_id = id
-            }
-            else{
-                updateHike.startPointParking_id = id
-            }
-        }
-        else{
-            if(reference=="huts"){
-                updateHike.endPointHut_id = id
-            }
-            else{
-                updateHike.endPointParking_id = id
-            }
-        }
-        try {
-            const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
-                if (err) {
-                    console.log("line " + console.trace() + " " + err)
-                } else {
-                    return docs;
+    if(!(await Hike.findOne({_id:hikeId,localGuide_id:userId}))){
+        throw new TypeError(401)
+    } else {
+        if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
+            if(point=="start"){
+                if(reference=="huts"){
+                    updateHike.startPointHut_id = id
                 }
-            }).clone();
-            return hike._id;
-        } catch (err) {
-            console.log("line " + console.trace() + " " + err)
+                else{
+                    updateHike.startPointParking_id = id
+                }
+            }
+            else{
+                if(reference=="huts"){
+                    updateHike.endPointHut_id = id
+                }
+                else{
+                    updateHike.endPointParking_id = id
+                }
+            }
+            try {
+                const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
+                    if (err) {
+                        console.log("line " + console.trace() + " " + err)
+                    } else {
+                        return docs;
+                    }
+                }).clone();
+                return hike._id;
+            } catch (err) {
+                console.log("line " + console.trace() + " " + err)
+                throw new TypeError("DB error");
+            }
+        } else {
+            console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: " + point + " - " + reference + " - " + id + " - " + hikeId);
             throw new TypeError("DB error");
         }
-    } else {
-        console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: " + point + " - " + reference + " - " + id + " - " + hikeId);
-        throw new TypeError("DB error");
     }
 }
 

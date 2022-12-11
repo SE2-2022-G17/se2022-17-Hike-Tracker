@@ -7,7 +7,7 @@ import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
 import ShowHike from "./components/ShowHikeComponent";
 import ResponsiveNavBar from './components/ResponsiveNavBar';
-import { ProfileModal } from './components/Profile';
+import { ProfileModal, PerformanceModal } from './components/Profile';
 import VerifyAccount from './components/VerifyAccount';
 import CreateParking from './components/CreateParking';
 import { HighVerification } from './components/highLevelUserVerification'
@@ -41,7 +41,10 @@ function MainApp() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [modalShow, setModalShow] = useState(false);
+  const [performanceModal, setPerformanceModal] = useState(false);
   const [role, setRole] = useState("");
+  const [id, setId] = useState("");
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -54,6 +57,18 @@ function MainApp() {
     return JSON.parse(jsonPayload);
   }
 
+  let SavePreferenceUser = (data) => {
+    const authToken = localStorage.getItem('token');
+
+    return API.storePerformance(data, authToken).then(response => {
+      setUser(response);
+      return true;
+    }).catch(error => {
+      console.log(error);
+      return false;
+    })
+  }
+
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
@@ -63,6 +78,7 @@ function MainApp() {
           navigate('/verifyAccount/' + payload.email);
         }
         else {
+          setUser(user);
           localStorage.setItem('token', user.token);
           if ((payload.role === Type.platformManager
             || payload.role === Type.emergencyOperator)
@@ -84,6 +100,7 @@ function MainApp() {
   const doLogOut = async () => {
     localStorage.clear()
     setLoggedIn(false);
+    setUser(null);
     setRole("");
     navigate('/');
   }
@@ -96,6 +113,9 @@ function MainApp() {
     }
     else {
       const tokenPayload = extractTokenPayload(authToken);
+      API.getUserByEmail(tokenPayload.email, authToken).then(response => {
+        setUser(response);
+      }).catch(error => console.log(error));
       setRole(tokenPayload.role);
       if (tokenPayload.active === ValidationType.notValidated) {
         navigate('/verifyAccount/' + tokenPayload.email);
@@ -113,7 +133,7 @@ function MainApp() {
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log(user);
   }, []);
 
   return (
@@ -123,6 +143,7 @@ function MainApp() {
         doLogOut={doLogOut}
         openLogin={doLogIn}
         setModalShow={setModalShow}
+        setPerformanceModal={setPerformanceModal}
         role={role}
       />
       {errorMessage ?  //Error Alert
@@ -134,6 +155,16 @@ function MainApp() {
         show={modalShow}
         onHide={() => setModalShow(false)}
       />
+      {
+        user !== null ?
+            <PerformanceModal performanceModal={performanceModal}
+                              setPerformanceModal={setPerformanceModal}
+                              user={user}
+                              SavePreferenceUser={ SavePreferenceUser }
+            />
+            : ''
+      }
+
       <></>
 
 
@@ -144,7 +175,7 @@ function MainApp() {
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide />}/>
+        <Route path="/localGuide" element={<LocalGuide/>}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
         <Route path="/hiker/hikes/:id" element={<ShowHike role={role}/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
@@ -152,9 +183,8 @@ function MainApp() {
         <Route path="/huts/create" element={<CreateHut />} />
         <Route path="/huts/searchHut" element={<SearchHut />} />
       </Routes>
-    </>
+      </>
   );
 }
-
 
 export default App;

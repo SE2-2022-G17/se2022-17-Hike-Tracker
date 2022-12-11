@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
+const { stringify } = require('querystring');
 
 
 // init express
@@ -24,6 +25,14 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());
 
+function distanceCalc(p1,p2) {
+    const ph1 = p1.lat * Math.PI/180;
+    const ph2 = p2.lat * Math.PI/180;
+    const DL = (p2.lng-p1.lng)* Math.PI/180;
+    const R = 6371e3;
+    const d = Math.acos((Math.sin(ph1)*Math.sin(ph2))+(Math.cos(ph1)*Math.cos(ph2))*Math.cos(DL))*R;
+    return d;
+}
 
 /*** APIs ***/
 
@@ -154,11 +163,32 @@ const upload = multer({
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province);
+        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
         return res.status(201).end();
     } catch (err) {
         return res.status(500).json(err);
     }
+});
+
+app.post('/user/store-performance',  verifyUserToken, (req, res) => {
+    const altitude = req.body.altitude;
+    const duration = req.body.duration;
+    let user = req.user;
+
+    return dao.updateUserPreference(altitude, duration, user.email)
+        .then((response) => {
+
+            if (response.matchedCount > 0) {
+
+                user.preferenceAltitude = altitude;
+                user.preferenceDuration = duration;
+
+                return res.json(user);
+            } else
+                return res.status(500);
+
+        })
+        .catch((error) => { res.status(error).end(); });
 });
 
 app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
@@ -176,23 +206,39 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
     }
 });
 
+app.get('/user', verifyUserToken, (req, res) => {
+    dao.getUserByEmail(req.user.email)
+        .then((user) => {
+            console.log(user); res.json(user); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
+
 
 app.get('/hutsCloseTo/:id', async (req, res) => {
     const hikeId = req.params.id;
-    let huts = [];
+    const huts = [];
     try{
         const trace = await dao.getHikeTrace(hikeId);
-        for(let i=0;i<trace.length;i++){
-            const hutsNearPoint = await dao.getHuts(undefined,undefined,undefined,trace[i].lng,trace[i].lat,"5");
-            hutsNearPoint.forEach(hutNearPoint => {
-                const res = huts.find((hut) =>{ 
-                    return hutNearPoint._id.toString() === hut._id.toString();
-                });
-                if(res===undefined) {
-                    huts.push(hutNearPoint);
+        const allHuts = await dao.getHuts();
+
+        trace.forEach((point)=>{
+            allHuts.forEach((hut)=>{
+                const p1 = {
+                    lng : point.lng,
+                    lat : point.lat
                 }
-            })   
-        }
+                const p2 = {
+                    lng : hut.point.location.coordinates[0],
+                    lat : hut.point.location.coordinates[1]
+                }
+                if(distanceCalc(p1,p2) <= 5000){
+                    const found =  huts.find((h)=>h._id.toString()===hut._id.toString());
+                    if( found === undefined )
+                        huts.push(hut);
+                }
+            });
+        })
         res.json(huts);
     }catch (err) {
         console.log(err);
@@ -314,13 +360,17 @@ app.put('/linkStartArrival',verifyUserToken, async (req, res) => {
     try {
         if(!req || !req.body || !req.body.point || !req.body.reference || req.body.point!=="end" && req.body.point!=="start" || req.body.reference!=="parking" && req.body.reference!=="huts" || !req.body.id || !req.body.hikeId)
             return res.status(422).end();
-        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId)
+        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId, (await dao.getUserByEmail(req.user.email))._id)
         if (result) {
             return res.status(201).json(result);
         } else {
             return res.status(500).json(result);
         }
     } catch (err) {
+        console.log(typeof(err.message))
+        if(err.message === "401"){
+            return res.status(401).end()
+        }
         return res.status(500).json(err)
     }
 })

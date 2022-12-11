@@ -8,13 +8,13 @@ function LocalGuide() {
         <Container>
             <Row>
                 <Col>
-                    <MainContent />
+                    <MainContent/>
                 </Col>
             </Row>
         </Container>
     </>
 }
-
+//PROPS: user: the user
 function MainContent() {
     const [title, setTitle] = useState("");
     const [time, setTime] = useState("");
