@@ -350,6 +350,8 @@ async function getPreferredHikes(duration, altitude, token){
 
     if (duration !== undefined)
         parametes.push("maxTime=" + duration)
+    if (altitude !== undefined)
+        parametes.push("maxAscent=" + altitude)
 
 
     query += parametes.join("&");

@@ -6,7 +6,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Button from 'react-bootstrap/Button';
 import UserType from '../models/UserType';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChartLine, faArrowRightFromBracket, faInfo} from "@fortawesome/free-solid-svg-icons";
+import {faChartLine, faArrowRightFromBracket, faInfo, faLightbulb} from "@fortawesome/free-solid-svg-icons";
 import { Navigate, useNavigate } from 'react-router-dom';
 import {Card} from "react-bootstrap";
 import React from "react";
@@ -91,7 +91,7 @@ function ResponsiveNavBar(props) {
 
                                                 <NavDropdown.Item
                                                     onClick={() => navigate('/preferredHikes')}>
-                                                    <FontAwesomeIcon className={'me-1'} icon={faChartLine} />
+                                                    <FontAwesomeIcon className={'me-1'} icon={faLightbulb}/>
                                                     Suggested Hikes
                                                 </NavDropdown.Item> 
 
