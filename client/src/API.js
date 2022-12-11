@@ -310,7 +310,7 @@ async function getAllParking(){
 }
 
 async function addReferencePoint(id, token, name, description,longitude,latitude) {
-    const response = await fetch(url + '/hikes/reference-points/' + id, {
+    const response = await fetch(url + '/hikes/' + id + '/reference-points/', {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`,
