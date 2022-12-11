@@ -410,6 +410,22 @@ app.get('/getParking', verifyUserToken, (req, res) => {
         .catch((error) => { return res.status(500).json(error); });
 });
 
+
+app.get('/preferredHikes', verifyUserToken, (req, res)=>{
+
+    let maxAscent = req.query.maxAscent 
+    let maxTime = req.query.maxTime
+
+    dao.getPreferredHikes(maxAscent, maxTime)
+        .then((hikes) => { res.json(hikes); })
+        .catch((error) => { res.status(parseInt(error.message)).json(error); });
+
+});
+
+
+
+
+
 const server = http.createServer(app);
 
 

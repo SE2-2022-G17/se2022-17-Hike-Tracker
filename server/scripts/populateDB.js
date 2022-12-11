@@ -32,6 +32,7 @@ function HikeDetail(title, time, difficulty, city, province, description, file) 
     this.province = province;
     this.description = description;
     this.file = file;
+    
 }
 
 
@@ -93,6 +94,7 @@ async function run() {
         new HikeDetail("Stromboli Sentiero Alto", 5.5, 1, "Stromboli", "ME", "La camminata sul vulcano perfettamente piramidale di Stromboli che si staglia sul mare color cobalto sicuramente fa un effetto wow. Non capita tutti i giorni, dopo tutto, di poter camminare su un cono fumante, sempre attivo. La più incantevole tra le isole Eolie, Stromboli è il giovincello sprezzante dei vulcani, formato solamente 40.000 anni fa.", "Stromboli Sentiero Alto.gpx")
     ]
 
+
     const user = await User.create({
         firstName: "Pietro",
         lastName: "Bertorelle",
@@ -132,6 +134,7 @@ async function run() {
     await user3.save()
     console.log(user3);
 
+
     for (const h of testDataHikes) {
         try {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
@@ -165,6 +168,7 @@ async function run() {
                 startPoint: startPosition._id,
                 endPoint: endPosition._id,
                 authorId: user._id,
+
             })
             await hike.save()
             console.log(hike)

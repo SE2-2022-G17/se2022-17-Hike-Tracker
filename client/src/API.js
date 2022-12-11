@@ -350,6 +350,31 @@ async function getAllParking() {
     return await result.json();
 }
 
+async function getPreferredHikes(duration, altitude, token){
+
+    const hourDuration = (duration/60).toFixed(1);
+    let query = "?";
+    let parametes = [];
+
+    if (duration !== undefined)
+        parametes.push("maxTime=" + hourDuration)
+    if (altitude !== undefined)
+        parametes.push("maxAscent=" + altitude)
+
+
+    query += parametes.join("&");
+
+    const response = await fetch(url + '/preferredHikes' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const hikes = await response.json();
+    return hikes;
+
+}
 
 const API = {
     getVisitorHikes,
@@ -370,8 +395,10 @@ const API = {
     getParking,
     getHutsCloseToHike,
     storePerformance,
-    getUserByEmail
+    getUserByEmail,
+    getPreferredHikes
 };
+
 
 export default API;
 
