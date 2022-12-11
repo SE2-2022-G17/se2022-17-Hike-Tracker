@@ -395,6 +395,8 @@ exports.getHikeTrace = async (hikeId) => {
 
 exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId, userId) => {
     const updateHike = {};
+    console.log("myId: "+ await User.findOne({"_id":userId}));
+    console.log("Requested Id: "+ await User.findOne({"_id":(await Hike.findOne({"_id":hikeId})).authorId}));
     if(!(await Hike.findOne({
         "_id":hikeId,
         "authorId":userId

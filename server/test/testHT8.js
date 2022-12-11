@@ -44,7 +44,9 @@ before(async () => {
             point: startPosition._id
         }
     )
+
     const user = await User.create({
+        _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide@email.com",
