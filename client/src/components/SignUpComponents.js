@@ -86,8 +86,6 @@ function SignUpForm(props) {
                                                 }
                                             }/>
                             </Form.Group>
-    } else if ( type !== 'localGuide' && phoneNumber !== '' ) {
-        setPhoneNumber('');
     }
 
     return (
@@ -99,7 +97,11 @@ function SignUpForm(props) {
                     <Form >
                         <Form.Group controlId='type' className='base-form'>
                             <Form.Label >Who are you?</Form.Label>
-                            <Form.Select aria-label="Tipo di iscrizione" onChange={(event) => { setType(event.target.value); }} >
+                            <Form.Select aria-label="Tipo di iscrizione" onChange={(event) => {
+                                setType(event.target.value);
+                                setPhoneNumber('');
+                            }
+                            } >
                                 <option value="hiker">Hiker</option>
                                 <option value="localGuide">Local Guide</option>
                                 <option value="platformManager">Platform Manager</option>
