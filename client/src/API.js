@@ -17,8 +17,6 @@ async function validateEmail(email, verificationCode) {
     if (response.ok) {
         return "OK"
     } else {
-        const errDetail = await response.json();
-        //throw errDetail.message;
         return "Error"
     }
 
@@ -44,7 +42,6 @@ async function signUp(credentials) {
     if (response.ok) {
         return "OK";
     } else {
-        //const errDetail = await response.json();
         return "Error";
     }
 }
@@ -134,7 +131,7 @@ async function getHuts(
 
     let parametes = []
 
-    if (bedsMin !== undefined && bedsMin.trim().length!=0)
+    if (bedsMin !== undefined && bedsMin.trim().length!==0)
         parametes.push("bedsMin=" + bedsMin)
     if (minAltitude !== undefined && minAltitude.trim().length !== 0)
         parametes.push("altitudeMin=" + minAltitude)
@@ -194,21 +191,7 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
         },
         credentials: 'include',
-        body: body/*JSON.stringify({
-            "title": title,
-            "length": length,
-            "time": time,
-            "ascent": ascent,
-            "difficulty": difficulty,
-            "startPoint": startPoint,
-            "endPoint": endPoint,
-            "referencePoints": referencePoints,
-            "description": description,
-            "city": city,
-            "province": province,
-            "track_file":track
-        })*/
-
+        body: body
     })
     const resp = await response;
     if (resp.ok) {
@@ -265,7 +248,7 @@ async function linkStartArrival(point,reference,id,hikeId,token){
             hikeId:hikeId
         })
     })
-    return await response.json();
+    return response.json();
 }
 
 async function linkHut(hut, hike, token) {
@@ -283,6 +266,43 @@ async function linkHut(hut, hike, token) {
     return response.status;
 }
 
+async function getParking(
+    lotsMin,
+    minAltitude,
+    maxAltitude,
+    longitude,
+    latitude,
+    searchRadius,
+    token
+) {
+    let query = "?"
+
+    let parametes = []
+
+    if (lotsMin !== undefined && lotsMin.trim().length!==0)
+        parametes.push("lotsMin=" + lotsMin)
+    if (minAltitude !== undefined && minAltitude.trim().length !== 0)
+        parametes.push("altitudeMin=" + minAltitude)
+    if (maxAltitude !== undefined && maxAltitude.trim().length !== 0)
+        parametes.push("altitudeMax=" + maxAltitude)
+    if (longitude !== undefined && longitude.trim().length !== 0)
+        parametes.push("longitude=" + longitude)
+    if (latitude !== undefined && latitude.trim().length !== 0)
+        parametes.push("latitude=" + latitude)
+    if (searchRadius !== undefined && searchRadius.trim().length !== 0)
+        parametes.push("searchRadius=" + searchRadius)
+
+    query += parametes.join("&")
+    const response = await fetch(url + '/getParking' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    const parking = await response.json()
+    return parking
+}
 
 async function getAllParking(){
     const result = await fetch(url + '/parking');

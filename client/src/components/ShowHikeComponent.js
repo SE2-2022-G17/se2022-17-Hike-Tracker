@@ -36,6 +36,7 @@ function ShowHike(props) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
                 }
+                
             }).catch(function (error) {
                 console.log(error);
             })
@@ -193,11 +194,7 @@ function ShowHike(props) {
                     <div ref={mapContainer} className="map-container" />
                 </Col>
             </Row>
-            {
-
-
-                
-
+            {               
                 //only localguide can link hut to a hike
                 props.role === "localGuide" ? <>
                 <Accordion className="mb-3">

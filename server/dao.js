@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const { prependOnceListener } = require('./models/Hike')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
+const Location = require('./models/Location');
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
@@ -67,18 +68,18 @@ exports.getHuts = async (
 ) => {
 
     try {
-        
+
         let nearPositions = await Position
             .find()
             .filterByDistance(longitude, latitude, searchRadius)
 
         const huts = await Hut.find()
-            .select({ "__v": 0})
+            .select({ "__v": 0 })
             .filterBy('altitude', altitudeMin, altitudeMax)
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            
+
         return huts
     } catch (e) {
         console.log(e.message)
@@ -108,7 +109,7 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
 
         await transporter.sendMail(mailOptions)
     }
-    
+
     const user = await User.create({
         firstName: firstName,
         lastName: lastName,
@@ -168,7 +169,7 @@ exports.validateUser = async (email, activationCode) => {
 
 exports.saveNewParking = async (name, description, parkingSpaces, latitude, longitude) => {
 
-    let startPosition = await Position.create({
+    let position = await Position.create({
         "location.coordinates": [longitude, latitude]
     })
 
@@ -176,7 +177,7 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
         name: name,
         description: description,
         parkingSpaces: parkingSpaces,
-        coordinate: startPosition._id
+        point: position._id
     });
 
     parking.save((err) => {
@@ -272,20 +273,6 @@ exports.getHike = async (id) => {
     }
 }
 
-
-exports.getAllHuts = async () => {
-    try {
-        return await Hut.find()
-            .then(huts => {
-                return huts;
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    } catch (e) {
-        console.log(e.message);
-    }
-}
 
 exports.getAllHuts = async () => {
     try {
@@ -410,5 +397,79 @@ exports.getAllParking = async () => {
         }).clone();
     } catch (e) {
         console.log(e.message);
+    }
+}
+
+exports.getParking = async (
+    lotsMin,
+    altitudeMin,
+    altitudeMax,
+    longitude,
+    latitude,
+    searchRadius
+) => {
+
+    try {
+
+        let nearPositions = await Position
+            .find()
+            .filterByDistance(longitude, latitude, searchRadius)
+        console.log("ey: " + nearPositions)
+        const parking = await Parking.find()
+            .select({ "__v": 0 })
+            .filterBy('altitude', altitudeMin, altitudeMax)
+            .filterBy('parkingSpaces', lotsMin)
+            .filterByPositions(longitude, latitude, nearPositions)
+            .populate('point')
+
+        return parking
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+exports.createReferencePoint = async (hikeId, name, description, longitude, latitude) => {
+
+    if (!hikeId || !longitude || !latitude || !name || !description) {
+        throw { description: "wrong parameters", status: 400 };
+    }
+
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw { description: "Hike not found", status: 404 }
+
+    const position = await Position.create({
+        "location.coordinates": [longitude, latitude]
+    });
+
+    hike.referencePoints.push(position._id);
+
+    const referencePoint = await Location.create({
+        name: name,
+        description: description,
+        point: position
+    });
+
+    hike.save();
+    referencePoint.save();
+    position.save();
+}
+
+exports.getHikeTrace = async (hikeId) => {
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw { description: "Hike not found", status: 404 }
+
+
+    try {
+        const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+        var gpx = new gpxParser()
+        gpx.parse(file)
+        return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
+
+    } catch (e) {
+        throw { description: "Trace not found", status: 404 };
     }
 }

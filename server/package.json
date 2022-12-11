@@ -6,11 +6,13 @@
     "scripts": {
         "test": "cross-env NODE_ENV=test mocha --timeout 60000",
         "start": "node server.js",
-        "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov mocha --timeout 60000"
+        "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov mocha --timeout 60000",
+        "swagger-autogen": "node swagger.js"
     },
     "author": "Andrea Amato",
     "license": "ISC",
     "dependencies": {
+        "and": "^0.0.3",
         "bcrypt": "^5.1.0",
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
@@ -31,7 +33,9 @@
         "nodemon": "^2.0.7",
         "passport": "^0.6.0",
         "passport-local": "^1.0.0",
-        "sqlite3": "^5.0.2"
+        "sqlite3": "^5.0.2",
+        "swagger-autogen": "^2.22.0",
+        "swagger-ui-express": "^4.6.0"
     },
     "devDependencies": {
         "chai": "^4.3.7",
