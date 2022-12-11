@@ -180,8 +180,12 @@ app.post('/user/store-performance',  verifyUserToken, (req, res) => {
     return dao.updateUserPreference(altitude, duration, user.email)
         .then((response) => {
 
-            if (Object.keys(response).length > 0)
+            if (Object.keys(response).length > 0) {
+                console.log(response);
                 return res.json(response);
+
+            }
+
             else
                 return res.status(500).end();
 

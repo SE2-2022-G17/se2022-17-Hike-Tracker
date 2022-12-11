@@ -161,7 +161,7 @@ exports.updateUserPreference = async (altitude, duration, email) => {
             'preferenceAltitude': altitude,
             'preferenceDuration': duration,
         }
-    });
+    }, { new: true });
 }
 
 exports.getUserByEmail = async (email) => {
