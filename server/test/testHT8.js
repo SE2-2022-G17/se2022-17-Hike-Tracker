@@ -67,7 +67,7 @@ before(async () => {
         ascent: 5,
         startPoint: startPosition._id,
         endPoint: endPosition._id,
-        localGuide_id:user._id
+        authorId:user._id
     });
 
     const hut = await Hut.create(

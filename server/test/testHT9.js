@@ -71,7 +71,7 @@ before(async () => {
         description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
         track_file: "Croagh Patrick Mountain.gpx",
         __v: 0,
-        localGuide_id: user._id
+        authorId: user._id
     }
 
     const hut = {

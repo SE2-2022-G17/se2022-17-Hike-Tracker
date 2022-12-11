@@ -137,8 +137,7 @@ function ShowHike(props) {
     let linkHutBlock = '';
 
     //only localguide can link hut to a hike, check if this user created this hike
-    if (props.role === "localGuide" && linkHut === false && props.user !== null && hike !== null &&
-        hike.authorId === props.user._id ) {
+    if (props.role === "localGuide" && linkHut === false && hike !== null) {
         linkHutBlock = <Row className="m-3">
                         <Col className="text-center">
                             <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
@@ -147,7 +146,7 @@ function ShowHike(props) {
     }
 
 
-    console.log(hike, props.user)
+    console.log(hike)
 
     return (
         <Container>
