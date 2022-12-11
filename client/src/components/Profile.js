@@ -3,9 +3,9 @@ import Utils from '../Utils';
 import Button from "react-bootstrap/Button";
 import React, {useState} from "react";
 import {Form, Alert} from "react-bootstrap";
-import {faChartLine, faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import API from "../API";
+import ShowType from "../models/PerformanceType.js";
 
 function ProfileModal(props) {
   let loggedUser = undefined
@@ -40,7 +40,19 @@ function ProfileModal(props) {
                 <p className="mb-0">Role</p>
               </div>
               <div className="col-sm-9">
-                <p className="text-muted mb-0">{loggedUser.role}</p>
+                <p className="text-muted mb-0">{
+                  loggedUser.role === "hiker"? "Hiker"
+                  :
+                  loggedUser.role === "friend"? "Friend"
+                  :
+                  loggedUser.role === "localGuide"? "Local guide"
+                  :
+                  loggedUser.role === "hutWorker"? "Hut worker"
+                  :
+                  loggedUser.role === "emergencyOperator"? "Emergency operator"
+                  :<></>
+
+                }</p>
               </div>
             </div>
             <hr />
@@ -70,33 +82,35 @@ function ProfileModal(props) {
 
 function PerformanceModal(props) {
 
-  const type = {
-    show: 1,
-    create: 2,
-    notSet: 3,
-    edit: 4,
-  };
+  let defaultShowType = ShowType.notSet;
+  let preferenceDuration = '';
+  let preferenceAltitude = '';
 
-  const [showType, setShowType] = useState(type.notSet);
-  const [duration, setDuration] = useState('');
-  const [altitude, setAltitude] = useState('');
+  if ( validateValue(props.user.preferenceDuration) || validateValue(props.user.preferenceAltitude) ) {
+    defaultShowType = ShowType.show;
+    preferenceDuration = props.user.preferenceDuration;
+    preferenceAltitude = props.user.preferenceAltitude;
+  }
+  const [showType, setShowType] = useState(defaultShowType);
+  const [duration, setDuration] = useState(preferenceDuration);
+  const [altitude, setAltitude] = useState(preferenceAltitude);
   const [showAlert, setShowAlert] = useState(false);
 
   const onHide = () => {
     props.setPerformanceModal(false);
     props.setPerformanceModal(false);
-    setShowType(type.notSet);
+    const type = ( validateValue(props.user.preferenceDuration) || validateValue(props.user.preferenceAltitude) ) ? ShowType.show : ShowType.notSet;
+    setShowType(type);
     setShowAlert(false);
     setDuration('');
     setAltitude('');
   }
 
-  if (props.user !== null) {
 
     let Save = () => {
 
-      if (altitude !== '' && altitude !== 0 &&
-          duration !== '' && duration !== 0)
+      if (altitude !== '' && altitude !== 0 && altitude !== '0' &&
+          duration !== '' && duration !== 0 && duration !== '0')
       {
         const data = {
           altitude: altitude,
@@ -105,36 +119,42 @@ function PerformanceModal(props) {
 
         const result = props.SavePreferenceUser(data);
         result.then(res => {
-          if (res)
+          if (res) {
             setShowAlert(true);
+            setShowType(ShowType.show);
+          }
         });
       }
     }
 
-    let preferenceDuration = props.user.preferenceDuration;
-    let preferenceAltitude = props.user.preferenceAltitude;
-    let button = '', body = '', alert = '';
-    if (preferenceDuration === undefined && preferenceAltitude === undefined) {
-      button = <Button onClick={() => setShowType(type.create)}>Add parameters</Button>
+    let Cancel = () => {
+      setShowType(ShowType.show);
+      setDuration(props.user.preferenceDuration);
+      setAltitude(props.user.preferenceAltitude);
     }
+
+  let Edit = () => {
+    setShowType(ShowType.edit);
+    setDuration(props.user.preferenceDuration);
+    setAltitude(props.user.preferenceAltitude);
+  }
+
+    if (showAlert)
+      setTimeout(() => setShowAlert(false), 2000)
+
+    let button = '', body = '', alert = '';
 
     if (showAlert)
       alert = <Alert show={showAlert} onClose={() => setShowAlert(false)} key={'success'} variant={'success'} dismissible>Saved</Alert>
 
-    if ( showType === type.notSet && ( preferenceDuration !== undefined || preferenceAltitude !== undefined ) ) {
-      setShowType(type.show);
-      setDuration(preferenceDuration)
-      setAltitude(preferenceAltitude)
-    }
-
-    if (showType === type.create || showType === type.edit)
+    if (showType === ShowType.create || showType === ShowType.edit)
       button = <>
         <Button onClick={() => Save() }>Save</Button>
-        <Button variant={"secondary"} onClick={() => setShowType(type.show)}>Cancel</Button>
+        <Button variant={"secondary"} onClick={() => Cancel()}>Cancel</Button>
       </>
 
-    if (showType === type.show) {
-      button = <Button onClick={() => setShowType(type.edit)}>Edit</Button>
+    if (showType === ShowType.show) {
+      button = <Button onClick={() => Edit()}>Edit</Button>
       body = <><div className="row">
         <div className="col-sm-3">
           <p className="mb-0">Duration</p>
@@ -154,7 +174,7 @@ function PerformanceModal(props) {
         </div></>
     }
 
-    if (showType === type.create || showType === type.edit) {
+    if (showType === ShowType.create || showType === ShowType.edit) {
       body = <Form>
         <Form.Group className="mb-3">
           <Form.Label>Duration</Form.Label>
@@ -177,10 +197,11 @@ function PerformanceModal(props) {
       </Form>
     }
 
-    if (showType === type.notSet) {
+    if (showType === ShowType.notSet) {
       body = <div className={'text-center text-muted'}>
         <FontAwesomeIcon className={'me-1'} icon={faMagnifyingGlass} />Not set
       </div>
+      button = <Button onClick={() => setShowType(ShowType.create)}>Add parameters</Button>
     }
 
       return (
@@ -204,7 +225,11 @@ function PerformanceModal(props) {
           </Modal.Footer>
         </Modal>
     );
-  }
+}
+
+function validateValue(value)
+{
+  return (value !== undefined && value !== null);
 }
 
 export { ProfileModal, PerformanceModal }

@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const request = require('supertest');
 const app = require("../server.js");
-var chai = require('chai');
-var expect = chai.expect;
+let chai = require('chai');
+let expect = chai.expect;
 const localGuide = require('./mocks/localGuideToken.js');
 
 
@@ -42,5 +42,14 @@ describe('Test API for parking lot', () => {
                 longitude: 3.2
             });
         expect(response.statusCode).to.equal(201);
+    });
+
+    it('get parking lot', async () => {
+        const token = localGuide.token;
+
+        const response = await request(app).get("/getParking")
+            .set('Authorization', "Bearer " + token)
+            .send();
+        expect(response.statusCode).to.equal(200);
     });
 });

@@ -12,6 +12,7 @@ const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
+const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -48,8 +49,7 @@ exports.getVisitorHikes = async (
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
-
-
+        
         return hikes
 
     } catch (e) {
@@ -78,7 +78,7 @@ exports.getHuts = async (
             .filterBy('beds', bedsMin)
             .filterByPositions(longitude, latitude, nearPositions)
             .populate('point')
-            
+        
         return huts
     } catch (e) {
         console.log(e.message)
@@ -88,10 +88,10 @@ exports.getHuts = async (
 exports.registerUser = async (firstName, lastName, email, password, role) => {
     const hash = await bcrypt.hash(password, 10)
     const activationCode = generateActivationCode()
-
+    
     if (process.env.NODE_ENV === "development") {
 
-        var transporter = nodemailer.createTransport({
+        let transporter = nodemailer.createTransport({
             service: "hotmail",
             auth: {
                 user: "se2g17@outlook.com",
@@ -99,7 +99,7 @@ exports.registerUser = async (firstName, lastName, email, password, role) => {
             }
         })
 
-        var mailOptions = {
+        let mailOptions = {
             from: "se2g17@outlook.com",
             to: email,
             subject: "Activation Code",
@@ -126,12 +126,11 @@ exports.loginUser = async (email, password) => {
     const user = await User.findOne({ email: email })
 
     if (user === null)
-        throw 404
-
+        throw new TypeError(404)
     const result = await bcrypt.compare(password, user.hash)
 
     if (result === false)
-        throw 401
+        throw new TypeError(401)
 
     const token = jwt.sign({
         'fullName': user.firstName + " " + user.lastName,
@@ -145,7 +144,8 @@ exports.loginUser = async (email, password) => {
         'lastName': user.lastName,
         'email': user.email,
         'role': user.role,
-        'active': user.active
+        'active': user.active,
+        '_id': user._id
     }
 
     return { token: token, user: res }
@@ -169,10 +169,10 @@ exports.validateUser = async (email, activationCode) => {
     const user = await User.findOne({ email: email })
 
     if (user === null)
-        throw 404
+        throw new TypeError(404)
 
     if (user.activationCode !== activationCode)
-        throw 404
+        throw new TypeError(404)
 
     user.active = validationType.mailOnly; //activate account if codes are equal
     await user.save()
@@ -201,23 +201,22 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
     return parking._id;
 }
 
-exports.saveNewHike = async (title, time, difficulty, description, track, city, province) => {
+exports.saveNewHike = async (title, time, difficulty, description, track, city, province, userId) => {
     let startPosition = undefined
     let endPosition = undefined
-    try {
 
+    try {
         if (track) {
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
-
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
-            var gpx = new gpxParser()
+            let gpx = new gpxParser()
             gpx.parse(content)
-            var length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
-            var ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
-            var points = gpx.tracks[0].points
-            var startPoint = points[0]
-            var endPoint = points[points.length - 1]
-
+            let length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            let points = gpx.tracks[0].points
+            let startPoint = points[0]
+            let endPoint = points[points.length - 1]
+            
             startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
             })
@@ -225,40 +224,45 @@ exports.saveNewHike = async (title, time, difficulty, description, track, city, 
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
-        }
+            const hike = new Hike({
+                title: title,
+                length: length,
+                expectedTime: time,
+                ascent: ascent,
+                difficulty: difficulty,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                description: description,
+                city: city,
+                province: province,
+                track_file: track !== undefined ? track.originalname : null,
+                authorId: userId
+            })
 
-        const hike = new Hike({
-            title: title,
-            length: length,
-            expectedTime: time,
-            ascent: ascent,
-            difficulty: difficulty,
-            startPoint: startPosition._id,
-            endPoint: endPosition._id,
-            description: description,
-            city: city,
-            province: province,
-            track_file: track !== undefined ? track.originalname : null
-        })
-
-        hike.save((err) => {
-            if (err) {
+            hike.save(function (err, hike) {
                 console.log(err);
-                throw new TypeError(JSON.stringify(err));
-            }
-        });
-        return hike._id;
+                if (err) {
+                    console.log(err);
+                    throw new TypeError(JSON.stringify(err));
+                }
+                else
+                    return hike._id;
+            });
+            return hike._id;
+        }
+        throw new TypeError("No track inserted!");
     } catch (e) {
-        throw 400;
+        console.log(e);
+        throw new TypeError(400);
     }
 }
 
 /* Util function to generate random 6 digit activation code */
 function generateActivationCode(length = 6) {
     let activationCode = ""
-
     for (let i = 0; i < length; i++) {
-        activationCode += (Math.floor(Math.random() * 9) + 1)
+        const randomArray = randomBytes(1);
+        activationCode += (Math.floor( (randomArray[0] * 9)/255) + 1)
     }
 
     return activationCode
@@ -278,10 +282,10 @@ exports.getHike = async (id) => {
                 return doc;
             })
             .catch(err => {
-                console.log(err);
+                throw new TypeError(err);
             });
     } catch (e) {
-        console.log(e.message)
+        throw new TypeError(e);
     }
 }
 
@@ -326,7 +330,7 @@ exports.createHut = async (
     website
 ) => {
     if (name === undefined || description === undefined || phone === undefined || email === undefined)
-        throw 400
+        throw new TypeError(400)
 
     const position = await Position.create({
         "location.coordinates": [longitude, latitude]
@@ -347,11 +351,16 @@ exports.createHut = async (
     position.save()
 }
 
-exports.linkHutToHike = async (hutId, hike) => {
-
-    if (hutId === undefined || hike === undefined)
-        throw 400;
-
+exports.linkHutToHike = async (hutId, hike, userId) => {
+    
+    if (hutId === undefined || hike === undefined || !userId)
+        throw new TypeError(400);
+    if(! (await Hike.findOne({
+        _id: hike._id,
+        authorId: userId
+    }))){
+        throw new TypeError(401);
+    }
     hike.huts.push(hutId);
     try {
         return await Hike.findByIdAndUpdate(hike._id, { huts: hike.huts })
@@ -366,35 +375,68 @@ exports.linkHutToHike = async (hutId, hike) => {
     }
 }
 
-exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId) => {
+exports.getHikeTrace = async (hikeId) => {
+    const hike = await Hike.findById(hikeId);
+
+    if (hike === null)
+        throw new TypeError({ description: "Hike not found", status: 404 })
+
+
+    try {
+        const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+        const gpx = new gpxParser()
+        gpx.parse(file)
+        return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
+
+    } catch (e) {
+        throw new TypeError({ description: "Trace not found", status: 404 });
+    }
+}
+
+exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId, userId) => {
     const updateHike = {};
-    if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
-        point === "start" ?
-            reference === "huts" ?
-                updateHike.startPointHut_id = id
-                :
-                updateHike.startPointParking_id = id
-            :
-            reference === "huts" ?
-                updateHike.endPointHut_id = id
-                :
-                updateHike.endPointParking_id = id
-        try {
-            const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
-                if (err) {
-                    console.log("line " + console.trace() + " " + err)
-                } else {
-                    return docs;
+    console.log("myId: "+ await User.findOne({"_id":userId}));
+    console.log("Requested Id: "+ await User.findOne({"_id":(await Hike.findOne({"_id":hikeId})).authorId}));
+    if(!(await Hike.findOne({
+        "_id":hikeId,
+        "authorId":userId
+    }))){
+        throw new TypeError(401)
+    } else {
+        if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
+            if(point=="start"){
+                if(reference=="huts"){
+                    updateHike.startPointHut_id = id
                 }
-            }).clone();
-            return hike._id;
-        } catch (err) {
-            console.log("line " + console.trace() + " " + err)
+                else{
+                    updateHike.startPointParking_id = id
+                }
+            }
+            else{
+                if(reference=="huts"){
+                    updateHike.endPointHut_id = id
+                }
+                else{
+                    updateHike.endPointParking_id = id
+                }
+            }
+            try {
+                const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
+                    if (err) {
+                        console.log("line " + console.trace() + " " + err)
+                    } else {
+                        return docs;
+                    }
+                }).clone();
+                return hike._id;
+            } catch (err) {
+                console.log("line " + console.trace() + " " + err)
+                throw new TypeError("DB error");
+            }
+        } else {
+            console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: " + point + " - " + reference + " - " + id + " - " + hikeId);
             throw new TypeError("DB error");
         }
-    } else {
-        console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: " + point + " - " + reference + " - " + id + " - " + hikeId);
-        throw new TypeError("DB error");
     }
 }
 
