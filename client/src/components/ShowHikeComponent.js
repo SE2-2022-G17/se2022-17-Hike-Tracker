@@ -137,16 +137,14 @@ function ShowHike(props) {
     let linkHutBlock = '';
 
     //only localguide can link hut to a hike, check if this user created this hike
-    if (props.role === "localGuide" && linkHut === false && hike !== null) {
+    if (props.role === "localGuide" && props.user !== null && props.user.approved &&
+        linkHut === false && hike !== null) {
         linkHutBlock = <Row className="m-3">
                         <Col className="text-center">
                             <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
                         </Col>
                     </Row>
     }
-
-
-    console.log(hike)
 
     return (
         <Container>
@@ -216,7 +214,7 @@ function ShowHike(props) {
 
             {
                 //props.role === "localGuide" => shows form to link the end/start point to hut/parking
-                props.role === "localGuide" && hike !== null ? <>
+                props.role === "localGuide" && props.user !== null && props.user.approved && hike !== null ? <>
                 <br/><br/>
                 <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]}/>
                 </>

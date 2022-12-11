@@ -6,11 +6,38 @@ import {Form, Alert} from "react-bootstrap";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ShowType from "../models/PerformanceType.js";
+import Type from "../models/UserType";
+import Badge from 'react-bootstrap/Badge';
 
 function ProfileModal(props) {
+  const user = props.user;
+
   let loggedUser = undefined
   if (localStorage.getItem('token') !== null)
     loggedUser = Utils.parseJwt(localStorage.getItem('token'))
+
+  // local guide approve block
+  let localGuideApproved = '';
+  if ( user.role === Type.localGuide )
+  {
+    localGuideApproved = <><hr />
+                          <div className="row">
+                            <div className="col-sm-5">
+                              <p className="mb-0">Local Guide Approve</p>
+                            </div>
+                            <div className="col-sm-7">
+                              {user.approved ?
+                                  <Badge bg="success">
+                                    Active
+                                  </Badge>
+                                  :
+                                  <Badge bg="danger">
+                                    Inactive
+                                  </Badge>
+                              }
+                            </div>
+                          </div></>;
+  }
 
   return (
     loggedUser ?
@@ -27,19 +54,19 @@ function ProfileModal(props) {
         <Modal.Body>
           <div className="card-body">
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Full Name</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{loggedUser.fullName}</p>
               </div>
             </div>
             <hr />
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Role</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{
                   loggedUser.role === "hiker"? "Hiker"
                   :
@@ -57,22 +84,23 @@ function ProfileModal(props) {
             </div>
             <hr />
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Email</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{loggedUser.email}</p>
               </div>
             </div>
             <hr />
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Profile state</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{loggedUser.active ? 'Active' : 'Not active'}</p>
               </div>
             </div>
+            { localGuideApproved }
           </div>
         </Modal.Body>
       </Modal>

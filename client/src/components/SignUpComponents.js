@@ -3,6 +3,8 @@ import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate,Link } from 'react-router-dom';
 import { VerCard } from './Verification.js'
 import API from '../API';
+import 'react-phone-number-input/style.css'
+import PhoneInput from "react-phone-number-input";
 
 function SignUpForm(props) {
     const [name, setName] = useState('');
@@ -16,6 +18,7 @@ function SignUpForm(props) {
     const [signedUp,setSignedUp] = useState(false);
     const [emailIsValidated,setEmailIsValidated] = useState(false);
     const [regButtonDisabled,setRegButtonDisabled] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState('');
     const navigate = useNavigate();
 
     const signUp = (credentials) => {
@@ -40,7 +43,7 @@ function SignUpForm(props) {
         event.preventDefault();
         props.setErrorMessage('');
         setRegButtonDisabled(true);
-        const credentials = { name, surname, username, password, type };
+        const credentials = { name, surname, username, password, type, phoneNumber };
 
         // validation that forms are not empty
         let valid = true;
@@ -59,6 +62,9 @@ function SignUpForm(props) {
         } else if (confirmPassword !== password) {
             valid = false;
             props.setErrorMessage('Please confirm your password correctly');
+        } else if (type === 'localGuide' && phoneNumber === '') {
+            valid = false;
+            props.setErrorMessage('Please enter phone number');
         }
         if (valid) {
             signUp(credentials);
@@ -67,6 +73,22 @@ function SignUpForm(props) {
             setRegButtonDisabled(false);
         }
     };
+
+    let phoneNUmberBlock = '';
+    if (type === 'localGuide') {
+        phoneNUmberBlock = <Form.Group controlId='phoneNumber' className='base-form'>
+                                <Form.Label>Phone Number:</Form.Label>
+                                <PhoneInput international defaultCountry="IT" value={phoneNumber}
+                                             onChange={setPhoneNumber} countryCallingCodeEditable={false}
+                                            style={
+                                                {
+                                                    borderRadius: '0.375rem'
+                                                }
+                                            }/>
+                            </Form.Group>
+    } else if ( type !== 'localGuide' && phoneNumber !== '' ) {
+        setPhoneNumber('');
+    }
 
     return (
 
@@ -97,6 +119,9 @@ function SignUpForm(props) {
                             <Form.Label>Email:</Form.Label>
                             <Form.Control type='email' value={username} onChange={ev => setUsername(ev.target.value)} />
                         </Form.Group>
+                        {
+                            phoneNUmberBlock
+                        }
                         <Form.Group controlId='password' className='base-form'>
                             <Form.Label>Password:</Form.Label>
                             <Form.Control type='password' value={password} onChange={ev => setPassword(ev.target.value)} />

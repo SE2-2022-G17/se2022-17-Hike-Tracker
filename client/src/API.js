@@ -28,7 +28,8 @@ async function signUp(credentials) {
         lastName: credentials.surname,
         email: credentials.username,
         password: credentials.password,
-        role: credentials.type
+        role: credentials.type,
+        phoneNumber: credentials.phoneNumber,
     }
 
     let response = await fetch(new URL('/user/register', url), {

@@ -78,7 +78,6 @@ function MainApp() {
           navigate('/verifyAccount/' + payload.email);
         }
         else {
-          console.log(user.user);
           setUser(user.user);
           localStorage.setItem('token', user.token);
           if ((payload.role === Type.platformManager
@@ -134,7 +133,6 @@ function MainApp() {
         }
       }
     }
-    console.log(user);
   }, []);
 
   return (
@@ -152,10 +150,15 @@ function MainApp() {
           <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible>{errorMessage}</Alert>
         </Col></Row>
         : false}
-      <ProfileModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-      />
+      {
+        user !== null ?
+            <ProfileModal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+                user={user}
+            />
+            : ''
+      }
       {
         user !== null ?
             <PerformanceModal performanceModal={performanceModal}
@@ -176,12 +179,12 @@ function MainApp() {
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide/>}/>
+        <Route path="/localGuide" element={<LocalGuide user={user}/>}/>
         <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
-        <Route path="/hiker/hikes/:id" element={<ShowHike role={role}/>} />
+        <Route path="/hiker/hikes/:id" element={<ShowHike role={role} user={user}/>} />
         <Route path="/HighLevelVerification" element={<HighVerification />}/>
-        <Route path="/parking/create" element={<CreateParking />}/>
-        <Route path="/huts/create" element={<CreateHut />} />
+        <Route path="/parking/create" element={<CreateParking user={user}/>}/>
+        <Route path="/huts/create" element={<CreateHut user={user}/>} />
         <Route path="/huts/searchHut" element={<SearchHut />} />
       </Routes>
       </>

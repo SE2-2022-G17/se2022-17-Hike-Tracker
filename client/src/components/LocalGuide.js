@@ -2,17 +2,31 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useEffect, useState } from 'react';
 import API from "../API";
 import CityProvince from "./CityProvince";
+import Type from "../models/UserType";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {  faSquareXmark } from "@fortawesome/free-solid-svg-icons";
 
-function LocalGuide() {
-    return <>
-        <Container>
-            <Row>
-                <Col>
-                    <MainContent/>
-                </Col>
-            </Row>
-        </Container>
-    </>
+function LocalGuide(props) {
+
+    let body = '';
+
+    if (props.user !== null && props.user.role === Type.localGuide) {
+        if (props.user.approved)
+            body = <MainContent/>;
+        else
+            body = <div className={'text-center'}>
+                <FontAwesomeIcon icon={ faSquareXmark } size="4x" className={'text-danger'}/>
+                <p>You are not approved</p>
+        </div>;
+    }
+
+    return <Container>
+                <Row>
+                    <Col>
+                        {body}
+                    </Col>
+                </Row>
+            </Container>
 }
 
 function MainContent() {
