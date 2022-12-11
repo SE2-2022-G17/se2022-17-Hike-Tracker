@@ -6,6 +6,7 @@ let chai = require('chai');
 let expect = chai.expect;
 const localGuide = require('./mocks/localGuideToken.js');
 const Type = require('../constants/UserType.js');
+const { randomBytes } = require('node:crypto');
 
 
 let mongoServer;
@@ -80,10 +81,11 @@ describe('Test API for visitor to register', () => {
         expect(response.statusCode).to.equal(400);
     })
 
-    it('/user/login',async ()=>{
+    it('test wrong login',async ()=>{
+        const randomArray = randomBytes(1);
         const response = await request(app).post("/user/login").send({
-            "email":"testing@email.com",
-            "password":"random"
+            "email":"wrong@email.com",
+            "password":randomArray[0].toString()
         })
         expect(response.statusCode).to.equal(404);
     })
