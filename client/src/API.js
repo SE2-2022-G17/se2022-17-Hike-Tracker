@@ -289,15 +289,15 @@ async function getAllParking(){
     return await result.json();
 }
 
-async function addReferencePoint(id, token, hikeId, name, description,longitude,latitude) {
-    const response = await fetch(url + '/hikes/'+ id + '/reference-points', {
+async function addReferencePoint(id, token, name, description,longitude,latitude) {
+    const response = await fetch(url + '/hikes/reference-points/' + id, {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id:hikeId,
+            id:id,
             name: name,
             description: description,
             longitude: longitude,

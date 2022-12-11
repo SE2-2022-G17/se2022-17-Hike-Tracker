@@ -4,23 +4,30 @@ import API from "../API";
 import ReferencePointPicker from './ReferencePointPicker';
 
 
-//Link hut to a hike
-//props: hikeId -> the id of the hike
+//Add reference point to an hike
 function AddReferencePoint(props) {
 
     const [name, setName] = useState('');
 
     const [description, setDescription] = useState('');
-    const [hut, setHut] = useState("");
-    const [hutsList, setHutsList] = useState([]);
     const [longitude, setLongitude] = useState("");
     const [latitude, setLatitude] = useState("");
 
     function handleConfirm() {
-        if (hut !== "") {
+        if (name !== "" && description!=="" && longitude!=="" && latitude !=="") {
             const authToken = localStorage.getItem('token');
-            API.linkHut(hut, props.hike, authToken)
-                .then((res) => { console.log(res); setHut("") })
+            const id = props.id;
+            console.log(props.id);
+            console.log(props.hike._id);
+            API.addReferencePoint(id, authToken,
+                name, description, longitude, latitude)
+                .then((res) => {
+                    console.log(res);
+                    setName("");
+                    setDescription("");
+                    setLatitude("");
+                    setLongitude("");
+                })
                 .catch(err => console.log(err))
         }
     }
@@ -58,7 +65,7 @@ function AddReferencePoint(props) {
                 </Form.Group>
                 <Row className="m-3">
                     <Col className="text-center">
-                        <Button variant="outline-dark" onClick={() => handleConfirm()} disabled={hut === "" ? true : false}>Confirm</Button>
+                        <Button variant="outline-dark" onClick={() => handleConfirm()} >Confirm</Button>
                     </Col>
                 </Row>
             </Form>

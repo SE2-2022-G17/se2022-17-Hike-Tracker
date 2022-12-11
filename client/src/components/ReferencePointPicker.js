@@ -24,7 +24,6 @@ function ReferencePointPicker(props) {
                 console.log(error);
             })
         }
-        console.log(hike);
 
         if (hike !== null) {
             if (map.current) return; // initialize map only once
