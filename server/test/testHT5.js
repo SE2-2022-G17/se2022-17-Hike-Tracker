@@ -27,7 +27,7 @@ after(async () => {
     app.close();
 });
 
-describe('Test API for creating huts (US5)', () => {
+describe('Test API for creating and viewing huts (US5)', () => {
     it('test create hut - unauthorized', async () => {
 
         const response = await request(app)
@@ -120,4 +120,13 @@ describe('Test API for creating huts (US5)', () => {
 
         expect(response.statusCode).to.equal(201);
     });
+
+    it("get all huts",async ()=>{
+        const token = localGuide.token;
+
+        const response = await request(app)
+            .get("/huts")
+
+        expect(response.statusCode).to.equal(200);
+    })
 });
