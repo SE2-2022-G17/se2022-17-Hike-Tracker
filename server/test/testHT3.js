@@ -4,6 +4,7 @@ const request = require('supertest');
 const app = require("../server.js");
 let chai = require('chai');
 let expect = chai.expect;
+const localGuide = require('./mocks/localGuideToken.js');
 const Type = require('../constants/UserType.js');
 
 
@@ -77,5 +78,33 @@ describe('Test API for visitor to register', () => {
     it('test validation email API',async ()=>{
         const response = await request(app).post("/user/validateEmail").send()
         expect(response.statusCode).to.equal(400);
+    })
+
+    it('/user/login',async ()=>{
+        const response = await request(app).post("/user/login").send({
+            "email":"testing@email.com",
+            "password":"random"
+        })
+        expect(response.statusCode).to.equal(404);
+    })
+
+    it('test verifyuser token API',async ()=>{
+        const token = localGuide.token;
+
+        const response = await request(app)
+        .get("/example/protected")
+        .set('Authorization', "Bearer " + token)
+        .send()
+        expect(response.statusCode).to.equal(201);
+    })
+
+    it('test user API',async ()=>{
+        const token = localGuide.token;
+
+        const response = await request(app)
+        .get("/user")
+        .set('Authorization', "Bearer " + token)
+        .send()
+        expect(response.statusCode).to.equal(200);
     })
 });

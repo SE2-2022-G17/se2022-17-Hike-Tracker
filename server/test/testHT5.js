@@ -6,6 +6,8 @@ let chai = require('chai');
 let expect = chai.expect;
 const localGuide = require('./mocks/localGuideToken.js');
 const hiker = require('./mocks/hikerToken');
+const Hut = require('../models/Hut.js');
+const Position = require('../models/Position.js');
 
 
 
@@ -18,6 +20,30 @@ before(async () => {
         const mongoUri = mongoServer.getUri();
         await mongoose.connect(mongoUri);
     }
+/*
+    await Hut.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc6") });
+
+    const hutPosition = await Position.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc8"),
+        "location.coordinates": [-9.63997, 53.77916] // Hut close to the start point of the hike
+    })
+
+    await hutPosition.save();
+
+    const hut = await Hut.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc6"),
+        name: "Hut test",
+        description: "Testing description",
+        point: hutPosition._id,
+        beds: "4",
+        altitude: "1000",
+        phone: "12345687643",
+        email: "test@test.com",
+        website: "www.test.it"
+    });
+
+    await hut.save();
+*/
 });
 
 after(async () => {
@@ -120,6 +146,14 @@ describe('Test API for creating and viewing huts (US5)', () => {
 
         expect(response.statusCode).to.equal(201);
     });
+
+    it('get wrong hut', async ()=>{
+        const response = await request(app)
+        .get('/huts/hut/63838b0ec591ae644e8bedc6')
+        .send()
+
+        expect(response.statusCode).to.equal(500);
+    })
 
     it("get all huts",async ()=>{
         const token = localGuide.token;

@@ -114,7 +114,7 @@ app.post('/user/login', (req, res) => {
 
     return dao.loginUser(email, password)
         .then((token) => { res.json(token); })
-        .catch((error) => { res.status(error).end(); });
+        .catch((error) => { res.status(parseInt(error.message)).end(); });
 
 });
 
