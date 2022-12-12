@@ -280,6 +280,7 @@ exports.getHike = async (id) => {
                 // Populate across multiple level: point of huts
                 populate: { path: 'point' }
             })
+            .populate('referencePoints')
             .then(doc => {
                 return doc;
             })
