@@ -9,7 +9,7 @@ function AddReferencePoint(props) {
 
     const [name, setName] = useState('');
 
-    const [description, setDescription] = useState('');
+    const [description, setDescription] = useState("");
     const [longitude, setLongitude] = useState("");
     const [latitude, setLatitude] = useState("");
 

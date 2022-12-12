@@ -13,6 +13,42 @@ function ReferencePointPicker(props) {
     const map = useRef(null);
     const [hike, setHike] = useState(null);
 
+    function distanceCalc(p1, p2) {
+        const ph1 = p1.lat * Math.PI / 180;
+        const ph2 = p2.lat * Math.PI / 180;
+        const DL = (p2.lng - p1.lng) * Math.PI / 180;
+        const R = 6371e3;
+        const d = Math.acos((Math.sin(ph1) * Math.sin(ph2)) + (Math.cos(ph1) * Math.cos(ph2)) * Math.cos(DL)) * R;
+        return d;
+
+    }
+
+    function handleMarker(point, marker) {
+        const authToken = localStorage.getItem('token');
+        API.getHikeTrace(hike._id, authToken)
+            .then(trace => {
+                let choise = point;
+                let minDistance = -1;
+                for (const p1 of trace) {
+                    if (p1.lat === point.lat && p1.lng === point.lng) {
+                        setLng(point.lng);
+                        setLat(point.lng);
+                        choise = point;
+                        return
+                    }
+                    let tmpDistance = distanceCalc(point, p1);
+                    if (minDistance === -1 || tmpDistance <= minDistance) {
+                        minDistance=tmpDistance;
+                        choise = p1;
+                    }
+                }
+                setLng(choise.lng);
+                setLat(choise.lat);
+                marker.setLngLat([choise.lng, choise.lat])
+            })
+            .catch(err => { console.log(err); })
+        return point;
+    }
 
     useEffect(() => {
 
@@ -26,6 +62,7 @@ function ReferencePointPicker(props) {
         }
 
         if (hike !== null) {
+
             if (map.current) return; // initialize map only once
             map.current = new mapboxgl.Map({
                 container: mapContainer.current,
@@ -70,20 +107,23 @@ function ReferencePointPicker(props) {
                             draggable: true
                         })
                             .setLngLat([hike.startPoint.location.coordinates[0], hike.startPoint.location.coordinates[1]])
-            
+
                         if (map.current) marker.addTo(map.current);
 
                         marker.on('dragend', function (e) {
                             const lngLat = e.target.getLngLat();
-                            setLng(lngLat['lng'].toFixed(5));
-                            setLat(lngLat['lat'].toFixed(5));
+                            const p1 = {
+                                lng: lngLat['lng'].toFixed(5),
+                                lat: lngLat['lat'].toFixed(5)
+                            }
+                            handleMarker(p1, marker);
                         })
 
                     }
                 });
             });
         }
-    });
+    }, [hike]);
 
     return (
         <div>

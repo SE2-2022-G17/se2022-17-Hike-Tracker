@@ -369,10 +369,16 @@ async function addReferencePoint(id, token, name, description,longitude,latitude
     return response.status
 }
 
-async function getHikeTrace(hikeId) {
-    const response = await fetch(url + '/hikes/' + hikeId + '/trace')
-    const hut = await response.json()
-    return hut
+async function getHikeTrace(hikeId, token) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/trace/', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const trace = await response.json();
+    return trace
 }
 
 
