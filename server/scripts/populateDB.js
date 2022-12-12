@@ -7,7 +7,7 @@ const UserType = require("../constants/UserType")
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Location = require("../models/Location")
-
+const Hut = require("../models/Hut")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
@@ -178,6 +178,25 @@ async function run() {
             console.log(e.message)
         }
     }
+
+
+    const hutPosition = await Position.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0"),
+        "location.coordinates": [9.82215717826966, 44.06182291835225]
+    })
+
+    const hut = await Hut.create({
+        name: "Portovenere",
+        description: "Hut di test", 
+        point: hutPosition,
+        beds: "4",
+        altitude: "200",
+        phone: "3453230077",
+        email: "test@test.it",
+        website: "www.test.it"
+    })
+
+    await hut.save();
 
     await mongoose.disconnect()
 }
