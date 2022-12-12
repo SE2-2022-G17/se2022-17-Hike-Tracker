@@ -130,6 +130,22 @@ function ShowHike(props) {
                             });
 
                         }
+
+                        //to show huts in map
+                        if (hike.referencePoints[0] !== null) {
+                            hike.referencePoints.forEach(rp => {
+                                const el = document.createElement('div');
+                                el.className = 'marker-refpoint';
+
+                                new mapboxgl.Marker(el)
+                                    .setLngLat([rp.location.coordinates[0], rp.location.coordinates[1]])
+                                    .addTo(map.current);
+
+                            });
+
+                        }
+
+
                     }
                 });
             });
@@ -141,10 +157,10 @@ function ShowHike(props) {
     //only localguide can link hut to a hike, check if this user created this hike
     if (props.role === "localGuide" && linkHut === false && hike !== null) {
         linkHutBlock = <Row className="m-3">
-                        <Col className="text-center">
-                            <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
-                        </Col>
-                    </Row>
+            <Col className="text-center">
+                <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
+            </Col>
+        </Row>
     }
 
 
@@ -208,34 +224,34 @@ function ShowHike(props) {
                     <div ref={mapContainer} className="map-container" />
                 </Col>
             </Row>
-            {               
+            {
                 //only localguide can link hut to a hike
                 props.role === "localGuide" ? <>
-                <Accordion className="mb-3">
-                    <Accordion.Item eventKey="0">
-                        <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
-                        <Accordion.Body>
-                            <ReferencePointsForm hikeId={id} />
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="1">
-                        <Accordion.Header>Link hut to this hike</Accordion.Header>
-                        <Accordion.Body>
-                            <LinkHut hike={hike}/>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="2">
-                        <Accordion.Header>Add reference point to this hike</Accordion.Header>
-                        <Accordion.Body>
-                            <AddReferencePoint hike={hike} id={id}/>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                </Accordion>
+                    <Accordion className="mb-3">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
+                            <Accordion.Body>
+                                <ReferencePointsForm hikeId={id} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>Link hut to this hike</Accordion.Header>
+                            <Accordion.Body>
+                                <LinkHut hike={hike} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="2">
+                            <Accordion.Header>Add reference point to this hike</Accordion.Header>
+                            <Accordion.Body>
+                                <AddReferencePoint hike={hike} id={id} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
 
-                <br/>
-    
-            </>
-            : <></>
+                    <br />
+
+                </>
+                    : <></>
             }
         </Container>
     );
