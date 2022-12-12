@@ -1,9 +1,35 @@
 import { useEffect, useState } from "react";
 import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
 import API from '../API';
+import Type from "../models/UserType";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSquareXmark} from "@fortawesome/free-solid-svg-icons";
 
+function CreateHut(props)
+{
+    let body = '';
 
-function CreateHut(props) {
+    if (props.user !== null && props.user.role === Type.localGuide) {
+        if (props.user.approved)
+            body = <CreateHutForm/>;
+        else
+            body =
+                <Row>
+                    <Col>
+                        <div className={'text-center'}>
+                            <FontAwesomeIcon icon={ faSquareXmark } size="4x" className={'text-danger'}/>
+                            <p>You are not approved</p>
+                        </div>;
+                    </Col>
+                </Row>
+    }
+
+    return <Container className="form-container">>
+                {body}
+            </Container>
+}
+
+function CreateHutForm() {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [beds, setBeds] = useState(0)
@@ -67,13 +93,11 @@ function CreateHut(props) {
                 setVariant('danger')
                 setMessage("An error occurred during the creation of the Hut")
             }
-            console.log(response)
         }
     }
 
     return (
-        <Container className="form-container">
-            <Form>
+        <Form>
                 <Form.Label><h3>Create new hut</h3></Form.Label>
                 <Form.Group className="mb-3">
                     <Form.Label>Hut name</Form.Label>
@@ -169,7 +193,6 @@ function CreateHut(props) {
                     Create
                 </Button>
             </Form>
-        </Container>
     )
 }
 
