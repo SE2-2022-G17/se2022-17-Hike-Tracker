@@ -8,9 +8,6 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
-const swaggerUi = require('swagger-ui-express');
-const openapiFile = require('./api/openapi.json');
-const { stringify } = require('querystring');
 
 
 // init express
@@ -26,7 +23,6 @@ app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use(express.json());
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(openapiFile));
 
 function distanceCalc(p1,p2) {
     const ph1 = p1.lat * Math.PI/180;
@@ -416,7 +412,6 @@ app.get('/getParking', verifyUserToken, (req, res) => {
 
 
 app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
-    // #swagger.description = 'Creates a new reference point and associates it to the hike specified in the path'
     const hikeId = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
@@ -445,11 +440,6 @@ app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
 });
 
 app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
-    // #swagger.description = 'Returns an array of coordinates that are part of the hike trace'
-    /* #swagger.responses[200] = {
-            description: 'Coordinates associated to this hike trace',
-            schema: [ {"lng": 9.69364, "lat": 39.99496} ]
-    } */
     const hikeId = req.params.id;
     const user = req.user; // this is received from verifyUserToken middleware
 
