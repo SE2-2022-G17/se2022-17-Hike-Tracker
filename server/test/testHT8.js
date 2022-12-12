@@ -64,7 +64,7 @@ before(async () => {
         city: 'Torino',
         province: 'Torino',
         description: 'test',
-        track_file: '..\public\tracks\Appalachian Trail.gpx',
+        track_file: 'rocciamelone.gpx',
         length: 2,
         ascent: 5,
         startPoint: startPosition._id,
@@ -176,40 +176,38 @@ describe('Test API for adding huts or parking as startPoint/arrivals', () => {
         expect(response.statusCode).to.equal(201);
     });
 
-    it('test wrong parameters as input',async()=>{
+    it('test wrong parameters as input', async () => {
         const token = localGuide.token;
 
         const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
         const parkHut = await Hut.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'));
 
         const response = await request(app)
-        .put("/linkStartArrival")
-        .set('Authorization', "Bearer " + token)
-        .send({
-            point: "end",
-            reference: undefined,
-            id: parkHut._id,
-            hikeId: hike.id
-        });
+            .put("/linkStartArrival")
+            .set('Authorization', "Bearer " + token)
+            .send({
+                point: "end",
+                reference: undefined,
+                id: parkHut._id,
+                hikeId: hike.id
+            });
         expect(response.statusCode).to.equal(422);
     });
 
-    it('test unauthorized acces',async()=>{
-        const token = -1;
+    it('test unauthorized acces', async () => {
 
         const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
         const parkHut = await Hut.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'));
 
         const response = await request(app)
-        .put("/linkStartArrival")
-        .set('Authorization', "Bearer " + token)
-        .send({
-            point: "end",
-            reference: "parking",
-            id: parkHut._id,
-            hikeId: hike.id
-        });
-        expect(response.statusCode).to.equal(400);
+            .put("/linkStartArrival")
+            .send({
+                point: "end",
+                reference: "parking",
+                id: parkHut._id,
+                hikeId: hike.id
+            });
+        expect(response.statusCode).to.equal(401);
     });
 
 });

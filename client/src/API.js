@@ -351,6 +351,63 @@ async function getAllParking() {
     return await result.json();
 }
 
+async function addReferencePoint(id, token, name, description,longitude,latitude) {
+    const response = await fetch(url + '/hikes/' + id + '/reference-points/', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id:id,
+            name: name,
+            description: description,
+            longitude: longitude,
+            latitude: latitude,
+        })
+    })
+
+    return response.status
+}
+
+async function getHikeTrace(hikeId, token) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/trace/', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const trace = await response.json();
+    return trace
+}
+
+
+async function getPreferredHikes(duration, altitude, token){
+
+    const hourDuration = (duration/60).toFixed(1);
+    let query = "?";
+    let parametes = [];
+
+    if (duration !== undefined)
+        parametes.push("maxTime=" + hourDuration)
+    if (altitude !== undefined)
+        parametes.push("maxAscent=" + altitude)
+
+
+    query += parametes.join("&");
+
+    const response = await fetch(url + '/preferredHikes' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const hikes = await response.json();
+    return hikes;
+
+}
 
 const API = {
     getVisitorHikes,
@@ -371,8 +428,12 @@ const API = {
     getParking,
     getHutsCloseToHike,
     storePerformance,
-    getUserByEmail
+    getUserByEmail,
+    getPreferredHikes,
+    addReferencePoint,
+    getHikeTrace
 };
+
 
 export default API;
 

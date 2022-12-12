@@ -24,7 +24,9 @@ const hikeSchema = new mongoose.Schema({
         type: Number,
         min: 0
     },
+
     ascent: Number,
+
     difficulty: {
         type: String,
         enum: Difficulty,

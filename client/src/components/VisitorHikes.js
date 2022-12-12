@@ -213,7 +213,7 @@ function HikesList(props) {
     const navigator = useNavigate();
 
     let goToHike = (id) => {
-        navigator('hiker/hikes/' + id);
+        navigator('/hiker/hikes/' + id);
     }
 
     return (
@@ -247,5 +247,5 @@ function SelectPointFromMap(props) {
     );
 }
 
-
-export default VisitorHikes;
+const HikesView = {VisitorHikes, HikesList}
+export default HikesView;
