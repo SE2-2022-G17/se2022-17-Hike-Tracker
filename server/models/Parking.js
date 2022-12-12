@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
-var Schema = mongoose.Schema
+const Schema = mongoose.Schema
 const Location = require("../models/Location")
 
 // this is a mechanism to extend schemas
-var ParkingSchema = new Schema({
+const ParkingSchema = new Schema({
     parkingSpaces: {
         type: Number,
         min: 1,

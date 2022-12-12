@@ -350,6 +350,38 @@ async function getAllParking() {
     return await result.json();
 }
 
+async function addReferencePoint(id, token, name, description,longitude,latitude) {
+    const response = await fetch(url + '/hikes/' + id + '/reference-points/', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id:id,
+            name: name,
+            description: description,
+            longitude: longitude,
+            latitude: latitude,
+        })
+    })
+
+    return response.status
+}
+
+async function getHikeTrace(hikeId, token) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/trace/', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const trace = await response.json();
+    return trace
+}
+
+
 async function getPreferredHikes(duration, altitude, token){
 
     const hourDuration = (duration/60).toFixed(1);
@@ -396,7 +428,9 @@ const API = {
     getHutsCloseToHike,
     storePerformance,
     getUserByEmail,
-    getPreferredHikes
+    getPreferredHikes,
+    addReferencePoint,
+    getHikeTrace
 };
 
 

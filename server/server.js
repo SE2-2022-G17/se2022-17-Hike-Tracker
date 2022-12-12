@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
+const swaggerUi = require('swagger-ui-express');
+const openapiFile = require('./api/openapi.json');
 const { stringify } = require('querystring');
 
 
@@ -24,6 +26,7 @@ app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use(express.json());
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(openapiFile));
 
 function distanceCalc(p1,p2) {
     const ph1 = p1.lat * Math.PI/180;
@@ -73,8 +76,8 @@ app.get('/getHuts', verifyUserToken, (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
     let searchRadius = req.query.searchRadius
-    if(searchRadius==undefined)
-        searchRadius="40075";
+    if (searchRadius == undefined)
+        searchRadius = "40075";
     dao.getHuts(
         bedsMin,
         altitudeMin,
@@ -96,7 +99,7 @@ app.post('/user/register', async (req, res) => {
 
     return dao.registerUser(firstName, lastName, email, password, role)
         .then(() => {return res.status(201).end(); })
-        .catch((error) => {console.log(error); return res.status(400).json(error); });
+        .catch((error) => {return res.status(400).json(error); });
 });
 
 app.post('/user/validateEmail', (req, res) => {
@@ -359,9 +362,9 @@ app.post('/hike/linkhut', verifyUserToken, async (req, res) => {
         .catch((error) => { res.status(parseInt(error.message)).json(error); })
 });
 
-app.put('/linkStartArrival',verifyUserToken, async (req, res) => {
+app.put('/linkStartArrival', verifyUserToken, async (req, res) => {
     try {
-        if(!req || !req.body || !req.body.point || !req.body.reference || req.body.point!=="end" && req.body.point!=="start" || req.body.reference!=="parking" && req.body.reference!=="huts" || !req.body.id || !req.body.hikeId)
+        if (!req || !req.body || !req.body.point || !req.body.reference || req.body.point !== "end" && req.body.point !== "start" || req.body.reference !== "parking" && req.body.reference !== "huts" || !req.body.id || !req.body.hikeId)
             return res.status(422).end();
         const userId = (await dao.getUserByEmail(req.user.email))._id
         const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId, userId)
@@ -396,8 +399,8 @@ app.get('/getParking', verifyUserToken, (req, res) => {
     let longitude = req.query.longitude
     let latitude = req.query.latitude
     let searchRadius = req.query.searchRadius
-    if(searchRadius==undefined)
-        searchRadius="40075";
+    if (searchRadius == undefined)
+        searchRadius = "40075";
     dao.getParking(
         lotsMin,
         altitudeMin,
@@ -408,6 +411,54 @@ app.get('/getParking', verifyUserToken, (req, res) => {
     )
         .then((parking) => { return res.json(parking); })
         .catch((error) => { return res.status(500).json(error); });
+});
+
+
+app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
+    // #swagger.description = 'Creates a new reference point and associates it to the hike specified in the path'
+    const hikeId = req.params.id;
+    const name = req.body.name;
+    const description = req.body.description;
+    const user = req.user; // this is received from verifyUserToken middleware
+    const longitude = req.body.longitude;
+    const latitude = req.body.latitude;
+
+    if (user.role !== Type.localGuide) {
+        res.sendStatus(403);
+        return;
+    }
+
+    try {
+        await dao.createReferencePoint(
+            hikeId,
+            name,
+            description,
+            longitude,
+            latitude,
+        );
+        res.sendStatus(201);
+    } catch (error) {
+        res.sendStatus(error.status);
+    }
+
+});
+
+app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
+    // #swagger.description = 'Returns an array of coordinates that are part of the hike trace'
+    /* #swagger.responses[200] = {
+            description: 'Coordinates associated to this hike trace',
+            schema: [ {"lng": 9.69364, "lat": 39.99496} ]
+    } */
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (!user) {
+        res.sendStatus(401);
+    }
+
+    dao.getHikeTrace(hikeId)
+        .then((trace) => { res.json(trace); })
+        .catch((error) => { res.status(error.status).json(error.description); });
 });
 
 
