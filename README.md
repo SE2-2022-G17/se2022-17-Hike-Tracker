@@ -1,4 +1,12 @@
 ## How to run the app:
+
+### Build the container
+- docker compose build --no-cache (remove --no-cache if you want)
+### Run the container
+- docker compose up
+### Stop and destory
+- docker compose down
+
 ### Run the server:
 - ``cd server``
 - ``npm install``
