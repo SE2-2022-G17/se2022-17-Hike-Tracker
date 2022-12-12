@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const Type = require("./UserType")
+const Type = require("../constants/UserType")
 const ValidationType = require("./ValidationType")
 
 const userSchema = new mongoose.Schema({
@@ -32,6 +32,22 @@ const userSchema = new mongoose.Schema({
     },
     activationCode: {
         type: String
+    },
+    preferenceAltitude: {
+        type: Number,
+        default: null
+    },
+    preferenceDuration: {
+        type: Number,
+        default: null
+    },
+    approved: {
+        type: Boolean,
+        default: false
+    },
+    phoneNumber: {
+        type: String,
+        default: ''
     }
 })
 

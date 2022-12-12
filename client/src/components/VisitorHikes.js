@@ -6,7 +6,15 @@ import API from '../API';
 import Difficulty from '../constants/Difficulty';
 import HikeCard from './HikeCard';
 import { useNavigate } from "react-router-dom";
+import MapPicker from './MapPicker';
+import Modal from 'react-bootstrap/Modal';
+import { GeoAlt } from 'react-bootstrap-icons';
+import CityProvince from './CityProvince';
 
+const polito = {
+    lng: "7.65991",
+    lat: "45.06355"
+}
 
 function VisitorHikes() {
     const [difficulty, setDifficulty] = useState(undefined);
@@ -21,6 +29,10 @@ function VisitorHikes() {
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
         API.getVisitorHikes()
@@ -74,27 +86,54 @@ function VisitorHikes() {
         );
         setHikes(retrivedHikes);
     }
-    
+
     return (
         <Container className='visitor-hike'>
             <Row>
                 <Col xl={3}>
-                    <Container fluid>
+                    <Container fluid className='hike-filters'>
                         <h5>Search for hikes!</h5>
                         <DifficultyPicker difficulty={difficulty} setDifficulty={setDifficulty} />
                         <MinMaxPicker filter="length" setMinFilter={setMinLength} setMaxFilter={setMaxLength} />
                         <MinMaxPicker filter="ascent" setMinFilter={setMinAscent} setMaxFilter={setMaxAscent} />
                         <MinMaxPicker filter="time" setMinFilter={setMinTime} setMaxFilter={setMaxTime} />
-                        <TextField filter="City" setFilter={setCity} />
-                        <TextField filter="Province" setFilter={setProvince} />
-                        <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
-                        <Button onClick={(ev) => { getVisitorHikes(ev) }}>Search</Button>
+                        <CityProvince
+                            province={province}
+                            setProvince={setProvince}
+                            setCity={setCity}
+                        />
+                        <SelectPointFromMap handleShow={handleShow} />
+                        <Coordinates lng={longitude} lat={latitude} />
+                        <Button
+                            className="search-button"
+                            onClick={(ev) => { getVisitorHikes(ev) }}
+                        >
+                            Searchs
+                        </Button>
                     </Container>
                 </Col>
                 <Col xl={9}>
                     <HikesList hikes={hikes} />
                 </Col>
             </Row>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select a point from map</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <MapPicker
+                        lng={longitude === undefined ? polito.lng : longitude}
+                        setLng={setLongitude}
+                        lat={latitude === undefined ? polito.lat : latitude}
+                        setLat={setLatitude}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleClose}>
+                        Select point
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }
@@ -156,34 +195,16 @@ function MinMaxPicker(props) {
     );
 }
 
-function CoordinatesPicker(props) {
-    const { setLongitude, setLatitude } = props;
+function Coordinates(props) {
+    const { lng, lat } = props;
 
     return (
-        <Row className='two-options-filter'>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{"Longitude "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={(ev) => setLongitude(ev.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{"Latitude "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={(ev) => setLatitude(ev.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-        </Row>
+        lng !== undefined && lat !== undefined ?
+            <Row>
+                <p className='coordinates'>{"Longitude: " + lng}</p>
+                <p className='coordinates'>{"Latitude: " + lat}</p>
+            </Row>
+            : undefined
     );
 }
 
@@ -192,7 +213,7 @@ function HikesList(props) {
     const navigator = useNavigate();
 
     let goToHike = (id) => {
-        navigator('hiker/hikes/' + id);
+        navigator('/hiker/hikes/' + id);
     }
 
     return (
@@ -209,24 +230,22 @@ function HikesList(props) {
     );
 }
 
-function TextField(props) {
-    const { filter, setFilter } = props;
+
+function SelectPointFromMap(props) {
 
     return (
-        <Row className='basic-filter'>
+        <Row className='basic-link'>
             <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{filter + ": "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={(ev) => setFilter(ev.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
+                <Button
+                    variant="outline-primary"
+                    onClick={props.handleShow}
+                >
+                    Select a point from map <GeoAlt />
+                </Button>
             </Col>
         </Row>
     );
 }
 
-export default VisitorHikes;
+const HikesView = {VisitorHikes, HikesList}
+export default HikesView;

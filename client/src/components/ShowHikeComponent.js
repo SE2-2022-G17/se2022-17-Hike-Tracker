@@ -11,6 +11,8 @@ import { useParams } from "react-router-dom";
 import LinkHut from './LinkHut';
 import API from "../API";
 import ReferencePointsForm from "./ReferencePointsForm";
+import Accordion from 'react-bootstrap/Accordion';
+import AddReferencePoint from "./AddReferencePoint";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -22,7 +24,7 @@ function ShowHike(props) {
     const [hike, setHike] = useState(null);
     const [lat, setLat] = useState(0);
     const [lng, setLng] = useState(0);
-    const [zoom, setZoom] = useState(11);
+    const zoom = 11;
     const [linkHut, setLinkHut] = useState(false);
     let { id } = useParams();
 
@@ -30,11 +32,12 @@ function ShowHike(props) {
         if (id !== null && hike === null) {
             API.getHike(id).then(function (hike) {
                 setHike(hike);
-                
+
                 if (hike.startPoint !== null) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
                 }
+
             }).catch(function (error) {
                 console.log(error);
             })
@@ -127,11 +130,39 @@ function ShowHike(props) {
                             });
 
                         }
+
+                        //to show huts in map
+                        if (hike.referencePoints[0] !== null) {
+                            hike.referencePoints.forEach(rp => {
+                                const el = document.createElement('div');
+                                el.className = 'marker-refpoint';
+
+                                new mapboxgl.Marker(el)
+                                    .setLngLat([rp.location.coordinates[0], rp.location.coordinates[1]])
+                                    .addTo(map.current);
+
+                            });
+
+                        }
+
+
                     }
                 });
             });
         }
     });
+
+    let linkHutBlock = '';
+
+    //only localguide can link hut to a hike, check if this user created this hike
+    if (props.role === "localGuide" && props.user !== null && props.user.approved &&
+        linkHut === false && hike !== null) {
+        linkHutBlock = <Row className="m-3">
+            <Col className="text-center">
+                <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
+            </Col>
+        </Row>
+    }
 
     return (
         <Container>
@@ -194,30 +225,36 @@ function ShowHike(props) {
             </Row>
             {
                 //only localguide can link hut to a hike
-                props.role === "localGuide" && linkHut === false ? <>
-                    <Row className="m-3">
-                        <Col className="text-center">
-                            <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
-                        </Col>
-                    </Row>
+                props.role === "localGuide" ? <>
+                    <Accordion className="mb-3">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
+                            <Accordion.Body>
+                                <ReferencePointsForm hikeId={id} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>Link hut to this hike</Accordion.Header>
+                            <Accordion.Body>
+                                <LinkHut hike={hike} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="2">
+                            <Accordion.Header>Add reference point to this hike</Accordion.Header>
+                            <Accordion.Body>
+                                <AddReferencePoint hike={hike} id={id} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
+
+                    <br />
+
                 </>
                     : <></>
             }
-            {linkHut === true ?
-                <LinkHut hike={hike} setShow={setLinkHut} />
-                : <></>}
-
-            {
-                //props.role === "localGuide" => shows form to link the end/start point to hut/parking
-                props.role === "localGuide" ? <>
-                <br/><br/>
-                <ReferencePointsForm hikeId={id}/>
-                </>
-                : <></>
-            }
         </Container>
     );
-    
+
 }
 
 export default ShowHike;

@@ -1,90 +1,171 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Col, Row, Container, Button} from 'react-bootstrap';
+import { Col, Row, Container, Button } from 'react-bootstrap';
 import mapboxgl from 'mapbox-gl'
-import toGeoJson from '@mapbox/togeojson'
-import {faLayerGroup, faMountainSun, faPersonRunning} from "@fortawesome/free-solid-svg-icons";
 import API from "../API";
 import Form from 'react-bootstrap/Form';
+import MapboxCircle from 'mapbox-gl-circle';
+import HutCard from '../components/HutCard'
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 
-
 function SearchHut(props) {
+    const startZoom = 7;
+    const startLng = 7.662;
+    const startLat = 45.062;
 
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const [huts, setHuts] = useState(null);
-    const [zoom, setZoom] = useState(11);
-    const [bedsMin,setBedsMin] = useState('');
-    const [altitudeMin,setAltitudeMin] = useState('');
-    const [altitudeMax,setAltitudeMax] = useState('');
-    const [longitude,setLongitude] = useState('');
-    const [latitude,setLatitude] = useState('');
-    const [city,setCity] = useState('');
-    const [province,setProvince] = useState('');
-    const [lng, setLng] = useState(7.662);      // Used to center the map on loading
-    const [lat, setLat] = useState(45.062);
-    const [refresh,setRefresh] = useState(false); // Do the not operation on this state to refresh huts
-    const [markers,setMarkers] = useState([]);
-    
+    const [huts, setHuts] = useState([]);
+    const [bedsMin, setBedsMin] = useState('');
+    const [altitudeMin, setAltitudeMin] = useState('');
+    const [altitudeMax, setAltitudeMax] = useState('');
+    const [longitude, setLongitude] = useState('');
+    const [latitude, setLatitude] = useState('');
+    const [refresh, setRefresh] = useState(false); // Do the not operation on this state to refresh huts
+    const [markers, setMarkers] = useState([]);
+    const [searchRadius,setSearchRadius] = useState('');
+    const [center,setCenter] = useState(null);
+    const [searchCircle,setsearchCircle] = useState(null);
+    const [circles,setCircles] = useState(0);
+    const [hutCardShow,setHutCardShow] = useState(false);
+    const [selectedHut,setSelectedHut] = useState(null);
+
+    function newMarker(lng,lat,hut,color){
+        const marker = new mapboxgl.Marker({color:color})
+            .setLngLat([lng, lat]);
+            marker.getElement().addEventListener('click', () => {
+            setSelectedHut(hut);
+        });
+        return marker;
+    }
+
     function updateMarkers(huts) {
         markers.forEach(marker => marker.remove());
         huts.forEach(hut => {
-            const marker = new mapboxgl.Marker()
-            .setLngLat([hut.point.location.coordinates[0], hut.point.location.coordinates[1]])
-            .setPopup(
-                new mapboxgl.Popup({ offset: 25 }) // add popups
-                    .setHTML(
-                        '<h3>' + hut.name + '</h3>' +
-                        '<h5>Description: '+ hut.description +'<h5>'+
-                        '<h5>Beds: ' + hut.beds + '<h5>' +
-                        '<h5>Altitude: ' + hut.altitude + '<h5>' + 
-                        '<h5>Coordinates: (' + hut.point.location.coordinates[1] + ',' + hut.point.location.coordinates[0] + ')<h5>' +
-                        '<h5>City: ' + hut.city + '<h5>' + 
-                        '<h5>Province: ' + hut.province + '<h5>' 
-                    )
-            );
-            if(map.current)marker.addTo(map.current);
-            setMarkers(old=>[...old,marker]);
+            const lng = hut.point.location.coordinates[0];
+            const lat = hut.point.location.coordinates[1];
+            if(selectedHut===null){
+                const marker = newMarker(lng,lat,hut,'blue');
+                if (map.current) marker.addTo(map.current);
+                setMarkers(old => [...old, marker]);
+            } 
+            else{
+                if(selectedHut.point.location.coordinates[0] === lng &&
+                    selectedHut.point.location.coordinates[1] === lat){
+                    const marker = newMarker(lng,lat,hut,'red');
+                    if (map.current) marker.addTo(map.current);
+                    setMarkers(old => [...old, marker]);
+                }
+                else{
+                    const marker = newMarker(lng,lat,hut,'blue');
+                    if (map.current) marker.addTo(map.current);
+                    setMarkers(old => [...old, marker]);
+                }
+            }
         });
     }
 
     useEffect(()=>{
-            const authToken = localStorage.getItem('token');
-            if(latitude.trim().length !=0 && longitude.trim().length !=0 && longitude>=-180 && longitude<=180 && latitude>=-90 && latitude<=90)
-            {
-                if(map.current)map.current.flyTo({center: [longitude, latitude], zoom: 11});
+        setRefresh(old=>!old);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[altitudeMin,altitudeMax,bedsMin,searchRadius,center,searchCircle]);
+
+
+    useEffect(()=>{
+            updateMarkers(huts);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[huts.length]);
+
+    useEffect(()=>{
+        if(huts!==null)
+            updateMarkers(huts);
+        if(selectedHut!==null)
+            setHutCardShow(true);
+        else
+            setHutCardShow(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[selectedHut]);
+
+    useEffect(() => {
+        const authToken = localStorage.getItem('token');
+        API.getHuts(
+            bedsMin,
+            altitudeMin,
+            altitudeMax,
+            longitude,
+            latitude,
+            searchRadius,
+            authToken)
+            .then(RetrievedHuts => {
+                setHuts(RetrievedHuts);
+            })
+            .catch(err => console.log(err));
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refresh]);
+
+
+    useEffect(()=>{
+        if(circles===1){
+            const circle = new MapboxCircle({lat: parseFloat(latitude), lng: parseFloat(longitude)}, 50000, {
+                editable: true,
+                fillColor: '#29AB87',
+            });
+            setSearchRadius((circle.getRadius()/1000).toString());
+
+            circle.on('radiuschanged', (circleObj) => {
+                setSearchRadius((circleObj.getRadius()/1000).toString());
+            });
+
+            circle.on('centerchanged', (circleObj) => {
+                setLatitude(circleObj.getCenter().lat.toFixed(5).toString());
+                setLongitude(circleObj.getCenter().lng.toFixed(5).toString());
+                setCenter(circleObj.getCenter());
+            });
+
+            circle.addTo(map.current);
+            setsearchCircle(circle);
+        }
+        else{
+            if(circles>1){
+                searchCircle.remove();
+                setCircles(old=>old-1);
             }
-            API.getHuts(
-                    bedsMin,
-                    altitudeMin,
-                    altitudeMax,
-                    longitude,
-                    latitude,
-                    city,
-                    province,
-                    authToken)
-                    .then(RetrievedHuts => {
-                        setHuts(RetrievedHuts);
-                        updateMarkers(RetrievedHuts);
-                    })
-                    .catch(err => console.log(err));
-    },[refresh]);
-    
+            if(circles===0 && searchCircle!==null){
+                searchCircle.remove();
+            }    
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[circles]);
+
     useEffect(() => {
         if (huts !== null) {
             if (map.current) return; // initialize map only once
             map.current = new mapboxgl.Map({
                 container: mapContainer.current,
                 style: 'mapbox://styles/mapbox/streets-v11',
-                center: [lng, lat],
-                zoom: zoom
+                center: [startLng, startLat],
+                zoom: startZoom
             });
 
             map.current.on('load', () => {
                 updateMarkers(huts);
             });
+            
+            map.current.addControl(new mapboxgl.FullscreenControl());
+
+            map.current.addControl(new mapboxgl.ScaleControl());
+            map.current.addControl(new mapboxgl.NavigationControl());
+            map.current.doubleClickZoom.disable();
+
+            map.current.on('dblclick', (e) => {
+                setLongitude(e.lngLat.lng.toFixed(5).toString());
+                setLatitude(e.lngLat.lat.toFixed(5).toString());
+                if(circles === 0){
+                    setCircles(old=>old+1);
+                }
+            });
         }
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
 
     return (
         <Container>
@@ -93,18 +174,48 @@ function SearchHut(props) {
                     <Container fluid>
                         <Row>
                             <Col>
-                                    <MinPicker filter="beds" setMinFilter={setBedsMin} />
-                                    <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
-                                    <TextField filter="City" setFilter={setCity} />
-                                    <TextField filter="Province" setFilter={setProvince} />
-                                    <CoordinatesPicker setLongitude={setLongitude} setLatitude={setLatitude} />
-                                    <Button onClick={(ev) => { setRefresh(oldValue=>!oldValue) }}>Search</Button>
+                                <MinPicker filter="beds" setMinFilter={setBedsMin} />
+                                <MinMaxPicker filter="altitude" setMinFilter={setAltitudeMin} setMaxFilter={setAltitudeMax} />
+                                <CoordinatesPicker longitude={longitude} latitude={latitude} setLongitude={setLongitude} setLatitude={setLatitude}
+                                    circles={circles} setCircles={setCircles} setSearchRadius={setSearchRadius}/>
+                                {
+                                    searchRadius === ''?
+                                    <h6>Search radius: unlimited</h6>:
+                                    <h6>Search radius: {searchRadius.replace(".",",")} km</h6>
+                                }                             
                             </Col>
                         </Row>
                     </Container>
                 </Col>
                 <Col xl={9}>
+                    {
+                        circles === 1 ?
+                        <>
+                        <Button variant="success"
+                            onClick={()=>{
+                                setCircles(old=>old-1);
+                                setLatitude("");
+                                setLongitude("");
+                                setSearchRadius("");
+                                setRefresh(old=>!old);
+                        }}>Remove search area</Button>
+                        </>:
+                        <h5>Double click on the map to search for the huts.</h5>
+                    }  
                     <div ref={mapContainer} className="map-container" />
+                </Col>
+            </Row>
+            <Row>
+                <Col xl={3}></Col>
+                <Col xl={9}>
+                {
+                    hutCardShow?
+                        <>
+                        <br></br>
+                        <HutCard hut={selectedHut} setSelectedHut={setSelectedHut}></HutCard>
+                        </>:
+                        <></>
+                }
                 </Col>
             </Row>
         </Container>
@@ -162,28 +273,8 @@ function MinMaxPicker(props) {
     );
 }
 
-function TextField(props) {
-    const { filter, setFilter } = props;
-
-    return (
-        <Row className='basic-filter'>
-            <Col>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>{filter + ": "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            onChange={(ev) => setFilter(ev.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Col>
-        </Row>
-    );
-}
-
 function CoordinatesPicker(props) {
-    const { setLongitude, setLatitude } = props;
+    const { setLongitude, setLatitude, latitude, longitude,circles,setCircles,setSearchRadius } = props;
 
     return (
         <Row className='two-options-filter'>
@@ -193,7 +284,14 @@ function CoordinatesPicker(props) {
                         <Form.Label>{"Longitude "}</Form.Label>
                         <Form.Control
                             type="text"
-                            onChange={(ev) => setLongitude(ev.target.value)}
+                            value={longitude}
+                            onChange={(ev) => {
+                                setLongitude(ev.target.value);
+                                if(circles>0){
+                                    setCircles(old=>old-1);
+                                    setSearchRadius("");
+                                }            
+                            }} disabled
                         />
                     </Form.Group>
                 </Form>
@@ -204,7 +302,14 @@ function CoordinatesPicker(props) {
                         <Form.Label>{"Latitude "}</Form.Label>
                         <Form.Control
                             type="text"
-                            onChange={(ev) => setLatitude(ev.target.value)}
+                            value={latitude}
+                            onChange={(ev) => {
+                                setLatitude(ev.target.value);
+                                if(circles>0){
+                                    setCircles(old=>old-1);
+                                    setSearchRadius("");
+                                }  
+                            }} disabled
                         />
                     </Form.Group>
                 </Form>

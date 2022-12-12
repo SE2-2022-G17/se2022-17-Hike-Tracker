@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const dao = require('./dao');
 const http = require('http');
 const jwt = require('jsonwebtoken');
-const Type = require('./models/UserType');
+const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
 
@@ -17,13 +17,21 @@ const port = 3001;
 const corsOptions = {
     origin: 'http://localhost:3000',
     credentials: true,
-    someSite:'None'
+    someSite: 'None'
 };
 app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use(express.json());
 
+function distanceCalc(p1,p2) {
+    const ph1 = p1.lat * Math.PI/180;
+    const ph2 = p2.lat * Math.PI/180;
+    const DL = (p2.lng-p1.lng)* Math.PI/180;
+    const R = 6371e3;
+    const d = Math.acos((Math.sin(ph1)*Math.sin(ph2))+(Math.cos(ph1)*Math.cos(ph2))*Math.cos(DL))*R;
+    return d;
+}
 
 /*** APIs ***/
 
@@ -41,63 +49,63 @@ app.get('/visitor/hikes', (req, res) => {
     let latitude = req.query.latitude
 
     dao.getVisitorHikes(
-        difficulty = difficulty,
-        minLength = minLength,
-        maxLength = maxLength,
-        minAscent = minAscent,
-        maxAscent = maxAscent,
-        minTime = minTime,
-        maxTime = maxTime,
-        city = city,
-        province = province,
-        longitude = longitude,
-        latitude = latitude
+        difficulty,
+        minLength,
+        maxLength,
+        minAscent,
+        maxAscent,
+        minTime,
+        maxTime,
+        city,
+        province,
+        longitude,
+        latitude
     )
         .then((hikes) => { res.json(hikes); })
         .catch((error) => { res.status(500).json(error); });
 });
 
-app.get('/getHuts', verifyUserToken,(req, res) => {
+app.get('/getHuts', verifyUserToken, (req, res) => {
     let bedsMin = req.query.bedsMin
     let altitudeMin = req.query.altitudeMin
     let altitudeMax = req.query.altitudeMax
     let longitude = req.query.longitude
     let latitude = req.query.latitude
-    let city = req.query.city
-    let province = req.query.province
-
+    let searchRadius = req.query.searchRadius
+    if (searchRadius == undefined)
+        searchRadius = "40075";
     dao.getHuts(
         bedsMin,
         altitudeMin,
         altitudeMax,
         longitude,
         latitude,
-        city,
-        province
+        searchRadius
     )
-        .then((hikes) => {return res.json(hikes); })
-        .catch((error) => {return res.status(500).json(error); });
+        .then((huts) => { return res.json(huts); })
+        .catch((error) => { return res.status(500).json(error); });
 });
 
-app.post('/user/register', (req, res) => {
+app.post('/user/register', async (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const email = req.body.email;
     const password = req.body.password;
     const role = req.body.role;
+    const phoneNumber = req.body.phoneNumber;
 
-    return dao.registerUser(firstName, lastName, email, password,role)
-    .then(() => { res.status(201).end(); })
-    .catch((error) => { res.status(400).json(error); });
+    return dao.registerUser(firstName, lastName, email, password, role, phoneNumber)
+        .then(() => {return res.status(201).end(); })
+        .catch((error) => {return res.status(400).json(error); });
 });
 
-app.post('/user/validateEmail',(req,res)=>{
+app.post('/user/validateEmail', (req, res) => {
     const email = req.body.email;
     const verificationCode = req.body.verificationCode;
 
-    return dao.validateUser(email,verificationCode)
-        .then(()=>{res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); })
+    return dao.validateUser(email, verificationCode)
+        .then(() => {return res.status(201).end(); })
+        .catch((error) => {return res.status(400).json(error); })
 });
 
 app.post('/user/login', (req, res) => {
@@ -106,7 +114,7 @@ app.post('/user/login', (req, res) => {
 
     return dao.loginUser(email, password)
         .then((token) => { res.json(token); })
-        .catch((error) => { res.status(error).end(); });
+        .catch((error) => { res.status(parseInt(error.message)).end(); });
 
 });
 
@@ -116,7 +124,7 @@ app.post('/user/login', (req, res) => {
 /* Bearer <token> */
 app.get('/example/protected', verifyUserToken, async (req, res) => {
     const user = req.user;
-    if(user.role === Type.hiker){
+    if (user.role === Type.hiker) {
         console.log("USER is an hiker");
     }
     res.status(201).end();
@@ -144,31 +152,96 @@ async function verifyUserToken(req, res, next) {
         req.user = decodedUser;
         next();
     } catch (err) {
+        console.log(err);
         res.status(400).send("Invalid token.");
     }
 };
 
-const upload = multer();
+const upload = multer({
+    limits: {
+        fileSize: 8000000 // Compliant: 8MB
+ }});
 
-app.post('/localGuide/addHike',[upload.single('track'),verifyUserToken],async (req,res)=>{
-    try{
-        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province);
+app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
+    try {
+        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
         return res.status(201).end();
-    } catch(err){
-        console.log(err);
+    } catch (err) {
         return res.status(500).json(err);
     }
 });
 
-app.post('/localGuide/addParking',verifyUserToken, async (req,res) => {
-    try{
+app.post('/user/store-performance',  verifyUserToken, (req, res) => {
+    const altitude = req.body.altitude;
+    const duration = req.body.duration;
+    let user = req.user;
+
+    return dao.updateUserPreference(altitude, duration, user.email)
+        .then((response) => {
+
+            if (Object.keys(response).length > 0) {
+                console.log(response);
+                return res.json(response);
+
+            }
+
+            else
+                return res.status(500).end();
+
+        })
+        .catch((error) => { res.status(error).end(); });
+});
+
+app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
+    
+    try {
         await dao.saveNewParking(req.body.name,
             req.body.description,
             req.body.parkingSpaces,
             req.body.latitude,
             req.body.longitude);
         return res.status(201).end();
-    } catch(err){
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+app.get('/user', verifyUserToken, (req, res) => {
+    dao.getUserByEmail(req.user.email)
+        .then((user) => {
+             res.json(user); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
+
+
+app.get('/hutsCloseTo/:id', async (req, res) => {
+    const hikeId = req.params.id;
+    const huts = [];
+    try{
+        const trace = await dao.getHikeTrace(hikeId);
+        const allHuts = await dao.getHuts();
+
+        trace.forEach((point)=>{
+            allHuts.forEach((hut)=>{
+                const p1 = {
+                    lng : point.lng,
+                    lat : point.lat
+                }
+                const p2 = {
+                    lng : hut.point.location.coordinates[0],
+                    lat : hut.point.location.coordinates[1]
+                }
+                if(distanceCalc(p1,p2) <= 5000){
+                    const found =  huts.find((h)=>h._id.toString()===hut._id.toString());
+                    if( found === undefined )
+                        huts.push(hut);
+                }
+            });
+        })
+        res.json(huts);
+    }catch (err) {
         console.log(err);
         return res.status(500).json(err);
     }
@@ -203,8 +276,8 @@ app.get('/hiker/hike-track/:id', (req, res) => {
                 (err) => {
                     if (err) {
                         res.send({
-                            error : err,
-                            msg   : "Problem downloading the file"
+                            error: err,
+                            msg: "Problem downloading the file"
                         })
                     }
                 });
@@ -229,20 +302,31 @@ app.post('/huts', verifyUserToken, async (req, res) => {
     const longitude = req.body.longitude;
     const latitude = req.body.latitude;
     const altitude = req.body.altitude;
-    const city = req.body.city;
-    const province = req.body.province;
+    const phone = req.body.phone;
+    const email = req.body.email;
+    const website = req.body.website;
 
-    if(user.role !== Type.localGuide){
+    if (user.role !== Type.localGuide) {
         res.sendStatus(403);
         return;
     }
 
-    if ( longitude === '' || latitude === ''){
+    if (longitude === '' || latitude === '') {
         res.sendStatus(500);
     }
 
     try {
-        await dao.createHut(name, description, beds, longitude, latitude, altitude,city,province);
+        await dao.createHut(
+            name,
+            description,
+            beds,
+            longitude,
+            latitude,
+            altitude,
+            phone,
+            email,
+            website
+        );
         res.sendStatus(201);
     } catch (error) {
         res.sendStatus(error);
@@ -253,50 +337,138 @@ app.post('/huts', verifyUserToken, async (req, res) => {
 //to get all huts
 app.get('/huts', (req, res) => {
     dao.getAllHuts()
-    .then ((huts)=> { res.json(huts); })
-    .catch((error) => { res.status(500).json(error); });
+        .then((huts) => { res.json(huts); })
+        .catch((error) => { res.status(500).json(error); });
 })
 
 //link hut to the hike
-app.post('/hike/linkhut', verifyUserToken, (req,res)=>{
+app.post('/hike/linkhut', verifyUserToken, async (req, res) => {
     const hike = req.body.hike;
     const hutId = req.body.hut;
     const user = req.user; // this is received from verifyUserToken middleware
-    
-    if(user.role !== Type.localGuide){
+
+    if (user.role !== Type.localGuide) {
         res.sendStatus(403);
         return;
     }
 
-    return dao.linkHutToHike(hutId, hike)
-        .then(()=>{res.status(201).end(); })
-        .catch((error) => { res.status(400).json(error); })
+    const userId = (await dao.getUserByEmail(user.email))._id;
+
+    return dao.linkHutToHike(hutId, hike, userId)
+        .then(() => { res.status(201).end(); })
+        .catch((error) => { res.status(parseInt(error.message)).json(error); })
 });
 
-app.put('/linkStartArrival',async (req,res) => {
-    try{
-        const result=await dao.modifyStartArrivalLinkToHutParking(req.body.point,req.body.reference,req.body.id,req.body.hikeId)
-        if(result){
+app.put('/linkStartArrival', verifyUserToken, async (req, res) => {
+    try {
+        if (!req || !req.body || !req.body.point || !req.body.reference || req.body.point !== "end" && req.body.point !== "start" || req.body.reference !== "parking" && req.body.reference !== "huts" || !req.body.id || !req.body.hikeId)
+            return res.status(422).end();
+        const userId = (await dao.getUserByEmail(req.user.email))._id
+        const result = await dao.modifyStartArrivalLinkToHutParking(req.body.point, req.body.reference, req.body.id, req.body.hikeId, userId)
+        if (result) {
             return res.status(201).json(result);
-        }else{
+        } else {
             return res.status(500).json(result);
         }
-    } catch (err){
+    } catch (err) {
+        console.log(typeof(err.message))
+        if(err.message === "401"){
+            return res.status(401).end()
+        }
         return res.status(500).json(err)
     }
 })
 
-app.get('/parking',async (req,res) => {
-    try{
+app.get('/parking', async (req, res) => {
+    try {
         const result = await dao.getAllParking();
         return res.status(200).json(result);
-    } catch(e){
+    } catch (e) {
         console.log(e.message);
         return res.status(500);
     }
 })
 
-const server=http.createServer(app);
+app.get('/getParking', verifyUserToken, (req, res) => {
+    let lotsMin = req.query.lotsMin
+    let altitudeMin = req.query.altitudeMin
+    let altitudeMax = req.query.altitudeMax
+    let longitude = req.query.longitude
+    let latitude = req.query.latitude
+    let searchRadius = req.query.searchRadius
+    if (searchRadius == undefined)
+        searchRadius = "40075";
+    dao.getParking(
+        lotsMin,
+        altitudeMin,
+        altitudeMax,
+        longitude,
+        latitude,
+        searchRadius
+    )
+        .then((parking) => { return res.json(parking); })
+        .catch((error) => { return res.status(500).json(error); });
+});
+
+
+app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
+    const name = req.body.name;
+    const description = req.body.description;
+    const user = req.user; // this is received from verifyUserToken middleware
+    const longitude = req.body.longitude;
+    const latitude = req.body.latitude;
+
+    if (user.role !== Type.localGuide) {
+        res.sendStatus(403);
+        return;
+    }
+
+    try {
+        await dao.createReferencePoint(
+            hikeId,
+            name,
+            description,
+            longitude,
+            latitude,
+        );
+        res.sendStatus(201);
+    } catch (error) {
+        res.sendStatus(error.status);
+    }
+
+});
+
+app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (!user) {
+        res.sendStatus(401);
+    }
+
+    dao.getHikeTrace(hikeId)
+        .then((trace) => { res.json(trace); })
+        .catch((error) => { res.status(error.status).json(error.description); });
+});
+
+
+app.get('/preferredHikes', verifyUserToken, (req, res)=>{
+
+    let maxAscent = req.query.maxAscent 
+    let maxTime = req.query.maxTime
+
+    dao.getPreferredHikes(maxAscent, maxTime)
+        .then((hikes) => { res.json(hikes); })
+        .catch((error) => { res.status(parseInt(error.message)).json(error); });
+
+});
+
+
+
+
+
+const server = http.createServer(app);
 
 
 // activate the server

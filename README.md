@@ -23,6 +23,9 @@
 ### Local Guide
 - email: localguide@email.com
 - password:password
+### Local Guide
+- email: localguide2@email.com
+- password:password
 
 ## Authentication and Authorization
 ### Client:
@@ -41,7 +44,11 @@
 
 ### How to test the application
 - ``cd server``
-- ``npm test tests/<name_of_test_file>`` 
+- ``npm test`` 
+
+### How to run coverage
+- ``cd server``
+- ``npm run coverage`` 
 
 ### MongoDB
 - you should have running a mongo database (the service: MongoDB server, must be running)<br/>

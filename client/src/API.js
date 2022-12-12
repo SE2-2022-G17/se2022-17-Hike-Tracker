@@ -17,8 +17,6 @@ async function validateEmail(email, verificationCode) {
     if (response.ok) {
         return "OK"
     } else {
-        const errDetail = await response.json();
-        //throw errDetail.message;
         return "Error"
     }
 
@@ -30,7 +28,8 @@ async function signUp(credentials) {
         lastName: credentials.surname,
         email: credentials.username,
         password: credentials.password,
-        role: credentials.type
+        role: credentials.type,
+        phoneNumber: credentials.phoneNumber,
     }
 
     let response = await fetch(new URL('/user/register', url), {
@@ -44,8 +43,28 @@ async function signUp(credentials) {
     if (response.ok) {
         return "OK";
     } else {
-        //const errDetail = await response.json();
         return "Error";
+    }
+}
+
+async function getUserByEmail(email, token) {
+    let response = await fetch('/user?' + new URLSearchParams({
+        email: email
+    }),
+        {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+                'Content-Type': 'application/json',
+            }
+        });
+
+    if (response.ok) {
+        const user = await response.json();
+        return user;
+    } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
     }
 }
 
@@ -65,6 +84,12 @@ async function logIn(credentials) {
         const errDetail = await response.json();
         throw errDetail.message;
     }
+}
+
+async function getHutsCloseToHike(hikeId) {
+    const response = await fetch(url + '/hutsCloseTo/' + hikeId)
+    const huts = await response.json()
+    return huts
 }
 
 async function getHut(hutId) {
@@ -127,15 +152,14 @@ async function getHuts(
     maxAltitude,
     longitude,
     latitude,
-    city,
-    province,
+    searchRadius,
     token
 ) {
     let query = "?"
 
     let parametes = []
 
-    if (bedsMin !== undefined && bedsMin.trim().length!=0)
+    if (bedsMin !== undefined && bedsMin.trim().length !== 0)
         parametes.push("bedsMin=" + bedsMin)
     if (minAltitude !== undefined && minAltitude.trim().length !== 0)
         parametes.push("altitudeMin=" + minAltitude)
@@ -145,10 +169,8 @@ async function getHuts(
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
-    if (city !== undefined && city.trim().length !== 0)
-        parametes.push("city=" + city)
-    if (province !== undefined && province.trim().length !== 0)
-        parametes.push("province=" + province)
+    if (searchRadius !== undefined && searchRadius.trim().length !== 0)
+        parametes.push("searchRadius=" + searchRadius)
 
     query += parametes.join("&")
     const response = await fetch(url + '/getHuts' + query, {
@@ -182,6 +204,19 @@ async function createParking(name, description, parkingSpaces, token, latitude, 
     return resp.status;
 }
 
+async function storePerformance(data, token) {
+    const response = fetch(url + '/user/store-performance', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+    });
+    return (await response).json();
+}
+
 async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
     const body = new FormData();
     body.append("track", track);
@@ -191,27 +226,14 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
     body.append("description", description);
     body.append("city", city);
     body.append("province", province);
+
     const response = fetch(url + '/localGuide/addHike', {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
         },
         credentials: 'include',
-        body: body/*JSON.stringify({
-            "title": title,
-            "length": length,
-            "time": time,
-            "ascent": ascent,
-            "difficulty": difficulty,
-            "startPoint": startPoint,
-            "endPoint": endPoint,
-            "referencePoints": referencePoints,
-            "description": description,
-            "city": city,
-            "province": province,
-            "track_file":track
-        })*/
-
+        body: body
     })
     const resp = await response;
     if (resp.ok) {
@@ -231,7 +253,7 @@ async function getAllHuts() {
     return await response.json()
 }
 
-async function createHut(name, description, beds, token,longitude,latitude,altitude,city,province) {
+async function createHut(name, description, beds, token, longitude, latitude, altitude, phone, email, website) {
     const response = await fetch(url + '/huts', {
         method: "POST",
         headers: {
@@ -245,29 +267,30 @@ async function createHut(name, description, beds, token,longitude,latitude,altit
             longitude: longitude,
             latitude: latitude,
             altitude: altitude,
-            city: city,
-            province: province
+            phone: phone,
+            email: email,
+            website: website
         })
     })
 
     return response.status
 }
 
-async function linkStartArrival(point,reference,id,hikeId,token){
-    const response = await fetch(url+'/linkStartArrival',{
+async function linkStartArrival(point, reference, id, hikeId, token) {
+    const response = await fetch(url + '/linkStartArrival', {
         method: "PUT",
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            point:point,
-            reference:reference,
-            id:id,
-            hikeId:hikeId
+            point: point,
+            reference: reference,
+            id: id,
+            hikeId: hikeId,
         })
     })
-    return await response.json();
+    return response.json();
 }
 
 async function linkHut(hut, hike, token) {
@@ -285,14 +308,132 @@ async function linkHut(hut, hike, token) {
     return response.status;
 }
 
+async function getParking(
+    lotsMin,
+    minAltitude,
+    maxAltitude,
+    longitude,
+    latitude,
+    searchRadius,
+    token
+) {
+    let query = "?"
 
-async function getAllParking(){
+    let parametes = []
+
+    if (lotsMin !== undefined && lotsMin.trim().length !== 0)
+        parametes.push("lotsMin=" + lotsMin)
+    if (minAltitude !== undefined && minAltitude.trim().length !== 0)
+        parametes.push("altitudeMin=" + minAltitude)
+    if (maxAltitude !== undefined && maxAltitude.trim().length !== 0)
+        parametes.push("altitudeMax=" + maxAltitude)
+    if (longitude !== undefined && longitude.trim().length !== 0)
+        parametes.push("longitude=" + longitude)
+    if (latitude !== undefined && latitude.trim().length !== 0)
+        parametes.push("latitude=" + latitude)
+    if (searchRadius !== undefined && searchRadius.trim().length !== 0)
+        parametes.push("searchRadius=" + searchRadius)
+
+    query += parametes.join("&")
+    const response = await fetch(url + '/getParking' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    const parking = await response.json()
+    return parking
+}
+
+async function getAllParking() {
     const result = await fetch(url + '/parking');
     return await result.json();
 }
 
+async function addReferencePoint(id, token, name, description,longitude,latitude) {
+    const response = await fetch(url + '/hikes/' + id + '/reference-points/', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id:id,
+            name: name,
+            description: description,
+            longitude: longitude,
+            latitude: latitude,
+        })
+    })
 
-const API = { getVisitorHikes, sendHikeDescription, logIn, signUp, validateEmail, getHike, getHikeTrackUrl, createHut, createParking , getHut, getHuts, getAllHuts,linkStartArrival,getAllParking, linkHut, getAllHuts};
+    return response.status
+}
+
+async function getHikeTrace(hikeId, token) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/trace/', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const trace = await response.json();
+    return trace
+}
+
+
+async function getPreferredHikes(duration, altitude, token){
+
+    const hourDuration = (duration/60).toFixed(1);
+    let query = "?";
+    let parametes = [];
+
+    if (duration !== undefined)
+        parametes.push("maxTime=" + hourDuration)
+    if (altitude !== undefined)
+        parametes.push("maxAscent=" + altitude)
+
+
+    query += parametes.join("&");
+
+    const response = await fetch(url + '/preferredHikes' + query, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const hikes = await response.json();
+    return hikes;
+
+}
+
+const API = {
+    getVisitorHikes,
+    sendHikeDescription,
+    logIn,
+    signUp,
+    validateEmail,
+    getHike,
+    getHikeTrackUrl,
+    createHut,
+    createParking,
+    getHut,
+    getHuts,
+    getAllHuts,
+    linkStartArrival,
+    getAllParking,
+    linkHut,
+    getParking,
+    getHutsCloseToHike,
+    storePerformance,
+    getUserByEmail,
+    getPreferredHikes,
+    addReferencePoint,
+    getHikeTrace
+};
+
 
 export default API;
 
