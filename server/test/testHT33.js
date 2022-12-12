@@ -196,7 +196,7 @@ describe('Test API to define reference points (US33)', () => {
             .get("/hikes/" + hikeId + "/trace")
             .set('Authorization', "Bearer " + token)
 
-        expect(response.body).to.be.an('array').that.is.not.empty;
+        expect(response.body).to.be.an('array');
 
         expect(response.statusCode).to.equal(200);
     });
