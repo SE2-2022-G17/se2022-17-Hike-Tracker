@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
 const { prependOnceListener } = require('./models/Hike')
@@ -18,13 +18,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
-  mongoose
-    .connect(
-        'mongodb://mongo:27017/hike-tracker', // the mongo container listening to port 27017
-        { useNewUrlParser: true }
-    )
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
+    mongoose.connect("mongodb://localhost/hike_tracker");
 }
 
 exports.getVisitorHikes = async (
