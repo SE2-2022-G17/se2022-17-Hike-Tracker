@@ -99,7 +99,7 @@ app.post('/user/register', async (req, res) => {
 
     return dao.registerUser(firstName, lastName, email, password, role)
         .then(() => {return res.status(201).end(); })
-        .catch((error) => {console.log(error); return res.status(400).json(error); });
+        .catch((error) => {return res.status(400).json(error); });
 });
 
 app.post('/user/validateEmail', (req, res) => {
