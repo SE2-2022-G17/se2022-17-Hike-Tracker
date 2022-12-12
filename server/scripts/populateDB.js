@@ -102,7 +102,8 @@ async function run() {
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
         activationCode: "123456",
         role: UserType.localGuide,
-        active: true
+        active: true,
+        approved: true
     })
 
     await user.save()
@@ -115,7 +116,8 @@ async function run() {
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
         activationCode: "123456",
         role: UserType.hiker,
-        active: true
+        active: true,
+        approved: true
     })
 
     await user2.save()

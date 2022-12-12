@@ -40,6 +40,14 @@ const userSchema = new mongoose.Schema({
     preferenceDuration: {
         type: Number,
         default: null
+    },
+    approved: {
+        type: Boolean,
+        default: false
+    },
+    phoneNumber: {
+        type: String,
+        default: ''
     }
 })
 

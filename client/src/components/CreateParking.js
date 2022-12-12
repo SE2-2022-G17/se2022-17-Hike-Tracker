@@ -1,9 +1,35 @@
 import { useEffect, useState } from "react";
 import {Container, Form, Button, Alert, Row, Col} from "react-bootstrap";
 import API from '../API';
+import Type from "../models/UserType";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSquareXmark} from "@fortawesome/free-solid-svg-icons";
 
+function CreateParking(props)
+{
+    let body = '';
 
-function CreateParking(props) {
+    if (props.user !== null && props.user.role === Type.localGuide) {
+        if (props.user.approved)
+            body = <CreateParkingForm/>;
+        else
+            body =
+                <Row>
+                    <Col>
+                        <div className={'text-center'}>
+                            <FontAwesomeIcon icon={ faSquareXmark } size="4x" className={'text-danger'}/>
+                            <p>You are not approved</p>
+                        </div>;
+                    </Col>
+                </Row>
+    }
+
+    return <Container className="form-container">>
+        {body}
+    </Container>
+}
+
+function CreateParkingForm() {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [parkingPlaces, setParkingPlaces] = useState(0)
@@ -45,7 +71,7 @@ function CreateParking(props) {
     }
 
     return (
-        <Container className="form-container">
+        <>
             {
                 message === '' ? undefined :
                 <Alert variant={variant}>{message}</Alert>
@@ -124,7 +150,7 @@ function CreateParking(props) {
                     Create
                 </Button>
             </Form>
-        </Container>
+        </>
     )
 }
 

@@ -6,11 +6,38 @@ import {Form, Alert} from "react-bootstrap";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ShowType from "../models/PerformanceType.js";
+import Type from "../models/UserType";
+import Badge from 'react-bootstrap/Badge';
 
 function ProfileModal(props) {
+  const user = props.user;
+
   let loggedUser = undefined
   if (localStorage.getItem('token') !== null)
     loggedUser = Utils.parseJwt(localStorage.getItem('token'))
+
+  // local guide approve block
+  let localGuideApproved = '';
+  if ( user.role === Type.localGuide )
+  {
+    localGuideApproved = <><hr />
+                          <div className="row">
+                            <div className="col-sm-5">
+                              <p className="mb-0">Local Guide Approve</p>
+                            </div>
+                            <div className="col-sm-7">
+                              {user.approved ?
+                                  <Badge bg="success">
+                                    Active
+                                  </Badge>
+                                  :
+                                  <Badge bg="danger">
+                                    Inactive
+                                  </Badge>
+                              }
+                            </div>
+                          </div></>;
+  }
 
   return (
     loggedUser ?
@@ -27,19 +54,19 @@ function ProfileModal(props) {
         <Modal.Body>
           <div className="card-body">
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Full Name</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{loggedUser.fullName}</p>
               </div>
             </div>
             <hr />
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Role</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{
                   loggedUser.role === "hiker"? "Hiker"
                   :
@@ -57,22 +84,23 @@ function ProfileModal(props) {
             </div>
             <hr />
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Email</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{loggedUser.email}</p>
               </div>
             </div>
             <hr />
             <div className="row">
-              <div className="col-sm-3">
+              <div className="col-sm-5">
                 <p className="mb-0">Profile state</p>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-7">
                 <p className="text-muted mb-0">{loggedUser.active ? 'Active' : 'Not active'}</p>
               </div>
             </div>
+            { localGuideApproved }
           </div>
         </Modal.Body>
       </Modal>
@@ -88,8 +116,8 @@ function PerformanceModal(props) {
 
   if ( validateValue(props.user.preferenceDuration) || validateValue(props.user.preferenceAltitude) ) {
     defaultShowType = ShowType.show;
-    preferenceDuration = props.user.preferenceDuration;
-    preferenceAltitude = props.user.preferenceAltitude;
+    preferenceDuration = validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '';
+    preferenceAltitude =  validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '';
   }
   const [showType, setShowType] = useState(defaultShowType);
   const [duration, setDuration] = useState(preferenceDuration);
@@ -109,8 +137,10 @@ function PerformanceModal(props) {
 
     let Save = () => {
 
-      if (altitude !== '' && altitude !== 0 && altitude !== '0' &&
-          duration !== '' && duration !== 0 && duration !== '0')
+      if (
+          ( altitude !== '' && altitude !== 0 && altitude !== '0' ) ||
+          ( duration !== '' && duration !== 0 && duration !== '0' )
+      )
       {
         const data = {
           altitude: altitude,
@@ -129,14 +159,14 @@ function PerformanceModal(props) {
 
     let Cancel = () => {
       setShowType(ShowType.show);
-      setDuration(props.user.preferenceDuration);
-      setAltitude(props.user.preferenceAltitude);
+      setDuration(validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '');
+      setAltitude(validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '');
     }
 
   let Edit = () => {
     setShowType(ShowType.edit);
-    setDuration(props.user.preferenceDuration);
-    setAltitude(props.user.preferenceAltitude);
+    setDuration(validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '');
+    setAltitude(validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '');
   }
 
     if (showAlert)
@@ -160,7 +190,9 @@ function PerformanceModal(props) {
           <p className="mb-0">Duration</p>
         </div>
         <div className="col-sm-9">
-          <p className="text-muted mb-0">{props.user.preferenceDuration} min  </p>
+          <p className="text-muted mb-0">{validateValue(props.user.preferenceDuration) ?
+                                          preferenceDuration + ' min' :
+                                          'Not set'}</p>
         </div>
       </div>
         <hr />
@@ -169,7 +201,9 @@ function PerformanceModal(props) {
             <p className="mb-0">Altitude</p>
           </div>
           <div className="col-sm-9">
-            <p className="text-muted mb-0">{props.user.preferenceAltitude} m</p>
+            <p className="text-muted mb-0">{validateValue(props.user.preferenceAltitude) ?
+                preferenceAltitude + ' m' :
+                'Not set' }</p>
           </div>
         </div></>
     }
