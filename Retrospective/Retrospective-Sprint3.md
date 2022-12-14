@@ -75,7 +75,7 @@ sections:
   - Difficulty in using third party software for maps management
 
 - What lessons did you learn (both positive and negative) in this sprint?
-  - ... 
+  - We must learn how to use in a better way SonarCloud and SonarQube specificly how to assign issues and show statistics
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
   - We improved UI usability
