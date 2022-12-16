@@ -469,7 +469,7 @@ app.get('/preferredHikes', verifyUserToken, (req, res) => {
 const storage = multer.memoryStorage();
 const imageUpload = multer({
     storage: storage,
-    limits: { fileSize: 1048576 } //max file size
+    limits: { fileSize: 8000000 } //max file size
 });
 
 app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], async (req, res) => {
