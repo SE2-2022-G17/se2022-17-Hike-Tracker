@@ -350,7 +350,7 @@ async function getAllParking() {
     return await result.json();
 }
 
-async function addReferencePoint(id, token, name, description,longitude,latitude) {
+async function addReferencePoint(id, token, name, description, longitude, latitude) {
     const response = await fetch(url + '/hikes/' + id + '/reference-points/', {
         method: "POST",
         headers: {
@@ -358,7 +358,7 @@ async function addReferencePoint(id, token, name, description,longitude,latitude
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id:id,
+            id: id,
             name: name,
             description: description,
             longitude: longitude,
@@ -382,9 +382,9 @@ async function getHikeTrace(hikeId, token) {
 }
 
 
-async function getPreferredHikes(duration, altitude, token){
+async function getPreferredHikes(duration, altitude, token) {
 
-    const hourDuration = (duration/60).toFixed(1);
+    const hourDuration = (duration / 60).toFixed(1);
     let query = "?";
     let parametes = [];
 
@@ -417,24 +417,24 @@ async function getHikeImage(hikeId, token) {
         credentials: 'include'
     });
 
-    if(!response.ok)
+    if (!response.ok)
         return null;
 
     const image = await response.json();
     return image;
 }
 
-async function addImageToHike(image, hikeId) {
+async function addImageToHike(image, hikeId, token) {
 
     const body = new FormData();
     body.append("image", image);
 
     const response = await fetch(url + '/hikes/' + hikeId + '/image/', {
         method: "POST",
-        //headers: {
-            //'Authorization': `Bearer ${token}`, // notice the Bearer before your token
-        //},
-        //credentials: 'include',
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
         body: body
     })
     return response.status;

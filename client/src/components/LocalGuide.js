@@ -62,7 +62,7 @@ function MainContent() {
         } else {
             //image addition is optional
             if (image !== "") {
-                await API.addImageToHike(image, hikeId);
+                await API.addImageToHike(image, hikeId, authToken);
             }
             setErr(true);
         }
