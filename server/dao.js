@@ -7,6 +7,8 @@ const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const Location = require('./models/Location');
 const User = require("./models/User")
+const Record = require("./models/Record")
+const RecordStatus = require("./constants/RecordStatus")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
 const ObjectId = require('mongodb').ObjectId
@@ -135,6 +137,7 @@ exports.loginUser = async (email, password) => {
         throw new TypeError(401)
 
     const token = jwt.sign({
+        'id': user._id,
         'fullName': user.firstName + " " + user.lastName,
         'email': user.email,
         'role': user.role,
@@ -157,7 +160,7 @@ exports.loginUser = async (email, password) => {
 }
 
 exports.updateUserPreference = async (altitude, duration, email) => {
-    return User.findOneAndUpdate({email: email}, {
+    return User.findOneAndUpdate({ email: email }, {
         $set: {
             'preferenceAltitude': altitude,
             'preferenceDuration': duration,
@@ -553,4 +556,21 @@ exports.getHikeTrace = async (hikeId) => {
     } catch (e) {
         throw { description: "Trace not found", status: 404 };
     }
+}
+
+exports.startRecordingHike = async (hikeId, userId) => {
+    if (!Hike.findById(hikeId))
+        throw { description: "Hike not found", status: 404 }
+    if (!User.findById(userId))
+        throw { description: "User not found", status: 404 }
+    
+
+    const record = await Record.create({
+        hikeId: hikeId,
+        userId: userId,
+        status: RecordStatus.STARTED,
+    });
+
+    await record.save()
+
 }
