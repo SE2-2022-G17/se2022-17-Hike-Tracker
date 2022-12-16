@@ -12,7 +12,10 @@ const recordSchema = new mongoose.Schema({
         required: true
     },
     lastReferencePoint: { type: Schema.Types.ObjectId, ref: 'Position' },
-    //creationDate: {}
+    creationDate: {
+        type: String,
+        default: Date.now()
+    }
 })
 
 module.exports = mongoose.model("Record", recordSchema)

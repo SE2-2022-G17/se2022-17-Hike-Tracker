@@ -558,12 +558,13 @@ exports.getHikeTrace = async (hikeId) => {
     }
 }
 
+//HT-17
 exports.startRecordingHike = async (hikeId, userId) => {
     if (!Hike.findById(hikeId))
         throw { description: "Hike not found", status: 404 }
     if (!User.findById(userId))
         throw { description: "User not found", status: 404 }
-    
+
 
     const record = await Record.create({
         hikeId: hikeId,
@@ -573,4 +574,26 @@ exports.startRecordingHike = async (hikeId, userId) => {
 
     await record.save()
 
+}
+
+//HT-18 
+exports.terminateRecordingHike = async (recordId, userId) => {
+    const record = await Record.findById(recordId);
+    if (!record)
+        throw { description: "Record not found", status: 404 }
+
+    if (record.userId.toString() !== userId)
+        throw { description: "Forbidden access to record", status: 403 }
+
+
+    record.status = RecordStatus.CLOSED;
+
+    await record.save()
+
+}
+
+//HT-34
+exports.getRecords = async (userId) => {
+    const records = await Record.find({ userId: userId });
+    return records;
 }

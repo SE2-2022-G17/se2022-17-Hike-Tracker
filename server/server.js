@@ -138,7 +138,7 @@ async function verifyUserToken(req, res, next) {
     const token = req.headers["authorization"].split(" ")[1];
 
     if (!token) {
-        return res.status(401).send("Access denied. No token provided.");
+        return res.status(401).send("Access denied. No token provided. (Usage: 'Bearer <token>')");
     }
 
     if (token === 'test') {
@@ -491,8 +491,30 @@ app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
     }
 });
 
+//HT-18
+app.put('/records/:id/terminate', verifyUserToken, async (req, res) => {
+    const recordId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
 
+    try {
+        await dao.terminateRecordingHike(recordId, user.id);
+        res.sendStatus(200);
+    } catch (error) {
+        res.send(error.status).json(error.description);;
+    }
+});
 
+//HT-34
+app.get('/records', verifyUserToken, async (req, res) => {
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    try {
+        const records = await dao.getRecords(user.id);
+        res.json(records);
+    } catch (error) {
+        res.send(error.status).json(error.description);;
+    }
+});
 
 
 
