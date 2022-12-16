@@ -567,3 +567,17 @@ exports.getHikeImage = async (hikeId) => {
     return image;
 
 }
+
+exports.addImageToHike = async (hikeId, file) => {
+
+    let imageUploadObject = {
+        hikeId: hikeId,
+        file: {
+            data: file.buffer,
+            contentType: file.mimetype
+        }
+    }
+    const hikeImage = new HikeImage(imageUploadObject);
+    // saving the object into the database
+    await hikeImage.save();
+}
