@@ -587,6 +587,7 @@ exports.terminateRecordingHike = async (recordId, userId) => {
 
 
     record.status = RecordStatus.CLOSED;
+    record.endDate = Date.now()
 
     await record.save()
 
@@ -596,4 +597,29 @@ exports.terminateRecordingHike = async (recordId, userId) => {
 exports.getRecords = async (userId) => {
     const records = await Record.find({ userId: userId });
     return records;
+}
+
+//HT-19
+exports.recordReferencePoint = async (recordId, userId, positionId) => {
+    console.log(recordId)
+    const record = await Record.findById(recordId);
+    if (!record)
+        throw { description: "Record not found", status: 404 }
+
+    const position = await Position.findById(positionId)
+    if (!position)
+        throw { description: "Record not found", status: 404 }
+
+    //const hike = await Hike.findById(record.hikeId);
+    //if (!hike.referencePoints.includes(positionId))
+    //    throw { description: "Reference point not belonging to hike", status: 400 }
+
+    if (record.userId.toString() !== userId)
+        throw { description: "Forbidden access to record", status: 403 }
+
+
+    record.status = RecordStatus.ONGOING;
+    record.referencePoints.push({ positionId: positionId, time: Date.now() });
+
+    await record.save()
 }

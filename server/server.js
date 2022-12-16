@@ -455,9 +455,9 @@ app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
 });
 
 
-app.get('/preferredHikes', verifyUserToken, (req, res)=>{
+app.get('/preferredHikes', verifyUserToken, (req, res) => {
 
-    let maxAscent = req.query.maxAscent 
+    let maxAscent = req.query.maxAscent
     let maxTime = req.query.maxTime
 
     dao.getPreferredHikes(maxAscent, maxTime)
@@ -466,28 +466,18 @@ app.get('/preferredHikes', verifyUserToken, (req, res)=>{
 
 });
 
-app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
-    const hikeId = req.params.id;
-    const user = req.user; // this is received from verifyUserToken middleware
-
-    try {
-        await dao.startRecordingHike(hikeId, user.id);
-        res.sendStatus(201);
-    } catch (error) {
-        res.send(error.status).json(error.description);;
-    }
-});
-
 //HT-17
 app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
     const hikeId = req.params.id;
     const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
 
     try {
         await dao.startRecordingHike(hikeId, user.id);
         res.sendStatus(201);
     } catch (error) {
-        res.send(error.status).json(error.description);;
+        res.json(error.description).send(error.status);
     }
 });
 
@@ -495,25 +485,46 @@ app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
 app.put('/records/:id/terminate', verifyUserToken, async (req, res) => {
     const recordId = req.params.id;
     const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
 
     try {
         await dao.terminateRecordingHike(recordId, user.id);
         res.sendStatus(200);
     } catch (error) {
-        res.send(error.status).json(error.description);;
+        res.json(error.description).send(error.status);
     }
 });
 
 //HT-34
 app.get('/records', verifyUserToken, async (req, res) => {
     const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
 
     try {
         const records = await dao.getRecords(user.id);
         res.json(records);
     } catch (error) {
-        res.send(error.status).json(error.description);;
+        res.json(error.description).send(error.status);
     }
+});
+
+//HT-19
+app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async (req, res) => {
+    const user = req.user; // this is received from verifyUserToken middleware
+    const recordId = req.params.recordId;
+    const positionId = req.params.positionId;
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        await dao.recordReferencePoint(recordId, user.id, positionId);
+        res.sendStatus(200);
+    } catch (error) {
+        res.json(error.description).send(error.status);
+    }
+
 });
 
 

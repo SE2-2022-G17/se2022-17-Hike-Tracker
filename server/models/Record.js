@@ -1,7 +1,11 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose;
-
 const RecordStatus = require("../constants/RecordStatus")
+
+const referencePointSchema = new mongoose.Schema({
+    positionId: { type: Schema.Types.ObjectId, ref: 'Position' },
+    time: Date
+});
 
 const recordSchema = new mongoose.Schema({
     hikeId: { type: Schema.Types.ObjectId, ref: 'Hike' },
@@ -11,11 +15,14 @@ const recordSchema = new mongoose.Schema({
         enum: RecordStatus,
         required: true
     },
-    lastReferencePoint: { type: Schema.Types.ObjectId, ref: 'Position' },
-    creationDate: {
-        type: String,
-        default: Date.now()
-    }
+    startDate: {
+        type: Date,
+        default: Date.now
+    },
+    endDate: {
+        type: Date,
+    },
+    referencePoints: [referencePointSchema],
 })
 
 module.exports = mongoose.model("Record", recordSchema)
