@@ -13,6 +13,7 @@ import API from "../API";
 import ReferencePointsForm from "./ReferencePointsForm";
 import Accordion from 'react-bootstrap/Accordion';
 import AddReferencePoint from "./AddReferencePoint";
+import { Buffer } from 'buffer';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -28,7 +29,15 @@ function ShowHike(props) {
     const [linkHut, setLinkHut] = useState(false);
     let { id } = useParams();
 
+    const [hikeImage, setHikeImage] = useState(undefined);
+
     useEffect(() => {
+        // scroll to top on page load
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }, []);
+
+    useEffect(() => {
+
         if (id !== null && hike === null) {
             API.getHike(id).then(function (hike) {
                 setHike(hike);
@@ -41,6 +50,18 @@ function ShowHike(props) {
             }).catch(function (error) {
                 console.log(error);
             })
+
+            async function fetchImage() {
+                const authToken = localStorage.getItem('token');
+                const image = await API.getHikeImage(id, authToken);
+                if (image !== null) {
+                    const contentType = image.file.contentType;
+                    const imageBase64 = Buffer.from(image.file.data.data).toString('base64');
+
+                    setHikeImage(`data:${contentType};base64,${imageBase64}`); //this is the format require by src in img tag
+                }
+            }
+            fetchImage()
         }
 
         if (hike !== null) {
@@ -167,6 +188,7 @@ function ShowHike(props) {
     return (
         <Container>
             <h1 className={'my-2'}>{hike !== null ? hike.title : ''}</h1>
+            {hikeImage !== undefined ? <img className="hike-image" src={hikeImage}></img> : undefined}
             <Row>
                 <Col>
                     <p>{hike !== null ? hike.description : ''}</p>

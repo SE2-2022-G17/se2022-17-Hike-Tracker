@@ -4,7 +4,7 @@ import API from "../API";
 import CityProvince from "./CityProvince";
 import Type from "../models/UserType";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {  faSquareXmark } from "@fortawesome/free-solid-svg-icons";
+import { faSquareXmark } from "@fortawesome/free-solid-svg-icons";
 
 function LocalGuide(props) {
 
@@ -12,21 +12,21 @@ function LocalGuide(props) {
 
     if (props.user !== null && props.user.role === Type.localGuide) {
         if (props.user.approved)
-            body = <MainContent/>;
+            body = <MainContent />;
         else
             body = <div className={'text-center'}>
-                <FontAwesomeIcon icon={ faSquareXmark } size="4x" className={'text-danger'}/>
+                <FontAwesomeIcon icon={faSquareXmark} size="4x" className={'text-danger'} />
                 <p>You are not approved</p>
-        </div>;
+            </div>;
     }
 
     return <Container>
-                <Row>
-                    <Col>
-                        {body}
-                    </Col>
-                </Row>
-            </Container>
+        <Row>
+            <Col>
+                {body}
+            </Col>
+        </Row>
+    </Container>
 }
 
 function MainContent() {
@@ -39,6 +39,7 @@ function MainContent() {
     const [province, setProvince] = useState("")
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
+    const [image, setImage] = useState("");
 
     useEffect(() => {
         if (time <= 0)
@@ -53,10 +54,16 @@ function MainContent() {
         }
         const authToken = localStorage.getItem('token');
         setLoading(true);
-        const errorMsg = await API.sendHikeDescription(title, time, difficulty, description, track, city, province, authToken);
-        if (errorMsg !== "") {
-            setErr(errorMsg);
+        //if the hike is not created (an error occurred) hikeId will be undefined
+        const hikeId = await API.sendHikeDescription(title, time, difficulty, description, track, city, province, authToken);
+
+        if (hikeId === undefined) {
+            setErr(hikeId);
         } else {
+            //image addition is optional
+            if (image !== "") {
+                await API.addImageToHike(image, hikeId, authToken);
+            }
             setErr(true);
         }
         setTimeout(() => setErr(""), 5000);
@@ -99,6 +106,10 @@ function MainContent() {
                 <Form.Group className="local-guide-form">
                     <Form.Label>GPX track:</Form.Label>
                     <Form.Control type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
+                </Form.Group>
+                <Form.Group className="local-guide-form">
+                    <Form.Label>Image file:</Form.Label>
+                    <Form.Control type="file" size="sm" onChange={event => setImage(event.target.files[0])} />
                 </Form.Group>
                 {
                     err !== "" && <>

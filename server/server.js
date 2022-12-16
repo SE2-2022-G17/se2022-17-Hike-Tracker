@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
-
+const HikeImage = require('./models/HikeImage');
 
 // init express
 const app = new express();
@@ -24,12 +24,12 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());
 
-function distanceCalc(p1,p2) {
-    const ph1 = p1.lat * Math.PI/180;
-    const ph2 = p2.lat * Math.PI/180;
-    const DL = (p2.lng-p1.lng)* Math.PI/180;
+function distanceCalc(p1, p2) {
+    const ph1 = p1.lat * Math.PI / 180;
+    const ph2 = p2.lat * Math.PI / 180;
+    const DL = (p2.lng - p1.lng) * Math.PI / 180;
     const R = 6371e3;
-    const d = Math.acos((Math.sin(ph1)*Math.sin(ph2))+(Math.cos(ph1)*Math.cos(ph2))*Math.cos(DL))*R;
+    const d = Math.acos((Math.sin(ph1) * Math.sin(ph2)) + (Math.cos(ph1) * Math.cos(ph2)) * Math.cos(DL)) * R;
     return d;
 }
 
@@ -95,8 +95,8 @@ app.post('/user/register', async (req, res) => {
     const phoneNumber = req.body.phoneNumber;
 
     return dao.registerUser(firstName, lastName, email, password, role, phoneNumber)
-        .then(() => {return res.status(201).end(); })
-        .catch((error) => {return res.status(400).json(error); });
+        .then(() => { return res.status(201).end(); })
+        .catch((error) => { return res.status(400).json(error); });
 });
 
 app.post('/user/validateEmail', (req, res) => {
@@ -104,8 +104,8 @@ app.post('/user/validateEmail', (req, res) => {
     const verificationCode = req.body.verificationCode;
 
     return dao.validateUser(email, verificationCode)
-        .then(() => {return res.status(201).end(); })
-        .catch((error) => {return res.status(400).json(error); })
+        .then(() => { return res.status(201).end(); })
+        .catch((error) => { return res.status(400).json(error); })
 });
 
 app.post('/user/login', (req, res) => {
@@ -160,18 +160,19 @@ async function verifyUserToken(req, res, next) {
 const upload = multer({
     limits: {
         fileSize: 8000000 // Compliant: 8MB
- }});
+    }
+});
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
-        return res.status(201).end();
+        const hikeId = await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
+        return res.status(201).json(hikeId);
     } catch (err) {
         return res.status(500).json(err);
     }
 });
 
-app.post('/user/store-performance',  verifyUserToken, (req, res) => {
+app.post('/user/store-performance', verifyUserToken, (req, res) => {
     const altitude = req.body.altitude;
     const duration = req.body.duration;
     let user = req.user;
@@ -193,7 +194,7 @@ app.post('/user/store-performance',  verifyUserToken, (req, res) => {
 });
 
 app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
-    
+
     try {
         await dao.saveNewParking(req.body.name,
             req.body.description,
@@ -210,7 +211,8 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
 app.get('/user', verifyUserToken, (req, res) => {
     dao.getUserByEmail(req.user.email)
         .then((user) => {
-             res.json(user); })
+            res.json(user);
+        })
         .catch((error) => { res.status(500).json(error); });
 });
 
@@ -219,29 +221,29 @@ app.get('/user', verifyUserToken, (req, res) => {
 app.get('/hutsCloseTo/:id', async (req, res) => {
     const hikeId = req.params.id;
     const huts = [];
-    try{
+    try {
         const trace = await dao.getHikeTrace(hikeId);
         const allHuts = await dao.getHuts();
 
-        trace.forEach((point)=>{
-            allHuts.forEach((hut)=>{
+        trace.forEach((point) => {
+            allHuts.forEach((hut) => {
                 const p1 = {
-                    lng : point.lng,
-                    lat : point.lat
+                    lng: point.lng,
+                    lat: point.lat
                 }
                 const p2 = {
-                    lng : hut.point.location.coordinates[0],
-                    lat : hut.point.location.coordinates[1]
+                    lng: hut.point.location.coordinates[0],
+                    lat: hut.point.location.coordinates[1]
                 }
-                if(distanceCalc(p1,p2) <= 5000){
-                    const found =  huts.find((h)=>h._id.toString()===hut._id.toString());
-                    if( found === undefined )
+                if (distanceCalc(p1, p2) <= 5000) {
+                    const found = huts.find((h) => h._id.toString() === hut._id.toString());
+                    if (found === undefined)
                         huts.push(hut);
                 }
             });
         })
         res.json(huts);
-    }catch (err) {
+    } catch (err) {
         console.log(err);
         return res.status(500).json(err);
     }
@@ -371,8 +373,8 @@ app.put('/linkStartArrival', verifyUserToken, async (req, res) => {
             return res.status(500).json(result);
         }
     } catch (err) {
-        console.log(typeof(err.message))
-        if(err.message === "401"){
+        console.log(typeof (err.message))
+        if (err.message === "401") {
             return res.status(401).end()
         }
         return res.status(500).json(err)
@@ -453,9 +455,9 @@ app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
 });
 
 
-app.get('/preferredHikes', verifyUserToken, (req, res)=>{
+app.get('/preferredHikes', verifyUserToken, (req, res) => {
 
-    let maxAscent = req.query.maxAscent 
+    let maxAscent = req.query.maxAscent
     let maxTime = req.query.maxTime
 
     dao.getPreferredHikes(maxAscent, maxTime)
@@ -464,7 +466,40 @@ app.get('/preferredHikes', verifyUserToken, (req, res)=>{
 
 });
 
+const storage = multer.memoryStorage();
+const imageUpload = multer({
+    storage: storage,
+    limits: { fileSize: 8000000 } //max file size
+});
 
+app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], async (req, res) => {
+    // req.file can be used to access all file properties
+    if (!req.file) {
+        res.status(400).json({
+            success: false,
+            message: "You must provide at least 1 file"
+        });
+    }
+
+    const hikeId = req.params.id;
+    dao.addImageToHike(hikeId, req.file)
+        .then(() => res.sendStatus(204))
+        .catch((e) => res.send(e.status).json(e.description));
+
+});
+
+app.get('/hikes/:id/image', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (!user) {
+        res.sendStatus(401);
+    }
+
+    dao.getHikeImage(hikeId)
+        .then((image) => { res.json(image); })
+        .catch((error) => { res.status(error.status).json(error.description); });
+});
 
 
 

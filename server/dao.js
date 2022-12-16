@@ -2,22 +2,24 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
-const { prependOnceListener } = require('./models/Hike')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const Location = require('./models/Location');
 const User = require("./models/User")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
+const HikeImage = require('./models/HikeImage')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
 const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
+const HTTPError = require('./models/HTTPError')
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
+    mongoose.set('strictQuery', false);
     mongoose.connect("mongodb://localhost/hike_tracker");
 }
 
@@ -157,7 +159,7 @@ exports.loginUser = async (email, password) => {
 }
 
 exports.updateUserPreference = async (altitude, duration, email) => {
-    return User.findOneAndUpdate({email: email}, {
+    return User.findOneAndUpdate({ email: email }, {
         $set: {
             'preferenceAltitude': altitude,
             'preferenceDuration': duration,
@@ -553,4 +555,29 @@ exports.getHikeTrace = async (hikeId) => {
     } catch (e) {
         throw { description: "Trace not found", status: 404 };
     }
+}
+
+exports.getHikeImage = async (hikeId) => {
+
+    const image = await HikeImage.findOne({ hikeId: hikeId });
+    
+    if (!image)
+        throw new HTTPError(404, "Image not found");
+
+    return image;
+
+}
+
+exports.addImageToHike = async (hikeId, file) => {
+
+    let imageUploadObject = {
+        hikeId: hikeId,
+        file: {
+            data: file.buffer,
+            contentType: file.mimetype
+        }
+    }
+    const hikeImage = new HikeImage(imageUploadObject);
+    // saving the object into the database
+    await hikeImage.save();
 }

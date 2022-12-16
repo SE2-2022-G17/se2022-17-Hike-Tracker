@@ -261,3 +261,7 @@
   margin: 1rem 0rem;
   max-width: 370px;
 }
+
+.hike-image {
+  max-width: 100%;
+}
