@@ -227,7 +227,7 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
     body.append("city", city);
     body.append("province", province);
 
-    const response = fetch(url + '/localGuide/addHike', {
+    const response = await fetch(url + '/localGuide/addHike', {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
@@ -235,11 +235,10 @@ async function sendHikeDescription(title, time, difficulty, description, track, 
         credentials: 'include',
         body: body
     })
-    const resp = await response;
-    if (resp.ok) {
-        return "";
+    if (response.ok) {
+        return await response.json();
     } else {
-        return resp.statusText;
+        return undefined;
     }
 }
 
@@ -409,6 +408,38 @@ async function getPreferredHikes(duration, altitude, token){
 
 }
 
+async function getHikeImage(hikeId, token) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/image', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+
+    if(!response.ok)
+        return null;
+
+    const image = await response.json();
+    return image;
+}
+
+async function addImageToHike(image, hikeId) {
+
+    const body = new FormData();
+    body.append("image", image);
+
+    const response = await fetch(url + '/hikes/' + hikeId + '/image/', {
+        method: "POST",
+        //headers: {
+            //'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        //},
+        //credentials: 'include',
+        body: body
+    })
+    return response.status;
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -431,7 +462,9 @@ const API = {
     getUserByEmail,
     getPreferredHikes,
     addReferencePoint,
-    getHikeTrace
+    getHikeTrace,
+    getHikeImage,
+    addImageToHike
 };
 
 
