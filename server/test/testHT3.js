@@ -11,23 +11,24 @@ const { randomBytes } = require('node:crypto');
 
 let mongoServer;
 
-before(async () => {
-    // if readyState is 0, mongoose is not connected
-    if (mongoose.connection.readyState === 0) {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-    }
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    if (mongoServer !== undefined)
-        await mongoServer.stop();
-    app.close();
-});
 
 describe('Test API for visitor to register', () => {
+    before(async () => {
+        // if readyState is 0, mongoose is not connected
+        if (mongoose.connection.readyState === 0) {
+            mongoServer = await MongoMemoryServer.create();
+            const mongoUri = mongoServer.getUri();
+            await mongoose.connect(mongoUri);
+        }
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        if (mongoServer !== undefined)
+            await mongoServer.stop();
+        app.close();
+    });
+
     it('test visitor registration', async () => {
         const response = await request(app).post("/user/register")
             .send({
@@ -76,37 +77,37 @@ describe('Test API for visitor to register', () => {
         expect(response.statusCode).to.equal(400); // Error code to be defined
     });
 
-    it('test validation email API',async ()=>{
+    it('test validation email API', async () => {
         const response = await request(app).post("/user/validateEmail").send()
         expect(response.statusCode).to.equal(400);
     })
 
-    it('test wrong login',async ()=>{
+    it('test wrong login', async () => {
         const randomArray = randomBytes(1);
         const response = await request(app).post("/user/login").send({
-            "email":"wrong@email.com",
-            "password":randomArray[0].toString()
+            "email": "wrong@email.com",
+            "password": randomArray[0].toString()
         })
         expect(response.statusCode).to.equal(404);
     })
 
-    it('test verifyuser token API',async ()=>{
+    it('test verifyuser token API', async () => {
         const token = localGuide.token;
 
         const response = await request(app)
-        .get("/example/protected")
-        .set('Authorization', "Bearer " + token)
-        .send()
+            .get("/example/protected")
+            .set('Authorization', "Bearer " + token)
+            .send()
         expect(response.statusCode).to.equal(201);
     })
 
-    it('test user API',async ()=>{
+    it('test user API', async () => {
         const token = localGuide.token;
 
         const response = await request(app)
-        .get("/user")
-        .set('Authorization', "Bearer " + token)
-        .send()
+            .get("/user")
+            .set('Authorization', "Bearer " + token)
+            .send()
         expect(response.statusCode).to.equal(200);
     })
 });

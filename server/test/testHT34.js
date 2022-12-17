@@ -24,79 +24,80 @@ const terminatedRecordId = "0000000197e4c1e796231d9f"
 const userId = "0000000196e4c1e796231d9f"
 
 
-before(async () => {
-    // if readyState is 0, mongoose is not connected
-    if (mongoose.connection.readyState === 0) {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-    }
-
-    await Hike.deleteMany();
-    await User.deleteMany();
-    await Record.deleteMany();
-
-    const startPosition = await Position.create({
-        "location.coordinates": [3, 5]
-    })
-
-    const endPosition = await Position.create({
-        "location.coordinates": [4, 6]
-    })
-
-    const hike = await Hike.create({
-        _id: new mongoose.Types.ObjectId(hikeId),
-        title: 'prova',
-        expectedTime: 20,
-        difficulty: Difficulty.Hiker,
-        city: 'Torino',
-        province: 'Torino',
-        description: 'test',
-        track_file: "rocciamelone.gpx",
-        length: 2,
-        ascent: 5,
-        startPoint: startPosition._id,
-        endPoint: endPosition._id
-    });
-
-    const user = await User.create({
-        _id: userId,
-        firstName: "Elon",
-        lastName: "Musk",
-        email: "grimes@twitter.com",
-        role: UserType.hiker,
-        active: ValidationType.mailOnly,
-        hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2"
-    });
-
-    const record = await Record.create({
-        _id: new mongoose.Types.ObjectId(recordId),
-        hikeId: new mongoose.Types.ObjectId(hikeId),
-        userId: new mongoose.Types.ObjectId(userId),
-        status: RecordStatus.STARTED
-    });
-
-    const terminatedRecord = await Record.create({
-        _id: new mongoose.Types.ObjectId(terminatedRecordId),
-        hikeId: new mongoose.Types.ObjectId(hikeId),
-        userId: new mongoose.Types.ObjectId(userId),
-        status: RecordStatus.CLOSED
-    });
-
-    await user.save();
-    await record.save();
-    await terminatedRecord.save();
-    await hike.save();
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    if (mongoServer !== undefined)
-        await mongoServer.stop();
-    app.close();
-});
-
 describe('Test API to get (completed) records (US34)', () => {
+    before(async () => {
+        // if readyState is 0, mongoose is not connected
+        if (mongoose.connection.readyState === 0) {
+            mongoServer = await MongoMemoryServer.create();
+            const mongoUri = mongoServer.getUri();
+            await mongoose.connect(mongoUri);
+        }
+
+        await Hike.deleteMany();
+        await User.deleteMany();
+        await Record.deleteMany();
+
+        const startPosition = await Position.create({
+            "location.coordinates": [3, 5]
+        })
+
+        const endPosition = await Position.create({
+            "location.coordinates": [4, 6]
+        })
+
+        const hike = await Hike.create({
+            _id: new mongoose.Types.ObjectId(hikeId),
+            title: 'prova',
+            expectedTime: 20,
+            difficulty: Difficulty.Hiker,
+            city: 'Torino',
+            province: 'Torino',
+            description: 'test',
+            track_file: "rocciamelone.gpx",
+            length: 2,
+            ascent: 5,
+            startPoint: startPosition._id,
+            endPoint: endPosition._id
+        });
+
+        const user = await User.create({
+            _id: userId,
+            firstName: "Elon",
+            lastName: "Musk",
+            email: "grimes@twitter.com",
+            role: UserType.hiker,
+            active: ValidationType.mailOnly,
+            hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2"
+        });
+
+        const record = await Record.create({
+            _id: new mongoose.Types.ObjectId(recordId),
+            hikeId: new mongoose.Types.ObjectId(hikeId),
+            userId: new mongoose.Types.ObjectId(userId),
+            status: RecordStatus.STARTED
+        });
+
+        const terminatedRecord = await Record.create({
+            _id: new mongoose.Types.ObjectId(terminatedRecordId),
+            hikeId: new mongoose.Types.ObjectId(hikeId),
+            userId: new mongoose.Types.ObjectId(userId),
+            status: RecordStatus.CLOSED
+        });
+
+        await user.save();
+        await record.save();
+        await terminatedRecord.save();
+        await hike.save();
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        if (mongoServer !== undefined)
+            await mongoServer.stop();
+        app.close();
+    });
+
+
     it('test get records - unauthorized', async () => {
 
         const response = await request(app)

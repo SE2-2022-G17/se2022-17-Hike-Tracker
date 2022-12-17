@@ -616,11 +616,11 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
 
     const position = await Position.findById(positionId).exec();
     if (!position)
-        throw { description: "Record not found", status: 404 }
+        throw new HTTPError("Position not found", 404);
 
-    const hike = await Hike.findById(record.hikeId);
+    const hike = await Hike.findById(record.hikeId).exec();
     if (!hike.referencePoints.includes(positionId))
-        throw { description: "Reference point not belonging to hike", status: 400 }
+        throw new HTTPError("Reference point not belonging to hike", 400);
 
     const reached = record.referencePoints.map(ref => ref.positionId);
     if (!reached.includes(positionId)) {

@@ -15,90 +15,92 @@ const User = require('../models/User.js');
 
 let mongoServer;
 
-before(async () => {
-    // if readyState is 0, mongoose is not connected
-    if (mongoose.connection.readyState === 0) {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-    }
-    await User.deleteMany({email:"localguide@email.com"})
-    await Parking.deleteOne({ _id: '0000000194e4c1e796231d9a' });
-    await Hut.deleteOne({ _id: '0000000194e4c1e796231d9b' });
-    await Hike.deleteOne({ _id: '0000000194e4c1e796231d9a' });
-
-    const startPosition = await Position.create({
-        "location.coordinates": [3, 5]
-    })
-
-    const endPosition = await Position.create({
-        "location.coordinates": [4, 6]
-    })
-
-    const parking = await Parking.create(
-        {
-            _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'),
-            name: "parking",
-            description: "parking test",
-            parkingSpaces: "3",
-            point: startPosition._id
-        }
-    )
-
-    const user = await User.create({
-        _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
-        firstName: "Pietro",
-        lastName: "Bertorelle",
-        email: "localguide@email.com",
-        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
-        activationCode: "123456",
-        role: "localGuide",
-        active: true
-    })
-    await user.save();
-    const hike = await Hike.create({
-        _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'),
-        title: 'prova',
-        expectedTime: 20,
-        difficulty: Difficulty.Hiker,
-        city: 'Torino',
-        province: 'Torino',
-        description: 'test',
-        track_file: 'rocciamelone.gpx',
-        length: 2,
-        ascent: 5,
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
-        authorId:user._id
-    });
-
-    const hut = await Hut.create(
-        {
-            _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'),
-            beds: 6,
-            altitude: 40,
-            point: startPosition._id,
-            name: "hut",
-            description: 'hut test'
-
-        }
-    )
-
-
-    await parking.save();
-    await hike.save();
-    await hut.save();
-
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    if (mongoServer !== undefined)
-        await mongoServer.stop();
-    app.close();
-});
 
 describe('Test API for adding huts or parking as startPoint/arrivals', () => {
+
+    before(async () => {
+        // if readyState is 0, mongoose is not connected
+        if (mongoose.connection.readyState === 0) {
+            mongoServer = await MongoMemoryServer.create();
+            const mongoUri = mongoServer.getUri();
+            await mongoose.connect(mongoUri);
+        }
+        await User.deleteMany({ email: "localguide@email.com" })
+        await Parking.deleteOne({ _id: '0000000194e4c1e796231d9a' });
+        await Hut.deleteOne({ _id: '0000000194e4c1e796231d9b' });
+        await Hike.deleteOne({ _id: '0000000194e4c1e796231d9a' });
+
+        const startPosition = await Position.create({
+            "location.coordinates": [3, 5]
+        })
+
+        const endPosition = await Position.create({
+            "location.coordinates": [4, 6]
+        })
+
+        const parking = await Parking.create(
+            {
+                _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'),
+                name: "parking",
+                description: "parking test",
+                parkingSpaces: "3",
+                point: startPosition._id
+            }
+        )
+
+        const user = await User.create({
+            _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
+            firstName: "Pietro",
+            lastName: "Bertorelle",
+            email: "localguide@email.com",
+            hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+            activationCode: "123456",
+            role: "localGuide",
+            active: true
+        })
+        await user.save();
+        const hike = await Hike.create({
+            _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'),
+            title: 'prova',
+            expectedTime: 20,
+            difficulty: Difficulty.Hiker,
+            city: 'Torino',
+            province: 'Torino',
+            description: 'test',
+            track_file: 'rocciamelone.gpx',
+            length: 2,
+            ascent: 5,
+            startPoint: startPosition._id,
+            endPoint: endPosition._id,
+            authorId: user._id
+        });
+
+        const hut = await Hut.create(
+            {
+                _id: new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'),
+                beds: 6,
+                altitude: 40,
+                point: startPosition._id,
+                name: "hut",
+                description: 'hut test'
+
+            }
+        )
+
+
+        await parking.save();
+        await hike.save();
+        await hut.save();
+
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        if (mongoServer !== undefined)
+            await mongoServer.stop();
+        app.close();
+    });
+
 
     it('test add hut as start point', async () => {
         const token = localGuide.token;

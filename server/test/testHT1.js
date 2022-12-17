@@ -7,23 +7,24 @@ let expect = chai.expect;
 
 let mongoServer;
 
-before(async () => {
-  // if readyState is 0, mongoose is not connected
-  if (mongoose.connection.readyState === 0) {
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    await mongoose.connect(mongoUri);
-  }
-});
-
-after(async () => {
-  await mongoose.disconnect();
-  if (mongoServer !== undefined)
-    await mongoServer.stop();
-  app.close();
-});
-
 describe('Test API for getting hikes', () => {
+  before(async () => {
+    // if readyState is 0, mongoose is not connected
+    if (mongoose.connection.readyState === 0) {
+      mongoServer = await MongoMemoryServer.create();
+      const mongoUri = mongoServer.getUri();
+      await mongoose.connect(mongoUri);
+    }
+  });
+
+  after(async () => {
+    await mongoose.disconnect();
+    if (mongoServer !== undefined)
+      await mongoServer.stop();
+    app.close();
+  });
+
+
   it('test visitor hikes difficulty,length,ascent and time filters', async () => {
     let query = "?minAscent=1000&maxAscent=3000"
       + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50&minLength=15";

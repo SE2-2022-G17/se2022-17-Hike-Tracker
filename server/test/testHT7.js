@@ -9,23 +9,25 @@ const localGuide = require('./mocks/localGuideToken.js');
 
 let mongoServer;
 
-before(async () => {
-    // if readyState is 0, mongoose is not connected
-    if (mongoose.connection.readyState === 0) {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-    }
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    if (mongoServer !== undefined)
-        await mongoServer.stop();
-    app.close();
-});
 
 describe('Test API for searching huts (US7)', () => {
+    before(async () => {
+        // if readyState is 0, mongoose is not connected
+        if (mongoose.connection.readyState === 0) {
+            mongoServer = await MongoMemoryServer.create();
+            const mongoUri = mongoServer.getUri();
+            await mongoose.connect(mongoUri);
+        }
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        if (mongoServer !== undefined)
+            await mongoServer.stop();
+        app.close();
+    });
+
+
     it('test search hut with all filters', async () => {
         const token = localGuide.token;
 
