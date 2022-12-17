@@ -622,11 +622,12 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
     if (!hike.referencePoints.includes(positionId))
         throw new HTTPError("Reference point not belonging to hike", 400);
 
-    const reached = record.referencePoints.map(ref => ref.positionId);
-    if (!reached.includes(positionId)) {
-        record.status = RecordStatus.ONGOING;
-        record.referencePoints.push({ positionId: positionId, time: Date.now() });
-    }
+    const reached = record.referencePoints.map(ref => ref.positionId.toString());
+    if (reached.includes(positionId))
+        throw new HTTPError("Reference point already recorded", 400);
+
+    record.status = RecordStatus.ONGOING;
+    record.referencePoints.push({ positionId: positionId, time: Date.now() });
 
     await record.save()
 }
