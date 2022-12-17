@@ -600,6 +600,12 @@ exports.getRecords = async (userId) => {
     return records;
 }
 
+exports.getCompletedRecords = async (userId) => {
+    const records = await Record.find({ userId: userId, status: RecordStatus.CLOSED });
+    return records;
+}
+
+
 //HT-19
 exports.recordReferencePoint = async (recordId, userId, positionId) => {
     console.log(recordId)

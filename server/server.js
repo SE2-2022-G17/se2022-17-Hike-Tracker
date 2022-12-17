@@ -511,6 +511,20 @@ app.get('/records', verifyUserToken, async (req, res) => {
     }
 });
 
+app.get('/records/completed', verifyUserToken, async (req, res) => {
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        const records = await dao.getCompletedRecords(user.id);
+        res.json(records);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
+
 //HT-19
 app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async (req, res) => {
     const user = req.user; // this is received from verifyUserToken middleware
