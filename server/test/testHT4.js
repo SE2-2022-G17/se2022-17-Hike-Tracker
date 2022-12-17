@@ -8,8 +8,12 @@ const Hike = require('../models/Hike.js');
 const localGuide = require('./mocks/localGuideToken.js');
 const fs = require('fs');
 const User = require('../models/User.js');
+const Position = require('../models/Position.js');
+const Difficulty = require('../constants/Difficulty');
+
 
 let mongoServer;
+const hikeId = "0000000194e4c1e796231dbf"
 
 
 describe('Test API for get hike information and insert hike', () => {
@@ -128,4 +132,22 @@ describe('Test API for get hike information and insert hike', () => {
         } catch (e) { }
         expect(response.statusCode).to.equal(500);
     })
+
+    it('test get hike image - unauthorized', async () => {
+        const response = await request(app)
+            .get("/hikes/" + hikeId + "/image")
+        //.set('Authorization', "Bearer " + token)
+
+        expect(response.statusCode).to.equal(401);
+    });
+
+    it('test get hike image - not found', async () => {
+        const token = localGuide.token;
+
+        const response = await request(app)
+            .get("/hikes/" + hikeId + "/image")
+            .set('Authorization', "Bearer " + token)
+
+        expect(response.statusCode).to.equal(404);
+    });
 });

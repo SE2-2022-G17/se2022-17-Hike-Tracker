@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
-const { prependOnceListener } = require('./models/Hike')
 const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const Location = require('./models/Location');
@@ -11,6 +10,7 @@ const Record = require("./models/Record")
 const RecordStatus = require("./constants/RecordStatus")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
+const HikeImage = require('./models/HikeImage')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -21,6 +21,7 @@ const HTTPError = require('./models/HTTPError')
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
+    mongoose.set('strictQuery', false);
     mongoose.connect("mongodb://localhost/hike_tracker");
 }
 
@@ -559,6 +560,35 @@ exports.getHikeTrace = async (hikeId) => {
     }
 }
 
+exports.getHikeImage = async (hikeId) => {
+
+    const image = await HikeImage.findOne({ hikeId: hikeId });
+
+    if (!image)
+        throw new HTTPError("Image not found", 404);
+
+    return image;
+
+}
+
+exports.addImageToHike = async (hikeId, file) => {
+
+    try {
+        let imageUploadObject = {
+            hikeId: hikeId,
+            file: {
+                data: file.buffer,
+                contentType: file.mimetype
+            }
+        }
+        const hikeImage = new HikeImage(imageUploadObject);
+        // saving the object into the database
+        await hikeImage.save();
+    } catch (e) {
+        throw new HTTPError("Error during saving of the image", 500);
+    }
+}
+
 //HT-17
 exports.startRecordingHike = async (hikeId, userId) => {
     const hike = await Hike.findById(hikeId).exec();
@@ -631,3 +661,4 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
 
     await record.save()
 }
+

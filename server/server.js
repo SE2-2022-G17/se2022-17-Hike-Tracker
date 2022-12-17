@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
-
+const HikeImage = require('./models/HikeImage');
 
 // init express
 const app = new express();
@@ -165,8 +165,8 @@ const upload = multer({
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
-        return res.status(201).end();
+        const hikeId = await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
+        return res.status(201).json(hikeId);
     } catch (err) {
         return res.status(500).json(err);
     }
@@ -466,6 +466,40 @@ app.get('/preferredHikes', verifyUserToken, (req, res) => {
 
 });
 
+const storage = multer.memoryStorage();
+const imageUpload = multer({
+    storage: storage,
+    limits: { fileSize: 8000000 } //max file size
+});
+
+app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], async (req, res) => {
+    // req.file can be used to access all file properties
+    if (!req.file) {
+        res.status(400).json({
+            success: false,
+            message: "You must provide at least 1 file"
+        });
+    }
+
+    const hikeId = req.params.id;
+    dao.addImageToHike(hikeId, req.file)
+        .then(() => res.sendStatus(204))
+        .catch((error) => { res.status(error.status).send(error.message); });
+
+});
+
+app.get('/hikes/:id/image', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (!user) {
+        res.sendStatus(401);
+    }
+    dao.getHikeImage(hikeId)
+        .then((image) => { res.json(image); })
+        .catch((error) => { res.status(error.status).send(error.message); });
+});
+
 //HT-17
 app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
     const hikeId = req.params.id;
@@ -477,7 +511,6 @@ app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
         await dao.startRecordingHike(hikeId, user.id);
         res.sendStatus(201);
     } catch (error) {
-        console.log(error.message)
         res.status(error.status).send(error.message);
     }
 });
@@ -523,7 +556,6 @@ app.get('/records/completed', verifyUserToken, async (req, res) => {
         res.status(error.status).send(error.message);
     }
 });
-
 
 //HT-19
 app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async (req, res) => {
