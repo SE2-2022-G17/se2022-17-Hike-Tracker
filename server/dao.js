@@ -608,25 +608,25 @@ exports.getCompletedRecords = async (userId) => {
 
 //HT-19
 exports.recordReferencePoint = async (recordId, userId, positionId) => {
-    console.log(recordId)
     const record = await Record.findById(recordId).exec();
     if (!record)
-        throw { description: "Record not found", status: 404 }
+        throw new HTTPError("Record not found", 404);
+    if (record.userId.toString() !== userId)
+        throw new HTTPError("Forbidden access to record", 403);
 
     const position = await Position.findById(positionId).exec();
     if (!position)
         throw { description: "Record not found", status: 404 }
 
-    //const hike = await Hike.findById(record.hikeId);
-    //if (!hike.referencePoints.includes(positionId))
-    //    throw { description: "Reference point not belonging to hike", status: 400 }
+    const hike = await Hike.findById(record.hikeId);
+    if (!hike.referencePoints.includes(positionId))
+        throw { description: "Reference point not belonging to hike", status: 400 }
 
-    if (record.userId.toString() !== userId)
-        throw { description: "Forbidden access to record", status: 403 }
-
-
-    record.status = RecordStatus.ONGOING;
-    record.referencePoints.push({ positionId: positionId, time: Date.now() });
+    const reached = record.referencePoints.map(ref => ref.positionId);
+    if (!reached.includes(positionId)) {
+        record.status = RecordStatus.ONGOING;
+        record.referencePoints.push({ positionId: positionId, time: Date.now() });
+    }
 
     await record.save()
 }
