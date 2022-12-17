@@ -17,6 +17,7 @@ let gpxParser = require('gpxparser');
 const Hut = require('./models/Hut')
 const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
+const HTTPError = require('./models/HTTPError')
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
@@ -561,36 +562,35 @@ exports.getHikeTrace = async (hikeId) => {
 //HT-17
 exports.startRecordingHike = async (hikeId, userId) => {
     if (!Hike.findById(hikeId))
-        throw { description: "Hike not found", status: 404 }
+        throw new HTTPError('Hike not found', 404);
     if (!User.findById(userId))
-        throw { description: "User not found", status: 404 }
+        throw new HTTPError('User not found', 404);
 
 
-    const record = await Record.create({
+    const record = new Record({
         hikeId: hikeId,
         userId: userId,
         status: RecordStatus.STARTED,
     });
 
-    await record.save()
-
+    await record.save();
 }
 
 //HT-18 
 exports.terminateRecordingHike = async (recordId, userId) => {
     const record = await Record.findById(recordId);
     if (!record)
-        throw { description: "Record not found", status: 404 }
-
+        throw new HTTPError("Record not found", 404);
     if (record.userId.toString() !== userId)
-        throw { description: "Forbidden access to record", status: 403 }
+        throw new HTTPError("Forbidden access to record", 403);
 
-
-    record.status = RecordStatus.CLOSED;
-    record.endDate = Date.now()
+    // close if it isn't already closed
+    if (record.status !== RecordStatus.CLOSED) {
+        record.status = RecordStatus.CLOSED;
+        record.endDate = Date.now()
+    }
 
     await record.save()
-
 }
 
 //HT-34

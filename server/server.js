@@ -477,7 +477,7 @@ app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
         await dao.startRecordingHike(hikeId, user.id);
         res.sendStatus(201);
     } catch (error) {
-        res.json(error.description).send(error.status);
+        res.status(error.status).send(error.message);
     }
 });
 
@@ -492,7 +492,7 @@ app.put('/records/:id/terminate', verifyUserToken, async (req, res) => {
         await dao.terminateRecordingHike(recordId, user.id);
         res.sendStatus(200);
     } catch (error) {
-        res.json(error.description).send(error.status);
+        res.status(error.status).send(error.message);
     }
 });
 
@@ -506,7 +506,7 @@ app.get('/records', verifyUserToken, async (req, res) => {
         const records = await dao.getRecords(user.id);
         res.json(records);
     } catch (error) {
-        res.json(error.description).send(error.status);
+        res.status(error.status).send(error.message);
     }
 });
 
@@ -522,7 +522,7 @@ app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async
         await dao.recordReferencePoint(recordId, user.id, positionId);
         res.sendStatus(200);
     } catch (error) {
-        res.json(error.description).send(error.status);
+        res.status(error.status).send(error.message);
     }
 
 });
