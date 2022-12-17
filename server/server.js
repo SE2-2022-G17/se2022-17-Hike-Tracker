@@ -138,7 +138,7 @@ async function verifyUserToken(req, res, next) {
     const token = req.headers["authorization"].split(" ")[1];
 
     if (!token) {
-        return res.status(401).send("Access denied. No token provided.");
+        return res.status(401).send("Access denied. No token provided. (Usage: 'Bearer <token>')");
     }
 
     if (token === 'test') {
@@ -484,7 +484,7 @@ app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], asy
     const hikeId = req.params.id;
     dao.addImageToHike(hikeId, req.file)
         .then(() => res.sendStatus(204))
-        .catch((e) => res.send(e.status).json(e.description));
+        .catch((error) => { res.status(error.status).send(error.message); });
 
 });
 
@@ -495,10 +495,83 @@ app.get('/hikes/:id/image', verifyUserToken, async (req, res) => {
     if (!user) {
         res.sendStatus(401);
     }
-
     dao.getHikeImage(hikeId)
         .then((image) => { res.json(image); })
-        .catch((error) => { res.status(error.status).json(error.description); });
+        .catch((error) => { res.status(error.status).send(error.message); });
+});
+
+//HT-17
+app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        await dao.startRecordingHike(hikeId, user.id);
+        res.sendStatus(201);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
+//HT-18
+app.put('/records/:id/terminate', verifyUserToken, async (req, res) => {
+    const recordId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        await dao.terminateRecordingHike(recordId, user.id);
+        res.sendStatus(200);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
+//HT-34
+app.get('/records', verifyUserToken, async (req, res) => {
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        const records = await dao.getRecords(user.id);
+        res.json(records);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
+app.get('/records/completed', verifyUserToken, async (req, res) => {
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        const records = await dao.getCompletedRecords(user.id);
+        res.json(records);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
+//HT-19
+app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async (req, res) => {
+    const user = req.user; // this is received from verifyUserToken middleware
+    const recordId = req.params.recordId;
+    const positionId = req.params.positionId;
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        await dao.recordReferencePoint(recordId, user.id, positionId);
+        res.sendStatus(200);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+
 });
 
 

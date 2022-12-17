@@ -1,7 +1,8 @@
-class HTTPError {
-    constructor(status, description) {
+class HTTPError extends Error {
+    constructor(message, status) {
+        super(message);
+        this.name = this.constructor.name;
         this.status = status;
-        this.description = description;
     }
 }
 

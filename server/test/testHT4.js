@@ -15,67 +15,43 @@ const Difficulty = require('../constants/Difficulty');
 let mongoServer;
 const hikeId = "0000000194e4c1e796231dbf"
 
-before(async () => {
-    // if readyState is 0, mongoose is not connected
-    if (mongoose.connection.readyState === 0) {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-    }
-    try {
-        fs.unlinkSync("./public/tracks/filename.gpx");
-        await Hike.deleteMany({ title: 'TestTrack' });
-        await User.deleteOne({
-            email: "localguide@email.com"
-        })
-    } catch (e) { }
-    const user = await User.create({
-        _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
-        firstName: "Pietro",
-        lastName: "Bertorelle",
-        email: "localguide@email.com",
-        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
-        activationCode: "123456",
-        role: "localGuide",
-        active: true
-    })
-    await user.save();
-
-    const startPosition = await Position.create({
-        "location.coordinates": [3, 5]
-    })
-
-    const endPosition = await Position.create({
-        "location.coordinates": [4, 6]
-    })
-
-
-    const hike = await Hike.create({
-        _id: new mongoose.Types.ObjectId(hikeId),
-        title: 'prova',
-        expectedTime: 20,
-        difficulty: Difficulty.Hiker,
-        city: 'Torino',
-        province: 'Torino',
-        description: 'test',
-        track_file: "rocciamelone.gpx",
-        length: 2,
-        ascent: 5,
-        startPoint: startPosition._id,
-        endPoint: endPosition._id
-    });
-
-    await hike.save();
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    if (mongoServer !== undefined)
-        await mongoServer.stop();
-    app.close();
-});
 
 describe('Test API for get hike information and insert hike', () => {
+    before(async () => {
+        // if readyState is 0, mongoose is not connected
+        if (mongoose.connection.readyState === 0) {
+            mongoServer = await MongoMemoryServer.create();
+            const mongoUri = mongoServer.getUri();
+            await mongoose.connect(mongoUri);
+        }
+        try {
+            fs.unlinkSync("./public/tracks/filename.gpx");
+            await Hike.deleteMany({ title: 'TestTrack' });
+            await User.deleteOne({
+                email: "localguide@email.com"
+            })
+        } catch (e) { }
+        const user = await User.create({
+            _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
+            firstName: "Pietro",
+            lastName: "Bertorelle",
+            email: "localguide@email.com",
+            hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+            activationCode: "123456",
+            role: "localGuide",
+            active: true
+        })
+        await user.save();
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        if (mongoServer !== undefined)
+            await mongoServer.stop();
+        app.close();
+    });
+
+
     it('get hike', async () => {
         const hike = await Hike.findOne({}, { _id: 1 })
             .catch(err => {

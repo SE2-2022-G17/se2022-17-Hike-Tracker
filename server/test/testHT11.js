@@ -12,97 +12,99 @@ const Position = require('../models/Position.js');
 
 let mongoServer;
 
-before(async () => {
-    // if readyState is 0, mongoose is not connected
-    if (mongoose.connection.readyState === 0) {
-        mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-    }
-
-    await Hike.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc4") });
-    await Position.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0") });
-    await Position.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc2") });
-
-    const startPosition = await Position.create({
-        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0"),
-        "location.coordinates": [3, 5]
-    })
-
-    const endPosition = await Position.create({
-        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc2"),
-        "location.coordinates": [4, 6]
-    })
-
-    const hike = {
-        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc4"),
-        title: "Croagh Patrick Mountain",
-        length: 7.08,
-        expectedTime: 3.9,
-        ascent: 500,
-        difficulty: "Hiker",
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
-        referencePoints: [],
-        huts: [],
-        city: "Croaghpatrick",
-        province: "County Mayo",
-        description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
-        track_file: "..\public\tracks\Croagh Patrick Mountain.gpx",
-        __v: 0
-    }
-
-    const hike2 = {
-        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc5"),
-        title: "Croagh Patrick Mountain",
-        length: 7.08,
-        expectedTime: 2,
-        ascent: 1000,
-        difficulty: "Hiker",
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
-        referencePoints: [],
-        huts: [],
-        city: "Croaghpatrick",
-        province: "County Mayo",
-        description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
-        track_file: "..\public\tracks\Croagh Patrick Mountain.gpx",
-        __v: 0
-    }
-
-    const hike3 = {
-        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc6"),
-        title: "Croagh Patrick Mountain",
-        length: 7.08,
-        expectedTime: 10,
-        ascent: 2000,
-        difficulty: "Hiker",
-        startPoint: startPosition._id,
-        endPoint: endPosition._id,
-        referencePoints: [],
-        huts: [],
-        city: "Croaghpatrick",
-        province: "County Mayo",
-        description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
-        track_file: "..\public\tracks\Croagh Patrick Mountain.gpx",
-        __v: 0
-    }
-    const toSave = await Hike.create(hike);
-    const toSave2 = await Hike.create(hike2);
-    const toSave3 = await Hike.create(hike3);
-    await toSave.save();
-    await toSave2.save();
-    await toSave3.save();
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    if (mongoServer !== undefined)
-        await mongoServer.stop();
-    app.close();
-});
 
 describe('Test API for getting preferred hikes (US11)', () => {
+    before(async () => {
+        // if readyState is 0, mongoose is not connected
+        if (mongoose.connection.readyState === 0) {
+            mongoServer = await MongoMemoryServer.create();
+            const mongoUri = mongoServer.getUri();
+            await mongoose.connect(mongoUri);
+        }
+
+        await Hike.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc4") });
+        await Position.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0") });
+        await Position.deleteOne({ _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc2") });
+
+        const startPosition = await Position.create({
+            _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0"),
+            "location.coordinates": [3, 5]
+        })
+
+        const endPosition = await Position.create({
+            _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc2"),
+            "location.coordinates": [4, 6]
+        })
+
+        const hike = {
+            _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc4"),
+            title: "Croagh Patrick Mountain",
+            length: 7.08,
+            expectedTime: 3.9,
+            ascent: 500,
+            difficulty: "Hiker",
+            startPoint: startPosition._id,
+            endPoint: endPosition._id,
+            referencePoints: [],
+            huts: [],
+            city: "Croaghpatrick",
+            province: "County Mayo",
+            description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
+            track_file: "..\public\tracks\Croagh Patrick Mountain.gpx",
+            __v: 0
+        }
+
+        const hike2 = {
+            _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc5"),
+            title: "Croagh Patrick Mountain",
+            length: 7.08,
+            expectedTime: 2,
+            ascent: 1000,
+            difficulty: "Hiker",
+            startPoint: startPosition._id,
+            endPoint: endPosition._id,
+            referencePoints: [],
+            huts: [],
+            city: "Croaghpatrick",
+            province: "County Mayo",
+            description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
+            track_file: "..\public\tracks\Croagh Patrick Mountain.gpx",
+            __v: 0
+        }
+
+        const hike3 = {
+            _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc6"),
+            title: "Croagh Patrick Mountain",
+            length: 7.08,
+            expectedTime: 10,
+            ascent: 2000,
+            difficulty: "Hiker",
+            startPoint: startPosition._id,
+            endPoint: endPosition._id,
+            referencePoints: [],
+            huts: [],
+            city: "Croaghpatrick",
+            province: "County Mayo",
+            description: "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.",
+            track_file: "..\public\tracks\Croagh Patrick Mountain.gpx",
+            __v: 0
+        }
+        const toSave = await Hike.create(hike);
+        const toSave2 = await Hike.create(hike2);
+        const toSave3 = await Hike.create(hike3);
+        await toSave.save();
+        await toSave2.save();
+        await toSave3.save();
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+        if (mongoServer !== undefined)
+            await mongoServer.stop();
+        app.close();
+    });
+
+
     it('test preferred hikes with user preferences', async () => {
 
         const token = localGuide.token;
@@ -114,7 +116,7 @@ describe('Test API for getting preferred hikes (US11)', () => {
 
         if (response.body.length != 0) {
             expect(response.body.every((hike) => {
-                return hike.expectedTime <= 2 && hike.ascent <= 2000 
+                return hike.expectedTime <= 2 && hike.ascent <= 2000
             }))
                 .to.true;
         }
@@ -151,7 +153,7 @@ describe('Test API for getting preferred hikes (US11)', () => {
 
         if (response.body.length != 0) {
             expect(response.body.every((hike) => {
-                return hike.expectedTime <= 2  
+                return hike.expectedTime <= 2
             }))
                 .to.true;
         }
@@ -169,7 +171,7 @@ describe('Test API for getting preferred hikes (US11)', () => {
 
         if (response.body.length != 0) {
             expect(response.body.every((hike) => {
-                return  hike.ascent <= 2000 
+                return hike.ascent <= 2000
             }))
                 .to.true;
         }
@@ -179,4 +181,3 @@ describe('Test API for getting preferred hikes (US11)', () => {
 
 
 });
-    

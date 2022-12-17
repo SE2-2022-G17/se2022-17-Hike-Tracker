@@ -6,6 +6,8 @@ const Hike = require("./models/Hike")
 const Position = require("./models/Position")
 const Location = require('./models/Location');
 const User = require("./models/User")
+const Record = require("./models/Record")
+const RecordStatus = require("./constants/RecordStatus")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
 const HikeImage = require('./models/HikeImage')
@@ -137,6 +139,7 @@ exports.loginUser = async (email, password) => {
         throw new TypeError(401)
 
     const token = jwt.sign({
+        'id': user._id,
         'fullName': user.firstName + " " + user.lastName,
         'email': user.email,
         'role': user.role,
@@ -560,9 +563,9 @@ exports.getHikeTrace = async (hikeId) => {
 exports.getHikeImage = async (hikeId) => {
 
     const image = await HikeImage.findOne({ hikeId: hikeId });
-    
+
     if (!image)
-        throw new HTTPError(404, "Image not found");
+        throw new HTTPError("Image not found", 404);
 
     return image;
 
@@ -570,14 +573,92 @@ exports.getHikeImage = async (hikeId) => {
 
 exports.addImageToHike = async (hikeId, file) => {
 
-    let imageUploadObject = {
-        hikeId: hikeId,
-        file: {
-            data: file.buffer,
-            contentType: file.mimetype
+    try {
+        let imageUploadObject = {
+            hikeId: hikeId,
+            file: {
+                data: file.buffer,
+                contentType: file.mimetype
+            }
         }
+        const hikeImage = new HikeImage(imageUploadObject);
+        // saving the object into the database
+        await hikeImage.save();
+    } catch (e) {
+        throw new HTTPError("Error during saving of the image", 500);
     }
-    const hikeImage = new HikeImage(imageUploadObject);
-    // saving the object into the database
-    await hikeImage.save();
 }
+
+//HT-17
+exports.startRecordingHike = async (hikeId, userId) => {
+    const hike = await Hike.findById(hikeId).exec();
+    const user = await User.findById(userId).exec();
+    if (!hike)
+        throw new HTTPError('Hike not found', 404);
+    if (!user)
+        throw new HTTPError('User not found', 404);
+
+    const record = new Record({
+        hikeId: hikeId,
+        userId: userId,
+        status: RecordStatus.STARTED,
+    });
+
+    await record.save();
+}
+
+//HT-18 
+exports.terminateRecordingHike = async (recordId, userId) => {
+    const record = await Record.findById(recordId).exec();
+    if (!record)
+        throw new HTTPError("Record not found", 404);
+    if (record.userId.toString() !== userId)
+        throw new HTTPError("Forbidden access to record", 403);
+
+    // close if it isn't already closed
+    if (record.status !== RecordStatus.CLOSED) {
+        record.status = RecordStatus.CLOSED;
+        record.endDate = Date.now()
+    }
+
+    await record.save()
+}
+
+//HT-34
+exports.getRecords = async (userId) => {
+    const records = await Record.find({ userId: userId });
+    return records;
+}
+
+exports.getCompletedRecords = async (userId) => {
+    const records = await Record.find({ userId: userId, status: RecordStatus.CLOSED });
+    return records;
+}
+
+
+//HT-19
+exports.recordReferencePoint = async (recordId, userId, positionId) => {
+    const record = await Record.findById(recordId).exec();
+    if (!record)
+        throw new HTTPError("Record not found", 404);
+    if (record.userId.toString() !== userId)
+        throw new HTTPError("Forbidden access to record", 403);
+
+    const position = await Position.findById(positionId).exec();
+    if (!position)
+        throw new HTTPError("Position not found", 404);
+
+    const hike = await Hike.findById(record.hikeId).exec();
+    if (!hike.referencePoints.includes(positionId))
+        throw new HTTPError("Reference point not belonging to hike", 400);
+
+    const reached = record.referencePoints.map(ref => ref.positionId.toString());
+    if (reached.includes(positionId))
+        throw new HTTPError("Reference point already recorded", 400);
+
+    record.status = RecordStatus.ONGOING;
+    record.referencePoints.push({ positionId: positionId, time: Date.now() });
+
+    await record.save()
+}
+
