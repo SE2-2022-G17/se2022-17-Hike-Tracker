@@ -561,11 +561,12 @@ exports.getHikeTrace = async (hikeId) => {
 
 //HT-17
 exports.startRecordingHike = async (hikeId, userId) => {
-    if (!Hike.findById(hikeId))
+    const hike = await Hike.findById(hikeId).exec();
+    const user = await User.findById(userId).exec();
+    if (!hike)
         throw new HTTPError('Hike not found', 404);
-    if (!User.findById(userId))
+    if (!user)
         throw new HTTPError('User not found', 404);
-
 
     const record = new Record({
         hikeId: hikeId,
@@ -578,7 +579,7 @@ exports.startRecordingHike = async (hikeId, userId) => {
 
 //HT-18 
 exports.terminateRecordingHike = async (recordId, userId) => {
-    const record = await Record.findById(recordId);
+    const record = await Record.findById(recordId).exec();
     if (!record)
         throw new HTTPError("Record not found", 404);
     if (record.userId.toString() !== userId)
@@ -602,11 +603,11 @@ exports.getRecords = async (userId) => {
 //HT-19
 exports.recordReferencePoint = async (recordId, userId, positionId) => {
     console.log(recordId)
-    const record = await Record.findById(recordId);
+    const record = await Record.findById(recordId).exec();
     if (!record)
         throw { description: "Record not found", status: 404 }
 
-    const position = await Position.findById(positionId)
+    const position = await Position.findById(positionId).exec();
     if (!position)
         throw { description: "Record not found", status: 404 }
 

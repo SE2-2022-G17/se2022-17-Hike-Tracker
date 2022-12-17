@@ -477,6 +477,7 @@ app.post('/hikes/:id/record', verifyUserToken, async (req, res) => {
         await dao.startRecordingHike(hikeId, user.id);
         res.sendStatus(201);
     } catch (error) {
+        console.log(error.message)
         res.status(error.status).send(error.message);
     }
 });
