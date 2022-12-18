@@ -440,6 +440,67 @@ async function addImageToHike(image, hikeId, token) {
     return response.status;
 }
 
+async function startRecordingHike(hikeId, token) {
+
+    const response = await fetch(url + '/hikes/' + hikeId + '/record', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+    });
+    return response.status;
+}
+
+async function terminateRecordingHike(recordId, token) {
+
+    const response = await fetch(url + '/records/' + recordId + '/terminate', {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+    });
+    return response.status;
+}
+
+
+async function getRecords(token) {
+    const response = await fetch(url + '/records', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const records = await response.json();
+    return records
+}
+
+async function getCompletedRecords(token) {
+    const response = await fetch(url + '/records/completed', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const records = await response.json();
+    return records
+}
+
+async function recordReferencePoint(recordId, positionId, token) {
+
+    const response = await fetch(url + '/records/' + recordId + '/reference-point/' + positionId, {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+    });
+    return response.status;
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -464,7 +525,12 @@ const API = {
     addReferencePoint,
     getHikeTrace,
     getHikeImage,
-    addImageToHike
+    addImageToHike,
+    startRecordingHike,
+    terminateRecordingHike,
+    getRecords,
+    getCompletedRecords,
+    recordReferencePoint
 };
 
 
