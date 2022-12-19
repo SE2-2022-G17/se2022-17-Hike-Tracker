@@ -498,7 +498,19 @@ async function getOngoingRecord(hikeId, token) {
         credentials: 'include'
     });
     const record = await response.json();
-    return record
+    return record;
+}
+
+async function getRecord(recordId, token) {
+    const response = await fetch(url + '/records/' + recordId, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const record = await response.json();
+    return record;
 }
 
 async function recordReferencePoint(recordId, positionId, token) {
@@ -543,6 +555,7 @@ const API = {
     getRecords,
     getCompletedRecords,
     getOngoingRecord,
+    getRecord,
     recordReferencePoint
 };
 

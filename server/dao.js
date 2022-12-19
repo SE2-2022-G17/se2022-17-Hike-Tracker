@@ -651,6 +651,19 @@ exports.getOngoingRecord = async (hikeId, userId) => {
     return record;
 }
 
+exports.getRecord = async (recordId, userId) => {
+    const record = await Record
+        .findById(recordId)
+        .populate('hikeId')
+        .exec();
+
+    if (record.userId.toString() !== userId)
+        throw new HTTPError("Forbidden access to record", 403);
+
+    return record;
+}
+
+
 //HT-19
 exports.recordReferencePoint = async (recordId, userId, positionId) => {
     const record = await Record.findById(recordId).exec();

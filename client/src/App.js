@@ -15,6 +15,7 @@ import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
 import SearchHut from './components/SearchHut'
 import PreferredHikes from './components/PreferredHikes'
+import Record from './components/Record'
 
 
 import API from './API';
@@ -198,6 +199,7 @@ function MainApp() {
         <Route path="/huts/searchHut" element={<SearchHut />} />
         <Route path="/preferredHikes" element={<PreferredHikes />} />
         <Route path="/recordedHikes" element={<RecordedHikes />} />
+        <Route path="/records/:id" element={<Record />} />
       </Routes>
     </>
   );
