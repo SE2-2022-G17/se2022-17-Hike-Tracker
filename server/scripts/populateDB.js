@@ -8,6 +8,9 @@ const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Location = require("../models/Location")
 const Hut = require("../models/Hut")
+const Record = require("../models/Record")
+const Image = require("../models/Image")
+
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
@@ -19,6 +22,8 @@ async function clear() {
         await Position.deleteMany()
         await User.deleteMany()
         await Location.deleteMany()
+        await Record.deleteMany()
+        await Image.deleteMany()
     } catch (e) {
         console.log(e.message)
     }

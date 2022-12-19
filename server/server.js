@@ -603,6 +603,16 @@ app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async
 
 });
 
+app.get('/reference-points/:positionId', async (req, res) => {
+    const positionId = req.params.positionId;
+
+    try {
+        const referencePoint = await dao.getReferencePointByPosition(positionId);
+        res.json(referencePoint);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
 
 
 const server = http.createServer(app);

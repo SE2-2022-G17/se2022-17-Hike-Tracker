@@ -290,3 +290,7 @@
   color: red;
   cursor: pointer;
 }
+
+.reference-point {
+  margin: 2rem 0rem;
+}

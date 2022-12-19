@@ -696,3 +696,12 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
     await record.save()
 }
 
+
+exports.getReferencePointByPosition = async (positionId) => {
+    //reference points are store by Location model
+    const referencePoint = await Location
+        .findOne({ point: positionId })
+        .exec();
+
+    return referencePoint;
+}

@@ -11,6 +11,8 @@ function Record(props) {
     const { id } = useParams();
     const [record, setRecord] = useState(undefined);
     const [trace, setTrace] = useState([]);
+    const [dirty, setDirty] = useState(false);
+    const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
@@ -24,21 +26,38 @@ function Record(props) {
                     .catch(e => console.log(e));
             })
             .catch(e => console.log(e));
-    }, []);
+    }, [dirty]);
 
     return (
         record !== undefined ?
-            <RecordInfo record={record} trace={trace} />
+            <RecordInfo
+                record={record}
+                trace={trace}
+                setDirty={setDirty}
+                disabled={disabled}
+                setDisabled={setDisabled}
+            />
             : <Spinner animation="border" />
     );
 }
 
 function RecordInfo(props) {
-    const { record, trace } = props;
+    const { record, trace, setDirty, disabled, setDisabled } = props;
+    const [referencePoint, setReferencePoint] = useState(undefined);
 
     const readableDate = (date) => {
         return new Date(date).toLocaleString();
     }
+
+    useEffect(() => {
+        const positions = record.referencePoints.map(r => r.positionId)
+        if (referencePoint !== undefined && !positions.includes(referencePoint.point)) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+
+    }, [referencePoint])
 
     return (
         <Container>
@@ -49,17 +68,25 @@ function RecordInfo(props) {
                 <p><b>Started: </b>{readableDate(record.startDate)}</p>
             </Row>
             {trace.length !== 0 ?
-                <Map hike={record.hikeId} trace={trace} />
+                <Map
+                    hike={record.hikeId}
+                    trace={trace}
+                    setReferencePoint={setReferencePoint} />
                 : <Spinner animation="border" />
             }
 
-
+            <ReferencePointCard
+                referencePoint={referencePoint}
+                record={record}
+                setDirty={setDirty}
+                disabled={disabled}
+                setDisabled={setDisabled} />
         </Container >
     );
 }
 
 function Map(props) {
-    const { hike, trace } = props;
+    const { hike, trace, setReferencePoint } = props;
     const mapContainer = useRef(null);
     const map = useRef(null);
 
@@ -91,12 +118,18 @@ function Map(props) {
             if (map.current) endMarker.addTo(map.current);
 
             // add marker of hike reference points
-            hike.referencePoints.forEach(ref => {
+            hike.referencePoints.forEach(position => {
                 const marker = new mapboxgl.Marker({
                     color: "#cc00cc",
-                }).setLngLat(ref.location.coordinates);
+                }).setLngLat(position.location.coordinates);
+                marker._element.id = position._id;
 
                 if (map.current) marker.addTo(map.current);
+
+                marker.getElement().addEventListener('click', async () => {
+                    const referencePoint = await API.getReferencePointByPosition(position._id);
+                    setReferencePoint(referencePoint);
+                });
             })
 
             map.current.addSource('route', {
@@ -131,6 +164,42 @@ function Map(props) {
         <div>
             <div ref={mapContainer} className="map-container-picker" />
         </div>
+    );
+}
+
+function ReferencePointCard(props) {
+    const { referencePoint, record, setDirty, disabled, setDisabled } = props;
+
+    const markAsReached = () => {
+        const authToken = localStorage.getItem('token');
+        setDisabled(true);
+
+        API.recordReferencePoint(record._id, referencePoint.point, authToken)
+            .then(() => setDirty(true))
+            .catch(e => console.log(e));
+    }
+
+    return (
+        referencePoint ?
+            <Card className="reference-point">
+                <Card.Body>
+                    <Row>
+                        <Col md={9}>
+                            <Card.Title>{referencePoint.name}</Card.Title>
+                            <Card.Text>{referencePoint.description}</Card.Text>
+                        </Col>
+                        <Col md={3} className="d-flex align-items-center">
+                            <Button
+                                onClick={markAsReached}
+                                disabled={disabled}
+                            >
+                                Mark as reached
+                            </Button>
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
+            : undefined
     );
 }
 

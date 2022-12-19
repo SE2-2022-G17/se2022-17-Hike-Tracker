@@ -525,6 +525,14 @@ async function recordReferencePoint(recordId, positionId, token) {
     return response.status;
 }
 
+async function getReferencePointByPosition(positionId) {
+    const response = await fetch(url + '/reference-points/' + positionId, {
+        method: "GET"
+    });
+    const referencePoint = await response.json();
+    return referencePoint;
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -556,7 +564,8 @@ const API = {
     getCompletedRecords,
     getOngoingRecord,
     getRecord,
-    recordReferencePoint
+    recordReferencePoint,
+    getReferencePointByPosition
 };
 
 

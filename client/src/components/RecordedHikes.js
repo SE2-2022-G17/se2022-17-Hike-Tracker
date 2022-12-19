@@ -104,34 +104,35 @@ function RecordCard(props) {
     }
 
     return (
-        <>
-            <Card className="record-card clickable" >
-                <Card.Body>
-                    <Card.Title onClick={() => goToRecord(record._id)}>{record.hikeId.title}</Card.Title>
-                    <Row>
-                        <Col lg={9} onClick={() => goToRecord(record._id)}>
-                            <Row>
-                                <p>Start date: {readableDate(record.startDate)}</p>
-                            </Row>
-                            {record.endDate !== undefined ?
+        record.hikeId !== null ?
+            <>
+                <Card className="record-card clickable" >
+                    <Card.Body>
+                        <Card.Title onClick={() => goToRecord(record._id)}>{record.hikeId.title}</Card.Title>
+                        <Row>
+                            <Col lg={9} onClick={() => goToRecord(record._id)}>
                                 <Row>
-                                    <p>End date: {readableDate(record.endDate)}</p>
-                                </Row> : undefined
-                            }
-                        </Col>
-                        <Col lg={3}>
-                            {(record.endDate === undefined && !disabled) ?
-                                <Button
-                                    variant='outline-danger'
-                                    onClick={terminateHike}>
-                                    Terminate
-                                </Button> : undefined
-                            }
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
-        </>);
+                                    <p>Start date: {readableDate(record.startDate)}</p>
+                                </Row>
+                                {record.endDate !== undefined ?
+                                    <Row>
+                                        <p>End date: {readableDate(record.endDate)}</p>
+                                    </Row> : undefined
+                                }
+                            </Col>
+                            <Col lg={3}>
+                                {(record.endDate === undefined && !disabled) ?
+                                    <Button
+                                        variant='outline-danger'
+                                        onClick={terminateHike}>
+                                        Terminate
+                                    </Button> : undefined
+                                }
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+            </> : undefined);
 }
 
 
