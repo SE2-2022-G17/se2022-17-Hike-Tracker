@@ -14,6 +14,8 @@ import ReferencePointsForm from "./ReferencePointsForm";
 import Accordion from 'react-bootstrap/Accordion';
 import AddReferencePoint from "./AddReferencePoint";
 import { Buffer } from 'buffer';
+import { Record2 } from 'react-bootstrap-icons';
+
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -30,11 +32,23 @@ function ShowHike(props) {
     let { id } = useParams();
 
     const [hikeImage, setHikeImage] = useState(undefined);
+    const [message, setMessage] = useState('')
+    const [variant, setVariant] = useState('warning')
+    const [record, setRecord] = useState(undefined);
+
 
     useEffect(() => {
         // scroll to top on page load
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    }, []);
+        async function fetchRecord() {
+            const authToken = localStorage.getItem('token');
+            const rec = await API.getOngoingRecord(id, authToken);
+            if (rec) {
+                setRecord(rec);
+            }
+        }
+        fetchRecord();
+    }, [variant, message]);
 
     useEffect(() => {
 
@@ -185,10 +199,30 @@ function ShowHike(props) {
         </Row>
     }
 
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const authToken = localStorage.getItem('token');
+        const response = await API.startRecordingHike(hike._id, authToken);
+
+        if (response === 201) {
+            //HTTP status code 201 means Created (successful)
+            setVariant('success')
+            setMessage("Hike started successfully, you can see your recorded hikes in")
+        } else {
+            setVariant('danger')
+            setMessage("An error occurred during the recording of the hike")
+        }
+    }
+
     return (
         <Container>
-            <h1 className={'my-2'}>{hike !== null ? hike.title : ''}</h1>
-            {hikeImage !== undefined ? <img className="hike-image" src={hikeImage}></img> : undefined}
+            <h1 className={'my-2'}>
+                {hike !== null ? hike.title : ''} <RecordButton record={record} />
+            </h1>
+            {hikeImage !== undefined ?
+                <img className="hike-image" src={hikeImage} alt=""></img>
+                : undefined
+            }
             <Row>
                 <Col>
                     <p>{hike !== null ? hike.description : ''}</p>
@@ -274,9 +308,30 @@ function ShowHike(props) {
                 </>
                     : <></>
             }
+            {(props.role === "hiker" && record === undefined) ?
+                <Row className="centered-row">
+                    <Button
+                        variant="info"
+                        className="start-button"
+                        onClick={handleSubmit}>
+                        Start Hike
+                    </Button>
+                </Row>
+                : undefined
+            }
         </Container>
     );
 
+}
+
+function RecordButton(props) {
+    return (
+        props.record !== undefined ?
+            <Record2
+                className="record-button"
+                onClick={() => console.log("go to record " + props.record._id)} />
+            : undefined
+    );
 }
 
 export default ShowHike;

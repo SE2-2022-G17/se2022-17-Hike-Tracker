@@ -626,15 +626,30 @@ exports.terminateRecordingHike = async (recordId, userId) => {
 
 //HT-34
 exports.getRecords = async (userId) => {
-    const records = await Record.find({ userId: userId });
+    const records = await Record
+        .find({ userId: userId })
+        .populate('hikeId');
     return records;
 }
 
 exports.getCompletedRecords = async (userId) => {
-    const records = await Record.find({ userId: userId, status: RecordStatus.CLOSED });
+    const records = await Record
+        .find({ userId: userId, status: RecordStatus.CLOSED })
+        .populate('hikeId')
     return records;
 }
 
+exports.getOngoingRecord = async (hikeId, userId) => {
+    const record = await Record
+        .findOne({
+            hikeId: hikeId,
+            userId: userId,
+            status: { $ne: RecordStatus.CLOSED }
+        })
+        .exec();
+
+    return record;
+}
 
 //HT-19
 exports.recordReferencePoint = async (recordId, userId, positionId) => {

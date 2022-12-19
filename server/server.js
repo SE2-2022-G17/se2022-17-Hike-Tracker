@@ -557,6 +557,21 @@ app.get('/records/completed', verifyUserToken, async (req, res) => {
     }
 });
 
+//this endpoint returns the started/ongoing record associated to the hike
+app.get('/hikes/:id/record', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        const record = await dao.getOngoingRecord(hikeId, user.id);
+        res.json(record);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
 //HT-19
 app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async (req, res) => {
     const user = req.user; // this is received from verifyUserToken middleware

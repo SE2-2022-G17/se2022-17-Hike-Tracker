@@ -29,6 +29,7 @@ import LocalGuide from './components/LocalGuide';
 import ValidationType from './models/ValidationType';
 import Type from './models/UserType';
 import Utils from './Utils';
+import RecordedHikes from './components/RecordedHikes';
 
 function App() {
   return (
@@ -47,8 +48,8 @@ function MainApp() {
   const [role, setRole] = useState("");
   const [id, setId] = useState("");
   const [user, setUser] = useState(null);
-  
-  
+
+
 
   const navigate = useNavigate();
 
@@ -74,7 +75,7 @@ function MainApp() {
     })
   }
 
- 
+
 
   const doLogIn = (credentials) => {
     API.logIn(credentials)
@@ -151,8 +152,8 @@ function MainApp() {
         setModalShow={setModalShow}
         setPerformanceModal={setPerformanceModal}
         role={role}
-        
-        
+
+
       />
       {errorMessage ?  //Error Alert
         <Row className="justify-content-center"><Col xs={6}>
@@ -161,21 +162,21 @@ function MainApp() {
         : false}
       {
         user !== null ?
-            <ProfileModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                user={user}
-            />
-            : ''
+          <ProfileModal
+            show={modalShow}
+            onHide={() => setModalShow(false)}
+            user={user}
+          />
+          : ''
       }
       {
         user !== null ?
-            <PerformanceModal performanceModal={performanceModal}
-                              setPerformanceModal={setPerformanceModal}
-                              user={user}
-                              SavePreferenceUser={ SavePreferenceUser }
-            />
-            : ''
+          <PerformanceModal performanceModal={performanceModal}
+            setPerformanceModal={setPerformanceModal}
+            user={user}
+            SavePreferenceUser={SavePreferenceUser}
+          />
+          : ''
       }
 
       <></>
@@ -188,16 +189,17 @@ function MainApp() {
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide user={user}/>}/>
-        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
-        <Route path="/hiker/hikes/:id" element={<ShowHike role={role} user={user}/>} />
-        <Route path="/HighLevelVerification" element={<HighVerification />}/>
-        <Route path="/parking/create" element={<CreateParking user={user}/>}/>
-        <Route path="/huts/create" element={<CreateHut user={user}/>} />
+        <Route path="/localGuide" element={<LocalGuide user={user} />} />
+        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />} />
+        <Route path="/hiker/hikes/:id" element={<ShowHike role={role} user={user} />} />
+        <Route path="/HighLevelVerification" element={<HighVerification />} />
+        <Route path="/parking/create" element={<CreateParking user={user} />} />
+        <Route path="/huts/create" element={<CreateHut user={user} />} />
         <Route path="/huts/searchHut" element={<SearchHut />} />
-        <Route path="/preferredHikes" element = {<PreferredHikes/>} />
+        <Route path="/preferredHikes" element={<PreferredHikes />} />
+        <Route path="/recordedHikes" element={<RecordedHikes />} />
       </Routes>
-      </>
+    </>
   );
 }
 
