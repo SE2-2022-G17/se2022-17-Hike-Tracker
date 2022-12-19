@@ -6,10 +6,6 @@ import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-load
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 
-const polito = {
-    lng: "7.65991",
-    lat: "45.06355"
-}
 
 function Record(props) {
     const { id } = useParams();
@@ -21,7 +17,6 @@ function Record(props) {
         API.getRecord(id, authToken)
             .then(rec => {
                 setRecord(rec);
-                console.log(rec)
                 API.getHikeTrace(rec.hikeId._id, authToken)
                     .then(t => {
                         setTrace(t);
@@ -54,7 +49,7 @@ function RecordInfo(props) {
                 <p><b>Started: </b>{readableDate(record.startDate)}</p>
             </Row>
             {trace.length !== 0 ?
-                <Map trace={trace} />
+                <Map hike={record.hikeId} trace={trace} />
                 : <Spinner animation="border" />
             }
 
@@ -64,7 +59,7 @@ function RecordInfo(props) {
 }
 
 function Map(props) {
-    const { trace } = props;
+    const { hike, trace } = props;
     const mapContainer = useRef(null);
     const map = useRef(null);
 
@@ -79,23 +74,30 @@ function Map(props) {
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v12',
             center: [trace[0].lng, trace[0].lat],
-            zoom: 8
+            zoom: 13
         });
 
         map.current.on('load', () => {
             const startMarker = new mapboxgl.Marker({
                 color: "#33cc33",
-                draggable: true
-            }).setLngLat([trace[0].lng, trace[0].lat])
+            }).setLngLat([trace[0].lng, trace[0].lat]);
 
             if (map.current) startMarker.addTo(map.current);
 
             const endMarker = new mapboxgl.Marker({
                 color: "#ff0000",
-                draggable: true
-            }).setLngLat([trace[trace.length - 1].lng, trace[trace.length - 1].lat])
+            }).setLngLat([trace[trace.length - 1].lng, trace[trace.length - 1].lat]);
 
             if (map.current) endMarker.addTo(map.current);
+
+            // add marker of hike reference points
+            hike.referencePoints.forEach(ref => {
+                const marker = new mapboxgl.Marker({
+                    color: "#cc00cc",
+                }).setLngLat(ref.location.coordinates);
+
+                if (map.current) marker.addTo(map.current);
+            })
 
             map.current.addSource('route', {
                 'type': 'geojson',

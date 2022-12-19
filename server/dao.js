@@ -45,7 +45,7 @@ exports.getVisitorHikes = async (
             .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
 
         const hikes = await Hike.find()
-            .select({ "__v": 0, "referencePoints": 0 })
+            .select({ "__v": 0 })
             .filterByDifficulty(difficulty)
             .filterBy("length", minLength, maxLength)
             .filterBy("ascent", minAscent, maxAscent)
@@ -654,7 +654,13 @@ exports.getOngoingRecord = async (hikeId, userId) => {
 exports.getRecord = async (recordId, userId) => {
     const record = await Record
         .findById(recordId)
-        .populate('hikeId')
+        .populate([{
+            path: 'hikeId',
+            populate: {
+                path: 'referencePoints',
+                model: 'Position'
+            }
+        }])
         .exec();
 
     if (record.userId.toString() !== userId)

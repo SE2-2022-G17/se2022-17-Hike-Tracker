@@ -15,6 +15,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import AddReferencePoint from "./AddReferencePoint";
 import { Buffer } from 'buffer';
 import { Record2 } from 'react-bootstrap-icons';
+import { useNavigate } from "react-router-dom";
 
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
@@ -325,11 +326,13 @@ function ShowHike(props) {
 }
 
 function RecordButton(props) {
+    const navigator = useNavigate();
+
     return (
         props.record !== undefined ?
             <Record2
                 className="record-button"
-                onClick={() => console.log("go to record " + props.record._id)} />
+                onClick={() => navigator('/records/' + props.record._id)} />
             : undefined
     );
 }

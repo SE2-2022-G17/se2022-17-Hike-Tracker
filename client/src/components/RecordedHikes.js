@@ -67,8 +67,8 @@ function RecordsList(props) {
 
     const navigator = useNavigate();
 
-    let goToHike = (id) => {
-        navigator('/hiker/hikes/' + id);
+    let goToRecord = (id) => {
+        navigator('/records/' + id);
     }
 
     return (
@@ -76,7 +76,11 @@ function RecordsList(props) {
             {props.records.length === 0 ? <h3>No records available</h3> : undefined}
             {props.records.map((record) => {
                 return (
-                    <RecordCard key={record._id} record={record} setDirty={props.setDirty} />
+                    <RecordCard
+                        key={record._id}
+                        record={record}
+                        setDirty={props.setDirty}
+                        goToRecord={goToRecord} />
                 );
             })
             }
@@ -85,14 +89,14 @@ function RecordsList(props) {
 }
 
 function RecordCard(props) {
-    const { record, setDirty } = props;
+    const { record, setDirty, goToRecord } = props;
     const [disabled, setDisabled] = useState(false);
 
     const readableDate = (date) => {
         return new Date(date).toLocaleString();
     }
 
-    const terminateHike = (recordId) => {
+    const terminateHike = () => {
         const authToken = localStorage.getItem('token');
         API.terminateRecordingHike(record._id, authToken);
         setDisabled(true);
@@ -101,11 +105,11 @@ function RecordCard(props) {
 
     return (
         <>
-            <Card className="record-card">
+            <Card className="record-card clickable" >
                 <Card.Body>
-                    <Card.Title>{record.hikeId.title}</Card.Title>
+                    <Card.Title onClick={() => goToRecord(record._id)}>{record.hikeId.title}</Card.Title>
                     <Row>
-                        <Col lg={9}>
+                        <Col lg={9} onClick={() => goToRecord(record._id)}>
                             <Row>
                                 <p>Start date: {readableDate(record.startDate)}</p>
                             </Row>
