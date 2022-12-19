@@ -50,8 +50,8 @@ function RecordInfo(props) {
     }
 
     useEffect(() => {
-        const positions = record.referencePoints.map(r => r.positionId)
-        if (referencePoint !== undefined && !positions.includes(referencePoint.point)) {
+        const reachedPositions = record.referencePoints.map(r => r.positionId)
+        if (referencePoint !== undefined && !reachedPositions.includes(referencePoint.point)) {
             setDisabled(false);
         } else {
             setDisabled(true);
