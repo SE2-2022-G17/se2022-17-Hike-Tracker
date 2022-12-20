@@ -29,6 +29,7 @@ import LocalGuide from './components/LocalGuide';
 import ValidationType from './models/ValidationType';
 import Type from './models/UserType';
 import Utils from './Utils';
+import UserStatistics from './components/UserStatistics';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function MainApp() {
   const [errorMessage, setErrorMessage] = useState('');
   const [modalShow, setModalShow] = useState(false);
   const [performanceModal, setPerformanceModal] = useState(false);
+  const [userStatistics, setUserStatistics] = useState(false);
   const [role, setRole] = useState("");
   const [id, setId] = useState("");
   const [user, setUser] = useState(null);
@@ -150,6 +152,7 @@ function MainApp() {
         openLogin={doLogIn}
         setModalShow={setModalShow}
         setPerformanceModal={setPerformanceModal}
+        setUserStatistics ={setUserStatistics}
         role={role}
         
         
@@ -177,7 +180,13 @@ function MainApp() {
             />
             : ''
       }
-
+      {
+        user !== null ?
+          <UserStatistics show={userStatistics}
+                          setShow={setUserStatistics}
+          />
+          : ""
+      }
       <></>
 
 

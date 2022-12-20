@@ -8,6 +8,8 @@ const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Location = require("../models/Location")
 const Hut = require("../models/Hut")
+const Record = require('../models/Record')
+let myHike;
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
@@ -136,7 +138,6 @@ async function run() {
     await user3.save()
     console.log(user3);
 
-
     for (const h of testDataHikes) {
         try {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
@@ -172,6 +173,7 @@ async function run() {
                 authorId: user._id,
 
             })
+            myHike = hike;
             await hike.save()
             console.log(hike)
         } catch (e) {
@@ -197,6 +199,14 @@ async function run() {
     })
 
     await hut.save();
+
+    const terminatedRecord = await Record.create({
+        hikeId: new mongoose.Types.ObjectId(myHike._id),
+        userId: new mongoose.Types.ObjectId(user2._id),
+        status: "closed"
+    });
+
+    await terminatedRecord.save();
 
     await mongoose.disconnect()
 }

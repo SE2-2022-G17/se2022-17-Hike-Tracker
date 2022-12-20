@@ -9,6 +9,7 @@ const Type = require('./constants/UserType');
 const cors = require('cors');
 const multer = require('multer');
 const HikeImage = require('./models/HikeImage');
+const dayjs = require('dayjs')
 
 // init express
 const app = new express();
@@ -574,7 +575,74 @@ app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async
 
 });
 
+//HT-35
+app.get('/getStats', verifyUserToken, async (req,res) => {
+    //try{
+        const user = req.user;
+        const completedRecords = await dao.getCompletedRecords(user.id);
 
+        let tothike = completedRecords.length;
+        let totkms = 0;
+        let altituderage = 0;
+        let longestkm = 0;
+        let longesthr = 0;
+        let shortestkm = 0;
+        let shortesthr = 0;
+        let fastpace = 0;
+        let highest = 0;
+        let avgpace = 0;
+        let avgvertspeed = 0;
+        let totMinutes = 0;
+        let verticalAscent = 0;
+        for(let i=0; i < completedRecords.length; i++){
+            let record = completedRecords[i];
+            const hike = await dao.getHike(record.hikeId);
+            if(i === 0){
+                altituderage = hike.ascent;
+                longestkm = hike.length;
+                longesthr = dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true);
+                shortestkm = hike.length;
+                shortesthr = dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true);
+            }
+            totkms = totkms + hike.length;
+            const high = dao.getHighestPoint(hike);
+            highest < high ? highest = high : null
+            altituderage < hike.ascent ? altituderage = hike.ascent : null
+            longestkm < hike.length ? longestkm = hike.length : null
+            longesthr < dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true) ? longesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true) : null
+            shortestkm > hike.length ? shortestkm = hike.length : null
+            shortesthr > dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true) ? shortesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true) : null
+            totMinutes = totMinutes + dayjs(record.endDate).diff(dayjs(record.startDate),'minute',true);
+            fastpace < totMinutes / hike.length ? fastpace = totMinutes / hike.length : null
+            verticalAscent = verticalAscent + dao.getHikeVerticalAscent(hike); 
+        }
+
+        totkms === 0 ?
+            avgpace = 0
+        : 
+            avgpace = totMinutes / totkms
+        
+        totMinutes === 0 ?
+            avgvertspeed = 0
+        : 
+            avgvertspeed = verticalAscent / (totMinutes/60)
+        res.status(200).json({
+            tothike:tothike,
+            totkms:totkms.toFixed(2),
+            altituderage:altituderage.toFixed(2),
+            longestkm:longestkm.toFixed(2),
+            longesthr:longesthr.toFixed(2),
+            shortestkm:shortestkm.toFixed(2),
+            shortesthr:shortesthr.toFixed(2),
+            fastpace:fastpace.toFixed(2),
+            highest:highest.toFixed(2),
+            avgpace:avgpace.toFixed(2),
+            avgvertspeed:avgvertspeed.toFixed(2)
+        });
+    /*} catch(error){
+        res.status(error.status).send(error.message);
+    }*/
+})
 
 const server = http.createServer(app);
 

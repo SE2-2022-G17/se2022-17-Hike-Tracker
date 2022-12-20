@@ -662,3 +662,42 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
     await record.save()
 }
 
+//HT-35
+exports.getHighestPoint = (hike) => {
+    const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+    const gpx = new gpxParser()
+    gpx.parse(file)
+    let maxHigh;
+    gpx.tracks[0].points.forEach((p,i) => {
+        i === 0 ? 
+            maxHigh = p.ele 
+        :
+            p.ele > maxHigh ? 
+                maxHigh = p.ele 
+            : 
+                null 
+        return;
+    }) 
+    return maxHigh;
+}
+
+//HT-35
+exports.getHikeVerticalAscent = (hike) => {
+    const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+    const gpx = new gpxParser()
+    gpx.parse(file)
+    let verticalAscent = 0
+    let pLess1 = 0;
+    gpx.tracks[0].points.forEach((p,i) => {
+        i === 0 ? 
+            null
+        :
+            p.ele>pLess1.ele ? 
+                verticalAscent = p.ele - pLess1.ele 
+            : 
+                null 
+        pLess1 = p;
+        return;
+    })
+    return verticalAscent;
+}

@@ -440,6 +440,17 @@ async function addImageToHike(image, hikeId, token) {
     return response.status;
 }
 
+async function getStats(token){
+    const response = await fetch(url + '/getStats',{
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    return await response.json();
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -464,7 +475,8 @@ const API = {
     addReferencePoint,
     getHikeTrace,
     getHikeImage,
-    addImageToHike
+    addImageToHike,
+    getStats
 };
 
 
