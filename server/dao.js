@@ -383,24 +383,6 @@ exports.linkHutToHike = async (hutId, hike, userId) => {
     }
 }
 
-exports.getHikeTrace = async (hikeId) => {
-    const hike = await Hike.findById(hikeId);
-
-    if (hike === null)
-        throw new TypeError({ description: "Hike not found", status: 404 })
-
-
-    try {
-        const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
-        const gpx = new gpxParser()
-        gpx.parse(file)
-        return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
-
-    } catch (e) {
-        throw new TypeError({ description: "Trace not found", status: 404 });
-    }
-}
-
 exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId, userId) => {
     const updateHike = {};
     if (!(await Hike.findOne({
