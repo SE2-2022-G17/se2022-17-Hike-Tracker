@@ -18,10 +18,10 @@ import { Record2 } from 'react-bootstrap-icons';
 import { useNavigate } from "react-router-dom";
 import Utils from '../Utils';
 import UserType from '../models/UserType';
+import CloseButton from 'react-bootstrap/CloseButton';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
-
 function ShowHike(props) {
 
     const mapContainer = useRef(null);
@@ -37,7 +37,29 @@ function ShowHike(props) {
     const [message, setMessage] = useState('')
     const [variant, setVariant] = useState('warning')
     const [record, setRecord] = useState(undefined);
+    const [refFormVisible,setrefFormVisible] = useState(false);
+    const [refMarker,setRefMarker] = useState([]);
+    const [hikeTrace,setHikeTrace] = useState(undefined);
 
+    function handleMarker(point, marker) {
+        let choise = point;
+        let minDistance = -1;
+        for (const p1 of hikeTrace) {
+            if (p1.lat === point.lat && p1.lng === point.lng) {
+                setLng(point.lng);
+                setLat(point.lng);
+                choise = point;
+                return
+            }
+            let tmpDistance = Utils.distanceCalc(point, p1);
+            if (minDistance === -1 || tmpDistance <= minDistance) {
+                minDistance=tmpDistance;
+                choise = p1;
+            }
+        }
+        marker.setLngLat([choise.lng, choise.lat])
+        return point;
+    }
 
     useEffect(() => {
         // scroll to top on page load
@@ -55,6 +77,20 @@ function ShowHike(props) {
         fetchRecord();
     }, [variant, message]);
 
+    useEffect(()=>{
+        if (map.current && refMarker.length>0 && refFormVisible){
+            for(let i=1;i<refMarker.length;i++)
+                refMarker[i].remove();
+            const point = refMarker[0].getLngLat();
+            handleMarker(point,refMarker[0]);
+            refMarker[0].addTo(map.current);
+        } 
+        else{
+            if(!refFormVisible)
+                setRefMarker([]);
+        }
+    },[refMarker.length])
+
     useEffect(() => {
 
         if (id !== null && hike === null) {
@@ -65,6 +101,12 @@ function ShowHike(props) {
                     setLat(hike.startPoint.location.coordinates[1])
                     setLng(hike.startPoint.location.coordinates[0])
                 }
+                const authToken = localStorage.getItem('token');
+                API.getHikeTrace(hike._id, authToken)
+                .then(trace => {
+                    setHikeTrace(trace);
+                })
+                .catch(err => { console.log(err); })
 
             }).catch(function (error) {
                 console.log(error);
@@ -182,10 +224,19 @@ function ShowHike(props) {
                                     .addTo(map.current);
 
                             });
-
                         }
 
+                        map.current.doubleClickZoom.disable();
 
+                        map.current.on('dblclick', (e) => {
+
+                            const marker = new mapboxgl.Marker({
+                                color: "red",
+                                draggable: false
+                            })
+                            .setLngLat([e.lngLat.lng.toFixed(5), e.lngLat.lat.toFixed(5)]);
+                            setRefMarker(old=>[marker,...old]);
+                        });
                     }
                 });
             });
@@ -283,30 +334,62 @@ function ShowHike(props) {
                 <Col className="map-margin">
                     <div ref={mapContainer} className="map-container" />
                 </Col>
+
             </Row>
+            {
+                refFormVisible ? 
+                <Row>
+                    <Col>
+                    <Card>
+                        <Card.Body>
+                                <Row>
+                                    <Col xl={11}>
+                                    </Col>
+                                    <Col xl={1}>
+                                        <CloseButton onClick={()=>{
+                                            setrefFormVisible(false);
+                                            if(refMarker.length>0){
+                                                refMarker.forEach(r=>{
+                                                    r.remove();
+                                                })
+                                                setRefMarker([]);
+                                            }
+                                        }}/>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map}/>
+                                    </Col>
+                                </Row>   
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+                : <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
+            }
             {
                 //only localguide can link hut to a hike
                 props.role === "localGuide" ? <>
-                    <Accordion className="mb-3">
-                        <Accordion.Item eventKey="0">
-                            <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
-                            <Accordion.Body>
-                                <ReferencePointsForm hikeId={id} />
-                            </Accordion.Body>
-                        </Accordion.Item>
-                        <Accordion.Item eventKey="1">
-                            <Accordion.Header>Link hut to this hike</Accordion.Header>
-                            <Accordion.Body>
-                                <LinkHut hike={hike} />
-                            </Accordion.Body>
-                        </Accordion.Item>
-                        <Accordion.Item eventKey="2">
-                            <Accordion.Header>Add reference point to this hike</Accordion.Header>
-                            <Accordion.Body>
-                                <AddReferencePoint hike={hike} id={id} />
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    </Accordion>
+                    <Row>
+                        <Col>
+                        <br></br>
+                            <Accordion className="mb-3">
+                                <Accordion.Item eventKey="0">
+                                    <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
+                                    <Accordion.Body>
+                                        <ReferencePointsForm hikeId={id} />
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="1">
+                                    <Accordion.Header>Link hut to this hike</Accordion.Header>
+                                    <Accordion.Body>
+                                        <LinkHut hike={hike} />
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            </Accordion>
+                        </Col>
+                    </Row>
 
                     <br />
 

@@ -17,7 +17,6 @@ import SearchHut from './components/SearchHut'
 import PreferredHikes from './components/PreferredHikes'
 import Record from './components/Record'
 
-
 import API from './API';
 
 import {
@@ -54,15 +53,6 @@ function MainApp() {
 
   const navigate = useNavigate();
 
-  function extractTokenPayload(token) {
-    let base64Url = token.split('.')[1];
-    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  }
-
   let SavePreferenceUser = (data) => {
 
     const authToken = localStorage.getItem('token');
@@ -81,7 +71,7 @@ function MainApp() {
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
-        const payload = extractTokenPayload(user.token);
+        const payload = Utils.parseJwt(user.token);
         setRole(payload.role);
         if (payload.active === ValidationType.notValidated) {
           navigate('/verifyAccount/' + payload.email);
@@ -121,7 +111,7 @@ function MainApp() {
       console.log("User is not logged-in");
     }
     else {
-      const tokenPayload = extractTokenPayload(authToken);
+      const tokenPayload = Utils.parseJwt(authToken);
       API.getUserByEmail(tokenPayload.email, authToken).then(response => {
         setUser(response);
       }).catch(error => console.log(error));
