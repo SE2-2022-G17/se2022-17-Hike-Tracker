@@ -21,28 +21,30 @@ function UserStatistics(props){
     const [load,setLoad] = useState(false);
 
     useEffect(()=>{
-        (async()=>{
-            try{
-                const container = await API.getStats(token);
-                console.log(container);
-                setTotHike(container.tothike);
-                setTotKms(container.totkms);
-                setHighest(container.highest);
-                setAltitudeRage(container.altituderage);
-                setLongestKm(container.longestkm);
-                setLongestHr(container.longesthr);
-                setShortestKm(container.shortestkm);
-                setShortestHr(container.shortesthr);
-                setAvgPace(container.avgpace);
-                setFastPace(container.fastpace);
-                setAvgVertSpeed(container.avgvertspeed);
-                
-                setLoad(true);
-            } catch(e){
-                console.log("An error occurred while featching the server.")
-            }
-        })();
-    },[token])
+        if(props.show===true){
+            (async()=>{
+                try{
+                    const container = await API.getStats(token);
+
+                    setTotHike(container.tothike);
+                    setTotKms(container.totkms);
+                    setHighest(container.highest);
+                    setAltitudeRage(container.altituderage);
+                    setLongestKm(container.longestkm);
+                    setLongestHr(container.longesthr);
+                    setShortestKm(container.shortestkm);
+                    setShortestHr(container.shortesthr);
+                    setAvgPace(container.avgpace);
+                    setFastPace(container.fastpace);
+                    setAvgVertSpeed(container.avgvertspeed);
+                    
+                    setLoad(true);
+                } catch(e){
+                    console.log("An error occurred while featching the server.")
+                }
+            })();
+        }
+    },[token,props.show])
 
     return <>
         <Modal show={props.show} onHide={()=>props.setShow(false)} aria-labelledby="contained-modal-title-vcenter" centered>
