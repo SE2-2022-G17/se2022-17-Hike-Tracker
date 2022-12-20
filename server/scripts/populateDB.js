@@ -16,24 +16,6 @@ mongoose.connect("mongodb://localhost/hike_tracker")
 
 run()
 
-async function clear() {
-    try {
-        await Hike.deleteMany()
-        await Position.deleteMany()
-        await User.deleteMany()
-        await Location.deleteMany()
-        await Record.deleteMany()
-        await Image.deleteMany()
-        await Hike.collection.dropIndexes();
-        await Position.collection.dropIndexes();
-        await User.collection.dropIndexes();
-        await Location.collection.dropIndexes();
-        await Record.collection.dropIndexes();
-        await Image.collection.dropIndexes();
-    } catch (e) {
-        console.log(e.message)
-    }
-}
 
 function HikeDetail(title, time, difficulty, city, province, description, file) {
     this.title = title;
@@ -48,7 +30,13 @@ function HikeDetail(title, time, difficulty, city, province, description, file) 
 
 
 async function run() {
-    clear()
+    await Hike.deleteMany()
+    await Position.deleteMany()
+    await User.deleteMany()
+    await Location.deleteMany()
+    await Record.deleteMany()
+    await Image.deleteMany()
+
     const difficulties = ['Tourist', 'Hiker', 'ProfessionalHiker']
     const testDataHikes = [
         new HikeDetail("Parco dei Nebrodi", 2.7, 1, "Capizzi", "ME", "Un breve ma splendido itinerario immerso nel cuore dei Nebrodi, ricadente nel territorio di Capizzi, che consente di apprezzare i principali relitti delle glaciazioni che dominano i boschi nebrodensi, come il Faggio, il Cerro e l’Agrifoglio.", "Nebrodi.gpx"),
@@ -108,7 +96,7 @@ async function run() {
 
 
     const user = await User.create({
-        _id: new mongoose.Types.ObjectId("63a17eef91f4a7917e931aaa"),
+        _id: "63a1a48e31d3c6a9e5202500",
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide@email.com",
@@ -123,7 +111,7 @@ async function run() {
     console.log(user);
 
     const user2 = await User.create({
-        _id: new mongoose.Types.ObjectId("63a17eef91f4a7917e931aba"),
+        _id: "63a1a48e31d3c6a9e5202501",
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "hiker@email.com",
@@ -138,7 +126,7 @@ async function run() {
     console.log(user2);
 
     const user3 = await User.create({
-        _id: new mongoose.Types.ObjectId("63a17eef91f4a7917e931aca"),
+        _id: "63a1a48e31d3c6a9e5202502",
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide2@email.com",
@@ -210,7 +198,7 @@ async function run() {
         });
 
         const streamPosition = await Position.create({
-            "location.coordinates": [14.56435, 37.89423]
+            "location.coordinates": [14.55317, 37.89529]
         });
 
         nebrodiHike.referencePoints.push(streamPosition._id);
@@ -222,7 +210,7 @@ async function run() {
         });
 
         const mountainPosition = await Position.create({
-            "location.coordinates": [14.55317, 37.89529]
+            "location.coordinates": [14.56435, 37.89423]
         });
 
         nebrodiHike.referencePoints.push(mountainPosition._id);
