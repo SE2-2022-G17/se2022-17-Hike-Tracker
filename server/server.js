@@ -676,14 +676,10 @@ app.get('/getStats', verifyUserToken, async (req,res) => {
             const hike = await dao.getHike(completedRecords[i].hikeId);
             statCalculator(response,completedRecords[i],i,hike);
         }
-        response.totkms === 0 ?
-        response.avgpace = 0
-        : 
+        if(response.totkms !== 0)
             response.avgpace = response.totMinutes / response.totkms
         
-        response.totMinutes === 0 ?
-            response.avgvertspeed = 0
-        : 
+        if(response.totMinutes !== 0)
             response.avgvertspeed = response.verticalAscent / (response.totMinutes/60)
         res.status(200).json({
             tothike:response.tothike,
