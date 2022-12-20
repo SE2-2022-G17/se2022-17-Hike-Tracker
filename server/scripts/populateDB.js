@@ -10,6 +10,7 @@ const Location = require("../models/Location")
 const Hut = require("../models/Hut")
 const Record = require("../models/Record")
 const Image = require("../models/Image")
+const HikeImage = require("../models/HikeImage")
 
 
 mongoose.connect("mongodb://localhost/hike_tracker")
@@ -221,14 +222,26 @@ async function run() {
             point: mountainPosition
         });
 
+        const nebrodiImage = fs.readFileSync("./test/mocks/images/parco-dei-nebrodi.jpg");
 
-        nebrodiHike.save();
-        fountainRefPoint.save();
-        mountainRefPoint.save();
-        streamRefPoint.save();
-        fountainPosition.save();
-        mountainPosition.save();
-        streamPosition.save();
+        let imageUploadObject = {
+            hikeId: nebrodiHike._id,
+            file: {
+                data: nebrodiImage,
+                contentType: "image/jpeg"
+            }
+        }
+        const hikeImage = new HikeImage(imageUploadObject);
+
+        await hikeImage.save();
+        
+        await nebrodiHike.save();
+        await fountainRefPoint.save();
+        await mountainRefPoint.save();
+        await streamRefPoint.save();
+        await fountainPosition.save();
+        await mountainPosition.save();
+        await streamPosition.save();
     }
 
     const hutPosition = await Position.create({
