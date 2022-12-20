@@ -440,6 +440,99 @@ async function addImageToHike(image, hikeId, token) {
     return response.status;
 }
 
+async function startRecordingHike(hikeId, token) {
+
+    const response = await fetch(url + '/hikes/' + hikeId + '/record', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+    });
+    return response.status;
+}
+
+async function terminateRecordingHike(recordId, token) {
+
+    const response = await fetch(url + '/records/' + recordId + '/terminate', {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+    });
+    return response.status;
+}
+
+
+async function getRecords(token) {
+    const response = await fetch(url + '/records', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const records = await response.json();
+    return records
+}
+
+async function getCompletedRecords(token) {
+    const response = await fetch(url + '/records/completed', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const records = await response.json();
+    return records
+}
+
+async function getOngoingRecord(hikeId, token) {
+    const response = await fetch(url + '/hikes/' + hikeId + '/record', {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const record = await response.json();
+    return record;
+}
+
+async function getRecord(recordId, token) {
+    const response = await fetch(url + '/records/' + recordId, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const record = await response.json();
+    return record;
+}
+
+async function recordReferencePoint(recordId, positionId, token) {
+
+    const response = await fetch(url + '/records/' + recordId + '/reference-point/' + positionId, {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+    });
+    return response.status;
+}
+
+async function getReferencePointByPosition(positionId) {
+    const response = await fetch(url + '/reference-points/' + positionId, {
+        method: "GET"
+    });
+    const referencePoint = await response.json();
+    return referencePoint;
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -464,7 +557,15 @@ const API = {
     addReferencePoint,
     getHikeTrace,
     getHikeImage,
-    addImageToHike
+    addImageToHike,
+    startRecordingHike,
+    terminateRecordingHike,
+    getRecords,
+    getCompletedRecords,
+    getOngoingRecord,
+    getRecord,
+    recordReferencePoint,
+    getReferencePointByPosition
 };
 
 

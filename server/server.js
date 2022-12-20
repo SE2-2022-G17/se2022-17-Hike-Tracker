@@ -557,6 +557,35 @@ app.get('/records/completed', verifyUserToken, async (req, res) => {
     }
 });
 
+app.get('/records/:id', verifyUserToken, async (req, res) => {
+    const recordId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        const record = await dao.getRecord(recordId, user.id);
+        res.json(record);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
+//this endpoint returns the started/ongoing record associated to the hike
+app.get('/hikes/:id/record', verifyUserToken, async (req, res) => {
+    const hikeId = req.params.id;
+    const user = req.user; // this is received from verifyUserToken middleware
+    if (user.role !== Type.hiker)
+        res.sendStatus(403)
+
+    try {
+        const record = await dao.getOngoingRecord(hikeId, user.id);
+        res.json(record);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
+
 //HT-19
 app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async (req, res) => {
     const user = req.user; // this is received from verifyUserToken middleware
@@ -569,11 +598,24 @@ app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async
         await dao.recordReferencePoint(recordId, user.id, positionId);
         res.sendStatus(200);
     } catch (error) {
-        res.status(error.status).send(error.message);
+        if (error.status)
+            res.status(error.status).send(error.message);
+        else
+            res.sendStatus(500);
     }
 
 });
 
+app.get('/reference-points/:positionId', async (req, res) => {
+    const positionId = req.params.positionId;
+
+    try {
+        const referencePoint = await dao.getReferencePointByPosition(positionId);
+        res.json(referencePoint);
+    } catch (error) {
+        res.status(error.status).send(error.message);
+    }
+});
 
 
 const server = http.createServer(app);

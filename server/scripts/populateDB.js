@@ -8,21 +8,15 @@ const fs = require('fs');
 let gpxParser = require('gpxparser');
 const Location = require("../models/Location")
 const Hut = require("../models/Hut")
+const Record = require("../models/Record")
+const Image = require("../models/Image")
+const HikeImage = require("../models/HikeImage")
+
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
 run()
 
-async function clear() {
-    try {
-        await Hike.deleteMany()
-        await Position.deleteMany()
-        await User.deleteMany()
-        await Location.deleteMany()
-    } catch (e) {
-        console.log(e.message)
-    }
-}
 
 function HikeDetail(title, time, difficulty, city, province, description, file) {
     this.title = title;
@@ -32,14 +26,21 @@ function HikeDetail(title, time, difficulty, city, province, description, file) 
     this.province = province;
     this.description = description;
     this.file = file;
-    
+
 }
 
 
 async function run() {
-    clear()
+    await Hike.deleteMany()
+    await Position.deleteMany()
+    await User.deleteMany()
+    await Location.deleteMany()
+    await Record.deleteMany()
+    await Image.deleteMany()
+
     const difficulties = ['Tourist', 'Hiker', 'ProfessionalHiker']
     const testDataHikes = [
+        new HikeDetail("Parco dei Nebrodi", 2.7, 1, "Capizzi", "ME", "Un breve ma splendido itinerario immerso nel cuore dei Nebrodi, ricadente nel territorio di Capizzi, che consente di apprezzare i principali relitti delle glaciazioni che dominano i boschi nebrodensi, come il Faggio, il Cerro e l’Agrifoglio.", "Nebrodi.gpx"),
         new HikeDetail("Arctic Circle Trail", 36.1, 1, "Kangerlussuaq", "Qeqqata Kommunia", "The only towns are at the beginning and the end of the trail, so the Arctic Circle Trail truly allows you to get away from the chaos and get in touch with nature. This backcountry hike gives you the freedom to catch trout for dinner, take pictures of foxes and reindeer, or anything else your heart desires.", "Arctic Circle Trail.gpx"),
         new HikeDetail("Bay Of Fires Walk", 1.5, 0, "Binalong Bay", "Tasmania", "This hike is highlighted by white beaches, blue waters, and orange-toned granite. The air is absolutely pristine and you’ll get a chance to experience ecology, wildlife, and rocky headlands along the way.", "Bay Of Fires Walk.gpx"),
         new HikeDetail("Berliner Hohenweg", 5.7, 2, "Mayrhofen", "Tyrol", "If you’re comfortable with high-alpine terrain, then this is the hike for you. Glaciers and mountain landscape light up the trail, and you’re bound to meet some new friends on this popular hike.", "Berliner Hohenweg.gpx"),
@@ -96,6 +97,7 @@ async function run() {
 
 
     const user = await User.create({
+        _id: "63a1a48e31d3c6a9e5202500",
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide@email.com",
@@ -110,6 +112,7 @@ async function run() {
     console.log(user);
 
     const user2 = await User.create({
+        _id: "63a1a48e31d3c6a9e5202501",
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "hiker@email.com",
@@ -124,6 +127,7 @@ async function run() {
     console.log(user2);
 
     const user3 = await User.create({
+        _id: "63a1a48e31d3c6a9e5202502",
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide2@email.com",
@@ -142,12 +146,12 @@ async function run() {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
             let gpx = new gpxParser()
             gpx.parse(content)
-            let length = ((gpx.tracks[0].distance.total)/1000).toFixed(2) //length in kilometers
+            let length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
             let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
             let points = gpx.tracks[0].points
             let startPoint = points[0]
             let endPoint = points[points.length - 1]
-            
+
             const startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
             })
@@ -179,6 +183,66 @@ async function run() {
         }
     }
 
+    //create two reference points for Nebrodi hike
+    const nebrodiHike = await Hike.findOne({ title: "Parco dei Nebrodi" });
+    if (nebrodiHike !== null) {
+        const fountainPosition = await Position.create({
+            "location.coordinates": [14.54032, 37.889]
+        });
+
+        nebrodiHike.referencePoints.push(fountainPosition._id);
+
+        const fountainRefPoint = await Location.create({
+            name: "Sorgente Nocita",
+            description: "Area attrezzata per la sosta ed il pic-nic con la caratteristica sorgente d'acqua alimentata tutto l'anno.",
+            point: fountainPosition
+        });
+
+        const streamPosition = await Position.create({
+            "location.coordinates": [14.55317, 37.89529]
+        });
+
+        nebrodiHike.referencePoints.push(streamPosition._id);
+
+        const streamRefPoint = await Location.create({
+            name: "Stream",
+            description: "Clear stream",
+            point: streamPosition
+        });
+
+        const mountainPosition = await Position.create({
+            "location.coordinates": [14.56435, 37.89423]
+        });
+
+        nebrodiHike.referencePoints.push(mountainPosition._id);
+
+        const mountainRefPoint = await Location.create({
+            name: "Monte Pelato",
+            description: "Mountain Peak",
+            point: mountainPosition
+        });
+
+        const nebrodiImage = fs.readFileSync("./test/mocks/images/parco-dei-nebrodi.jpg");
+
+        let imageUploadObject = {
+            hikeId: nebrodiHike._id,
+            file: {
+                data: nebrodiImage,
+                contentType: "image/jpeg"
+            }
+        }
+        const hikeImage = new HikeImage(imageUploadObject);
+
+        await hikeImage.save();
+        
+        await nebrodiHike.save();
+        await fountainRefPoint.save();
+        await mountainRefPoint.save();
+        await streamRefPoint.save();
+        await fountainPosition.save();
+        await mountainPosition.save();
+        await streamPosition.save();
+    }
 
     const hutPosition = await Position.create({
         _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc0"),
@@ -187,7 +251,7 @@ async function run() {
 
     const hut = await Hut.create({
         name: "Portovenere",
-        description: "Hut di test", 
+        description: "Hut di test",
         point: hutPosition,
         beds: "4",
         altitude: "200",

@@ -45,7 +45,7 @@ exports.getVisitorHikes = async (
             .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
 
         const hikes = await Hike.find()
-            .select({ "__v": 0, "referencePoints": 0 })
+            .select({ "__v": 0 })
             .filterByDifficulty(difficulty)
             .filterBy("length", minLength, maxLength)
             .filterBy("ascent", minAscent, maxAscent)
@@ -626,13 +626,54 @@ exports.terminateRecordingHike = async (recordId, userId) => {
 
 //HT-34
 exports.getRecords = async (userId) => {
-    const records = await Record.find({ userId: userId });
+    const records = await Record
+        .find({ userId: userId })
+        .populate('hikeId');
     return records;
 }
 
 exports.getCompletedRecords = async (userId) => {
-    const records = await Record.find({ userId: userId, status: RecordStatus.CLOSED });
+    const records = await Record
+        .find({ userId: userId, status: RecordStatus.CLOSED })
+        .populate('hikeId')
     return records;
+}
+
+exports.getOngoingRecord = async (hikeId, userId) => {
+    const record = await Record
+        .findOne({
+            hikeId: hikeId,
+            userId: userId,
+            status: { $ne: RecordStatus.CLOSED }
+        })
+        .exec();
+
+    return record;
+}
+
+exports.getRecord = async (recordId, userId) => {
+    const record = await Record
+        .findById(recordId)
+        .populate([{
+            path: 'hikeId',
+            populate: {
+                path: 'referencePoints',
+                model: 'Position'
+            }
+        },
+        {
+            path: 'referencePoints',
+            populate: {
+                path: 'positionId',
+                model: 'Position'
+            }
+        }])
+        .exec();
+
+    if (record.userId.toString() !== userId)
+        throw new HTTPError("Forbidden access to record", 403);
+
+    return record;
 }
 
 
@@ -662,3 +703,13 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
     await record.save()
 }
 
+
+exports.getReferencePointByPosition = async (positionId) => {
+    //reference points are store by Location model
+    const referencePoint = await Location
+        .findOne({ point: positionId })
+        .populate('point')
+        .exec();
+
+    return referencePoint;
+}
