@@ -16,8 +16,12 @@ const RecordStatus = require('../constants/RecordStatus.js');
 
 
 let mongoServer;
-const hikeId = "0000000194e4c1e796231d9f"
-const terminatedRecordId = "0000000197e4c1e796231d9f"
+const hikeId1 = "0000000194e4c1e796231d9f"
+const hikeId2 = "0000001194e4c1e796231d9f"
+const hikeId3 = "0000010194e4c1e796231d9f"
+const terminatedRecordId1 = "0000000197e4c1e796231d9f"
+const terminatedRecordId2 = "0000001197e4c1e796231d9f"
+const terminatedRecordId3 = "0000010197e4c1e796231d9f"
 const userId = "0000000196e4c1e796231d9f"
 
 
@@ -42,8 +46,8 @@ describe('Test API to get user statistics (US35)', () => {
             "location.coordinates": [4, 6]
         })
 
-        const hike = await Hike.create({
-            _id: new mongoose.Types.ObjectId(hikeId),
+        const hike1 = await Hike.create({
+            _id: new mongoose.Types.ObjectId(hikeId1),
             title: 'prova',
             expectedTime: 20,
             difficulty: Difficulty.Hiker,
@@ -57,6 +61,32 @@ describe('Test API to get user statistics (US35)', () => {
             endPoint: endPosition._id
         });
 
+        const hike2 = await Hike.create({
+            _id: new mongoose.Types.ObjectId(hikeId2),
+            title: 'prova2',
+            expectedTime: 200,
+            difficulty: Difficulty.Hiker,
+            city: 'Torino',
+            province: 'Torino',
+            description: 'test',
+            track_file: "Appalachian Trail.gpx",
+            length: 20,
+            ascent: 50,
+        });
+
+        const hike3 = await Hike.create({
+            _id: new mongoose.Types.ObjectId(hikeId3),
+            title: 'prova3',
+            expectedTime: 1,
+            difficulty: Difficulty.Hiker,
+            city: 'Torino',
+            province: 'Torino',
+            description: 'test',
+            track_file: "Mount Kailash.gpx",
+            length: 1,
+            ascent: 3,
+        });
+
         const user = await User.create({
             _id: userId,
             firstName: "Elon",
@@ -67,16 +97,40 @@ describe('Test API to get user statistics (US35)', () => {
             hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2"
         });
 
-        const terminatedRecord = await Record.create({
-            _id: new mongoose.Types.ObjectId(terminatedRecordId),
-            hikeId: new mongoose.Types.ObjectId(hikeId),
+        const terminatedRecord1 = await Record.create({
+            _id: new mongoose.Types.ObjectId(terminatedRecordId1),
+            hikeId: new mongoose.Types.ObjectId(hikeId1),
             userId: new mongoose.Types.ObjectId(userId),
-            status: RecordStatus.CLOSED
+            status: RecordStatus.CLOSED,
+            startDate: "2022-12-20T20:12:51.061+00:00",
+            endDate:"2022-12-20T21:50:03.838+00:00"
+        });
+
+        const terminatedRecord2 = await Record.create({
+            _id: new mongoose.Types.ObjectId(terminatedRecordId2),
+            hikeId: new mongoose.Types.ObjectId(hikeId2),
+            userId: new mongoose.Types.ObjectId(userId),
+            status: RecordStatus.CLOSED,
+            startDate: "2022-12-20T20:12:51.061+00:00",
+            endDate:"2022-12-20T21:50:03.838+00:00"
+        });
+
+        const terminatedRecord3 = await Record.create({
+            _id: new mongoose.Types.ObjectId(terminatedRecordId3),
+            hikeId: new mongoose.Types.ObjectId(hikeId3),
+            userId: new mongoose.Types.ObjectId(userId),
+            status: RecordStatus.CLOSED,
+            startDate: "2022-12-20T20:12:51.061+00:00",
+            endDate:"2022-12-20T21:50:03.838+00:00"
         });
 
         await user.save();
-        await terminatedRecord.save();
-        await hike.save();
+        await terminatedRecord1.save();
+        await terminatedRecord2.save();
+        await terminatedRecord3.save()
+        await hike1.save();
+        await hike2.save();
+        await hike3.save();
     });
 
     after(async () => {
