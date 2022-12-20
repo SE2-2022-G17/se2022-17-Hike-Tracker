@@ -717,7 +717,6 @@ exports.getHighestPoint = (hike) => {
                 maxHigh = p.ele 
             }
         }
-        return;
     }) 
     return maxHigh;
 }
@@ -736,7 +735,6 @@ exports.getHikeVerticalAscent = (hike) => {
             }
         }
         pLess1 = p;
-        return;
     })
     return verticalAscent;
 }

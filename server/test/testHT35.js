@@ -30,9 +30,9 @@ describe('Test API to get user statistics (US35)', () => {
             await mongoose.connect(mongoUri);
         }
 
-        await Hike.deleteMany();
-        await User.deleteMany();
-        await Record.deleteMany();
+        Hike.deleteMany();
+        User.deleteMany();
+        Record.deleteMany();
 
         const startPosition = await Position.create({
             "location.coordinates": [3, 5]

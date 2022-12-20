@@ -618,80 +618,89 @@ app.get('/reference-points/:positionId', async (req, res) => {
     }
 });
 
+//HT-35 - used in '/getStats' to reduce complixity
+function statCalculator(
+                    resp,
+                    record,
+                    i,
+                    hike
+                ){
+    
+    if(i === 0){
+        resp.altituderage = hike.ascent;
+        resp.longestkm = hike.length;
+        resp.longesthr = dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true);
+        resp.shortestkm = hike.length;
+        resp.shortesthr = dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true);
+    }
+    resp.totkms = resp.totkms + hike.length;
+    const high = dao.getHighestPoint(hike);
+    if(resp.highest < high)
+        resp.highest = high
+    if(resp.altituderage < hike.ascent)
+        resp.altituderage = hike.ascent
+    if(resp.longestkm < hike.length)
+        resp.longestkm = hike.length
+    if(resp.longesthr < dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true))
+        resp.longesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true)
+    if(resp.shortestkm > hike.length)
+        resp.shortestkm = hike.length
+    if(resp.shortesthr > dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true))
+        resp.shortesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true)
+    resp.totMinutes = resp.totMinutes + dayjs(record.endDate).diff(dayjs(record.startDate),'minute',true);
+    if(resp.fastpace < resp.totMinutes / hike.length)
+        resp.fastpace = resp.totMinutes / hike.length
+    resp.verticalAscent = resp.verticalAscent + dao.getHikeVerticalAscent(hike);
+}
 //HT-35
 app.get('/getStats', verifyUserToken, async (req,res) => {
-    //try{
+    try{
         const user = req.user;
         const completedRecords = await dao.getCompletedRecords(user.id);
 
-        let tothike = completedRecords.length;
-        let totkms = 0;
-        let altituderage = 0;
-        let longestkm = 0;
-        let longesthr = 0;
-        let shortestkm = 0;
-        let shortesthr = 0;
-        let fastpace = 0;
-        let highest = 0;
-        let avgpace = 0;
-        let avgvertspeed = 0;
-        let totMinutes = 0;
-        let verticalAscent = 0;
+        const response = {};
+        response.tothike = completedRecords.length;
+        response.totkms = 0;
+        response.altituderage = 0;
+        response.longestkm = 0;
+        response.longesthr = 0;
+        response.shortestkm = 0;
+        response.shortesthr = 0;
+        response.fastpace = 0;
+        response.highest = 0;
+        response.avgpace = 0;
+        response.avgvertspeed = 0;
+        response.totMinutes = 0;
+        response.verticalAscent = 0;
         for(let i=0; i < completedRecords.length; i++){
-            let record = completedRecords[i];
-            const hike = await dao.getHike(record.hikeId);
-            if(i === 0){
-                altituderage = hike.ascent;
-                longestkm = hike.length;
-                longesthr = dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true);
-                shortestkm = hike.length;
-                shortesthr = dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true);
-            }
-            totkms = totkms + hike.length;
-            const high = dao.getHighestPoint(hike);
-            if(highest < high)
-                highest = high
-            if(altituderage < hike.ascent)
-                altituderage = hike.ascent
-            if(longestkm < hike.length)
-                longestkm = hike.length
-            if(longesthr < dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true))
-                longesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true)
-            if(shortestkm > hike.length)
-                shortestkm = hike.length
-            if(shortesthr > dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true))
-                shortesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true)
-            totMinutes = totMinutes + dayjs(record.endDate).diff(dayjs(record.startDate),'minute',true);
-            if(fastpace < totMinutes / hike.length)
-                fastpace = totMinutes / hike.length
-            verticalAscent = verticalAscent + dao.getHikeVerticalAscent(hike); 
+            const hike = await dao.getHike(completedRecords[i].hikeId);
+            statCalculator(response,completedRecords[i],i,hike);
         }
-
-        totkms === 0 ?
-            avgpace = 0
+        response.totkms === 0 ?
+        response.avgpace = 0
         : 
-            avgpace = totMinutes / totkms
+            response.avgpace = response.totMinutes / response.totkms
         
-        totMinutes === 0 ?
-            avgvertspeed = 0
+        response.totMinutes === 0 ?
+            response.avgvertspeed = 0
         : 
-            avgvertspeed = verticalAscent / (totMinutes/60)
+            response.avgvertspeed = response.verticalAscent / (response.totMinutes/60)
         res.status(200).json({
-            tothike:tothike,
-            totkms:totkms.toFixed(2),
-            altituderage:altituderage.toFixed(2),
-            longestkm:longestkm.toFixed(2),
-            longesthr:longesthr.toFixed(2),
-            shortestkm:shortestkm.toFixed(2),
-            shortesthr:shortesthr.toFixed(2),
-            fastpace:fastpace.toFixed(2),
-            highest:highest.toFixed(2),
-            avgpace:avgpace.toFixed(2),
-            avgvertspeed:avgvertspeed.toFixed(2)
+            tothike:response.tothike,
+            totkms:response.totkms.toFixed(2),
+            altituderage:response.altituderage.toFixed(2),
+            longestkm:response.longestkm.toFixed(2),
+            longesthr:response.longesthr.toFixed(2),
+            shortestkm:response.shortestkm.toFixed(2),
+            shortesthr:response.shortesthr.toFixed(2),
+            fastpace:response.fastpace.toFixed(2),
+            highest:response.highest.toFixed(2),
+            avgpace:response.avgpace.toFixed(2),
+            avgvertspeed:response.avgvertspeed.toFixed(2)
         });
-    /*} catch(error){
+    } catch(error){
         res.status(error.status).send(error.message);
-    }*/
+    }
 })
 
 const server = http.createServer(app);
