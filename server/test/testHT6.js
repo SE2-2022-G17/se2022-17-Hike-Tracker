@@ -54,4 +54,9 @@ describe('Test API for parking lot', () => {
             .send();
         expect(response.statusCode).to.equal(200);
     });
+
+    it('get all parking lots',async () =>{
+        const response = await request(app).get('/parking')
+        expect(response.statusCode).to.equal(200);
+    })
 });

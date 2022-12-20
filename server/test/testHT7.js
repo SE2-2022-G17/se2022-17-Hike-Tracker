@@ -54,4 +54,10 @@ describe('Test API for searching huts (US7)', () => {
             .get("/getHuts" + query)
         expect(response.statusCode).to.equal(401);
     });
+
+    it('test search all huts successfully', async ()=>{
+        const response = await request(app)
+            .get("/hutsList")
+        expect(response.statusCode).to.equal(200)
+    })
 });
