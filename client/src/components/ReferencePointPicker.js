@@ -3,6 +3,7 @@ import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-load
 import Axios from "axios"
 import toGeoJson from '@mapbox/togeojson'
 import API from "../API";
+import Utils from '../Utils'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -13,15 +14,7 @@ function ReferencePointPicker(props) {
     const map = useRef(null);
     const [hike, setHike] = useState(null);
 
-    function distanceCalc(p1, p2) {
-        const ph1 = p1.lat * Math.PI / 180;
-        const ph2 = p2.lat * Math.PI / 180;
-        const DL = (p2.lng - p1.lng) * Math.PI / 180;
-        const R = 6371e3;
-        const d = Math.acos((Math.sin(ph1) * Math.sin(ph2)) + (Math.cos(ph1) * Math.cos(ph2)) * Math.cos(DL)) * R;
-        return d;
-
-    }
+    
 
     function handleMarker(point, marker) {
         const authToken = localStorage.getItem('token');
@@ -36,7 +29,7 @@ function ReferencePointPicker(props) {
                         choise = point;
                         return
                     }
-                    let tmpDistance = distanceCalc(point, p1);
+                    let tmpDistance = Utils.distanceCalc(point, p1);
                     if (minDistance === -1 || tmpDistance <= minDistance) {
                         minDistance=tmpDistance;
                         choise = p1;

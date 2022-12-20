@@ -9,6 +9,16 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
 }
 
-const Utils = { parseJwt };
+function distanceCalc(p1, p2) {
+    const ph1 = p1.lat * Math.PI / 180;
+    const ph2 = p2.lat * Math.PI / 180;
+    const DL = (p2.lng - p1.lng) * Math.PI / 180;
+    const R = 6371e3;
+    const d = Math.acos((Math.sin(ph1) * Math.sin(ph2)) + (Math.cos(ph1) * Math.cos(ph2)) * Math.cos(DL)) * R;
+    return d;
+
+}
+
+const Utils = { parseJwt, distanceCalc };
 
 export default Utils;

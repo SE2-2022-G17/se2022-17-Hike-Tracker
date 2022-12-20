@@ -39,6 +39,7 @@
   cursor: pointer;
 
 }
+
 .marker-hut {
   background-image: url("https://img.icons8.com/color/48/null/country-house.png");
   background-size: cover;
@@ -264,4 +265,32 @@
 
 .hike-image {
   max-width: 100%;
+}
+
+.start-button {
+  max-width: fit-content;
+  margin-bottom: 2rem;
+}
+
+.centered-row {
+  align-items: center;
+  justify-content: center;
+}
+
+.records {
+  max-width: 75%;
+}
+
+.record-card {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.record-button {
+  color: red;
+  cursor: pointer;
+}
+
+.reference-point {
+  margin: 2rem 0rem;
 }

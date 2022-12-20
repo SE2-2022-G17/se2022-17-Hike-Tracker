@@ -230,4 +230,11 @@ describe('Test API to record reaching a reference point (US19)', () => {
         expect(response.statusCode).to.equal(200);
     });
 
+    it('get reference point given position id - successful', async () => {
+        const response = await request(app)
+            .get('/reference-points/' + fountainId)
+
+        expect(response.statusCode).to.equal(200);
+    });
+
 });

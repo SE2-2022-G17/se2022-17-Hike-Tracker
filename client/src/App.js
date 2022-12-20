@@ -15,7 +15,7 @@ import { HighVerification } from './components/highLevelUserVerification'
 import CreateHut from './components/CreateHut'
 import SearchHut from './components/SearchHut'
 import PreferredHikes from './components/PreferredHikes'
-
+import Record from './components/Record'
 
 import API from './API';
 
@@ -30,6 +30,7 @@ import ValidationType from './models/ValidationType';
 import Type from './models/UserType';
 import Utils from './Utils';
 import UserStatistics from './components/UserStatistics';
+import RecordedHikes from './components/RecordedHikes';
 
 function App() {
   return (
@@ -49,19 +50,10 @@ function MainApp() {
   const [role, setRole] = useState("");
   const [id, setId] = useState("");
   const [user, setUser] = useState(null);
-  
-  
+
+
 
   const navigate = useNavigate();
-
-  function extractTokenPayload(token) {
-    let base64Url = token.split('.')[1];
-    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  }
 
   let SavePreferenceUser = (data) => {
 
@@ -76,12 +68,12 @@ function MainApp() {
     })
   }
 
- 
+
 
   const doLogIn = (credentials) => {
     API.logIn(credentials)
       .then(user => {
-        const payload = extractTokenPayload(user.token);
+        const payload = Utils.parseJwt(user.token);
         setRole(payload.role);
         if (payload.active === ValidationType.notValidated) {
           navigate('/verifyAccount/' + payload.email);
@@ -121,7 +113,7 @@ function MainApp() {
       console.log("User is not logged-in");
     }
     else {
-      const tokenPayload = extractTokenPayload(authToken);
+      const tokenPayload = Utils.parseJwt(authToken);
       API.getUserByEmail(tokenPayload.email, authToken).then(response => {
         setUser(response);
       }).catch(error => console.log(error));
@@ -154,8 +146,8 @@ function MainApp() {
         setPerformanceModal={setPerformanceModal}
         setUserStatistics ={setUserStatistics}
         role={role}
-        
-        
+
+
       />
       {errorMessage ?  //Error Alert
         <Row className="justify-content-center"><Col xs={6}>
@@ -164,21 +156,21 @@ function MainApp() {
         : false}
       {
         user !== null ?
-            <ProfileModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                user={user}
-            />
-            : ''
+          <ProfileModal
+            show={modalShow}
+            onHide={() => setModalShow(false)}
+            user={user}
+          />
+          : ''
       }
       {
         user !== null ?
-            <PerformanceModal performanceModal={performanceModal}
-                              setPerformanceModal={setPerformanceModal}
-                              user={user}
-                              SavePreferenceUser={ SavePreferenceUser }
-            />
-            : ''
+          <PerformanceModal performanceModal={performanceModal}
+            setPerformanceModal={setPerformanceModal}
+            user={user}
+            SavePreferenceUser={SavePreferenceUser}
+          />
+          : ''
       }
       {
         user !== null ?
@@ -197,16 +189,18 @@ function MainApp() {
           <LoginForm login={doLogIn} setErrorMessage={setErrorMessage} />} />
         <Route path='/signup' element={
           <SignUpForm setErrorMessage={setErrorMessage} />} />
-        <Route path="/localGuide" element={<LocalGuide user={user}/>}/>
-        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />}/>
-        <Route path="/hiker/hikes/:id" element={<ShowHike role={role} user={user}/>} />
-        <Route path="/HighLevelVerification" element={<HighVerification />}/>
-        <Route path="/parking/create" element={<CreateParking user={user}/>}/>
-        <Route path="/huts/create" element={<CreateHut user={user}/>} />
+        <Route path="/localGuide" element={<LocalGuide user={user} />} />
+        <Route path="/VerifyAccount/:email" element={<VerifyAccount doLogIn={doLogIn} />} />
+        <Route path="/hiker/hikes/:id" element={<ShowHike role={role} user={user} />} />
+        <Route path="/HighLevelVerification" element={<HighVerification />} />
+        <Route path="/parking/create" element={<CreateParking user={user} />} />
+        <Route path="/huts/create" element={<CreateHut user={user} />} />
         <Route path="/huts/searchHut" element={<SearchHut />} />
-        <Route path="/preferredHikes" element = {<PreferredHikes/>} />
+        <Route path="/preferredHikes" element={<PreferredHikes />} />
+        <Route path="/recordedHikes" element={<RecordedHikes />} />
+        <Route path="/records/:id" element={<Record />} />
       </Routes>
-      </>
+    </>
   );
 }
 
