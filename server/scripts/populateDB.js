@@ -140,7 +140,6 @@ async function run() {
     await user3.save()
     console.log(user3);
 
-
     for (const h of testDataHikes) {
         try {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')

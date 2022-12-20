@@ -440,6 +440,16 @@ async function addImageToHike(image, hikeId, token) {
     return response.status;
 }
 
+async function getStats(token){
+    const response = await fetch(url + '/getStats',{
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    return await response.json();
+}
 async function startRecordingHike(hikeId, token) {
 
     const response = await fetch(url + '/hikes/' + hikeId + '/record', {
@@ -558,6 +568,7 @@ const API = {
     getHikeTrace,
     getHikeImage,
     addImageToHike,
+    getStats,
     startRecordingHike,
     terminateRecordingHike,
     getRecords,

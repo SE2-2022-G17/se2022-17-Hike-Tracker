@@ -100,7 +100,13 @@ function ResponsiveNavBar(props) {
                                                 </NavDropdown.Item>
 
                                                 <NavDropdown.Item
-                                                    href="/"
+                                                    onClick={() => props.setUserStatistics(true)}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faChartLine} />
+                                                    User Statistics
+                                                </NavDropdown.Item>
+
+                                                <NavDropdown.Item 
+                                                    href="/" 
                                                     onClick={props.doLogOut}
                                                     className="danger"
                                                 >

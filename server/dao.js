@@ -703,6 +703,41 @@ exports.recordReferencePoint = async (recordId, userId, positionId) => {
     await record.save()
 }
 
+//HT-35
+exports.getHighestPoint = (hike) => {
+    const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+    const gpx = new gpxParser()
+    gpx.parse(file)
+    let maxHigh;
+    gpx.tracks[0].points.forEach((p,i) => {
+        if(i === 0){
+            maxHigh = p.ele 
+        } else {
+            if(p.ele > maxHigh){
+                maxHigh = p.ele 
+            }
+        }
+    }) 
+    return maxHigh;
+}
+
+//HT-35
+exports.getHikeVerticalAscent = (hike) => {
+    const file = fs.readFileSync("./public/tracks/" + hike.track_file, 'utf8')
+    const gpx = new gpxParser()
+    gpx.parse(file)
+    let verticalAscent = 0
+    let pLess1 = 0;
+    gpx.tracks[0].points.forEach((p,i) => {
+        if(i !== 0){
+            if(p.ele>pLess1.ele){
+                verticalAscent = p.ele - pLess1.ele 
+            }
+        }
+        pLess1 = p;
+    })
+    return verticalAscent;
+}
 
 exports.getReferencePointByPosition = async (positionId) => {
     //reference points are store by Location model
