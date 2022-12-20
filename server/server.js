@@ -649,14 +649,21 @@ app.get('/getStats', verifyUserToken, async (req,res) => {
             }
             totkms = totkms + hike.length;
             const high = dao.getHighestPoint(hike);
-            highest < high ? highest = high : null
-            altituderage < hike.ascent ? altituderage = hike.ascent : null
-            longestkm < hike.length ? longestkm = hike.length : null
-            longesthr < dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true) ? longesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true) : null
-            shortestkm > hike.length ? shortestkm = hike.length : null
-            shortesthr > dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true) ? shortesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true) : null
+            if(highest < high)
+                highest = high
+            if(altituderage < hike.ascent)
+                altituderage = hike.ascent
+            if(longestkm < hike.length)
+                longestkm = hike.length
+            if(longesthr < dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true))
+                longesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true)
+            if(shortestkm > hike.length)
+                shortestkm = hike.length
+            if(shortesthr > dayjs(record.endDate).diff(dayjs(record.startDate),'hour',true))
+                shortesthr = dayjs(hike.endDate).diff(dayjs(hike.startDate),'hour',true)
             totMinutes = totMinutes + dayjs(record.endDate).diff(dayjs(record.startDate),'minute',true);
-            fastpace < totMinutes / hike.length ? fastpace = totMinutes / hike.length : null
+            if(fastpace < totMinutes / hike.length)
+                fastpace = totMinutes / hike.length
             verticalAscent = verticalAscent + dao.getHikeVerticalAscent(hike); 
         }
 

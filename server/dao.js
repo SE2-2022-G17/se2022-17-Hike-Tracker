@@ -710,13 +710,13 @@ exports.getHighestPoint = (hike) => {
     gpx.parse(file)
     let maxHigh;
     gpx.tracks[0].points.forEach((p,i) => {
-        i === 0 ? 
+        if(i === 0){
             maxHigh = p.ele 
-        :
-            p.ele > maxHigh ? 
+        } else {
+            if(p.ele > maxHigh){
                 maxHigh = p.ele 
-            : 
-                null 
+            }
+        }
         return;
     }) 
     return maxHigh;
@@ -730,13 +730,11 @@ exports.getHikeVerticalAscent = (hike) => {
     let verticalAscent = 0
     let pLess1 = 0;
     gpx.tracks[0].points.forEach((p,i) => {
-        i === 0 ? 
-            null
-        :
-            p.ele>pLess1.ele ? 
+        if(i !== 0){
+            if(p.ele>pLess1.ele){
                 verticalAscent = p.ele - pLess1.ele 
-            : 
-                null 
+            }
+        }
         pLess1 = p;
         return;
     })
