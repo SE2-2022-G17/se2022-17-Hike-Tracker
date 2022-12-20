@@ -16,7 +16,8 @@ import AddReferencePoint from "./AddReferencePoint";
 import { Buffer } from 'buffer';
 import { Record2 } from 'react-bootstrap-icons';
 import { useNavigate } from "react-router-dom";
-
+import Utils from '../Utils';
+import UserType from '../models/UserType';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -43,9 +44,12 @@ function ShowHike(props) {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
         async function fetchRecord() {
             const authToken = localStorage.getItem('token');
-            const rec = await API.getOngoingRecord(id, authToken);
-            if (rec) {
-                setRecord(rec);
+            const user = Utils.parseJwt(authToken);
+            if (user.role === UserType.hiker) {
+                const rec = await API.getOngoingRecord(id, authToken);
+                if (rec) {
+                    setRecord(rec);
+                }
             }
         }
         fetchRecord();
