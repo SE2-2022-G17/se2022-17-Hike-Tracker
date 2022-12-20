@@ -24,6 +24,12 @@ async function clear() {
         await Location.deleteMany()
         await Record.deleteMany()
         await Image.deleteMany()
+        await Hike.collection.dropIndexes();
+        await Position.collection.dropIndexes();
+        await User.collection.dropIndexes();
+        await Location.collection.dropIndexes();
+        await Record.collection.dropIndexes();
+        await Image.collection.dropIndexes();
     } catch (e) {
         console.log(e.message)
     }
@@ -102,6 +108,7 @@ async function run() {
 
 
     const user = await User.create({
+        _id: new mongoose.Types.ObjectId("63a17eef91f4a7917e931aaa"),
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide@email.com",
@@ -116,6 +123,7 @@ async function run() {
     console.log(user);
 
     const user2 = await User.create({
+        _id: new mongoose.Types.ObjectId("63a17eef91f4a7917e931aba"),
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "hiker@email.com",
@@ -130,6 +138,7 @@ async function run() {
     console.log(user2);
 
     const user3 = await User.create({
+        _id: new mongoose.Types.ObjectId("63a17eef91f4a7917e931aca"),
         firstName: "Pietro",
         lastName: "Bertorelle",
         email: "localguide2@email.com",
@@ -200,8 +209,20 @@ async function run() {
             point: fountainPosition
         });
 
-        const mountainPosition = await Position.create({
+        const streamPosition = await Position.create({
             "location.coordinates": [14.56435, 37.89423]
+        });
+
+        nebrodiHike.referencePoints.push(streamPosition._id);
+
+        const streamRefPoint = await Location.create({
+            name: "Stream",
+            description: "Clear stream",
+            point: streamPosition
+        });
+
+        const mountainPosition = await Position.create({
+            "location.coordinates": [14.55317, 37.89529]
         });
 
         nebrodiHike.referencePoints.push(mountainPosition._id);
@@ -212,11 +233,14 @@ async function run() {
             point: mountainPosition
         });
 
+
         nebrodiHike.save();
         fountainRefPoint.save();
         mountainRefPoint.save();
+        streamRefPoint.save();
         fountainPosition.save();
         mountainPosition.save();
+        streamPosition.save();
     }
 
     const hutPosition = await Position.create({
