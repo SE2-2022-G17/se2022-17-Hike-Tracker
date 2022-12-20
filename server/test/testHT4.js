@@ -14,7 +14,7 @@ const Difficulty = require('../constants/Difficulty');
 
 let mongoServer;
 const hikeId = "0000000194e4c1e796231dbf"
-
+const hikeId2 = "0000001194e4c1e796231dbf"
 
 describe('Test API for get hike information and insert hike', () => {
     before(async () => {
@@ -42,6 +42,31 @@ describe('Test API for get hike information and insert hike', () => {
             active: true
         })
         await user.save();
+
+        const startPosition = await Position.create({
+            "location.coordinates": [3, 5]
+        })
+
+        const endPosition = await Position.create({
+            "location.coordinates": [4, 6]
+        })
+
+        const hike = await Hike.create({
+            _id: new mongoose.Types.ObjectId(hikeId2),
+            title: 'prova',
+            expectedTime: 20,
+            difficulty: Difficulty.Hiker,
+            city: 'Torino',
+            province: 'Torino',
+            description: 'test',
+            track_file: "rocciamelone.gpx",
+            length: 2,
+            ascent: 5,
+            startPoint: startPosition._id,
+            endPoint: endPosition._id
+        });
+
+        await hike.save()
     });
 
     after(async () => {
@@ -150,4 +175,18 @@ describe('Test API for get hike information and insert hike', () => {
 
         expect(response.statusCode).to.equal(404);
     });
+
+    it("test get hike's file - right",async () => {
+        const response = await request(app)
+            .get('/hiker/hike-track/'+hikeId2)
+
+        expect(response.statusCode).to.equal(200)
+    })
+
+    it("test get hike's file - internal server error",async () => {
+        const response = await request(app)
+            .get('/hiker/hike-track/'+hikeId)
+
+        expect(response.statusCode).to.equal(500)
+    })
 });
