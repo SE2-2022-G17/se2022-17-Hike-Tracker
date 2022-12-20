@@ -71,6 +71,12 @@ function RecordInfo(props) {
             <Row>
                 <p><b>Started: </b>{readableDate(record.startDate)}</p>
             </Row>
+            {record.endDate ?
+                <Row>
+                    <p><b>Ended: </b>{readableDate(record.endDate)}</p>
+                </Row>
+                : undefined
+            }
             {trace.length !== 0 ?
                 <Map
                     hike={record.hikeId}
