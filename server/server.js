@@ -598,7 +598,10 @@ app.put('/records/:recordId/reference-point/:positionId', verifyUserToken, async
         await dao.recordReferencePoint(recordId, user.id, positionId);
         res.sendStatus(200);
     } catch (error) {
-        res.status(error.status).send(error.message);
+        if (error.status)
+            res.status(error.status).send(error.message);
+        else
+            res.sendStatus(500);
     }
 
 });

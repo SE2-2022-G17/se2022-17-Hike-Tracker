@@ -660,6 +660,13 @@ exports.getRecord = async (recordId, userId) => {
                 path: 'referencePoints',
                 model: 'Position'
             }
+        },
+        {
+            path: 'referencePoints',
+            populate: {
+                path: 'positionId',
+                model: 'Position'
+            }
         }])
         .exec();
 
@@ -701,6 +708,7 @@ exports.getReferencePointByPosition = async (positionId) => {
     //reference points are store by Location model
     const referencePoint = await Location
         .findOne({ point: positionId })
+        .populate('point')
         .exec();
 
     return referencePoint;

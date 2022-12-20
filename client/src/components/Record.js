@@ -20,6 +20,7 @@ function Record(props) {
         API.getRecord(id, authToken)
             .then(rec => {
                 setRecord(rec);
+                setDirty(false);
                 API.getHikeTrace(rec.hikeId._id, authToken)
                     .then(t => {
                         setTrace(t);
@@ -50,18 +51,41 @@ function RecordInfo(props) {
         return new Date(date).toLocaleString();
     }
 
+    const isRefPointReached = (trace, current, selected) => {
+        const traceArray = trace.map(p => [p.lng, p.lat].toString());
+        const currentString = current.toString();
+        const selectedString = selected.toString();
+
+        const currentIndex = traceArray.indexOf(currentString);
+        const selectedIndex = traceArray.indexOf(selectedString);
+
+        if (selectedIndex > currentIndex)
+            return false;
+
+        return true;
+    }
+
     useEffect(() => {
-        const reachedPositions = record.referencePoints.map(r => r.positionId)
-        if (referencePoint !== undefined && !reachedPositions.includes(referencePoint.point)) {
+
+        const reachedPositions = record.referencePoints.map(r => r.positionId._id)
+
+        if (referencePoint !== undefined && !reachedPositions.includes(referencePoint.point._id)) {
+            const selectedRefPoint = referencePoint.point.location.coordinates;
             setDisabled(false);
+
+            if (reachedPositions.length > 0) {
+                const lastReachedRefPoint = record.referencePoints[reachedPositions.length - 1].positionId.location.coordinates;
+                setDisabled(isRefPointReached(trace, lastReachedRefPoint, selectedRefPoint));
+            }
         } else {
             setDisabled(true);
         }
 
+
         if (record.status === RecordStatus.CLOSED)
             setDisabled(true)
 
-    }, [referencePoint])
+    }, [referencePoint, record])
 
     return (
         <Container>
@@ -183,8 +207,9 @@ function ReferencePointCard(props) {
     const markAsReached = () => {
         const authToken = localStorage.getItem('token');
         setDisabled(true);
+        setDirty(true);
 
-        API.recordReferencePoint(record._id, referencePoint.point, authToken)
+        API.recordReferencePoint(record._id, referencePoint.point._id, authToken)
             .then(() => setDirty(true))
             .catch(e => console.log(e));
     }
