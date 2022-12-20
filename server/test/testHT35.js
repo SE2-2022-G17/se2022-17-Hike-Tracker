@@ -112,7 +112,7 @@ describe('Test API to get user statistics (US35)', () => {
             userId: new mongoose.Types.ObjectId(userId),
             status: RecordStatus.CLOSED,
             startDate: "2022-12-20T20:12:51.061+00:00",
-            endDate:"2022-12-20T21:50:03.838+00:00"
+            endDate:"2022-12-20T23:50:03.838+00:00"
         });
 
         const terminatedRecord3 = await Record.create({
@@ -121,7 +121,7 @@ describe('Test API to get user statistics (US35)', () => {
             userId: new mongoose.Types.ObjectId(userId),
             status: RecordStatus.CLOSED,
             startDate: "2022-12-20T20:12:51.061+00:00",
-            endDate:"2022-12-20T21:50:03.838+00:00"
+            endDate:"2022-12-20T20:50:03.838+00:00"
         });
 
         await user.save();
