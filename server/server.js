@@ -37,30 +37,9 @@ function distanceCalc(p1, p2) {
 /*** APIs ***/
 
 app.get('/visitor/hikes', (req, res) => {
-    let difficulty = req.query.difficulty
-    let minLength = req.query.minLength
-    let maxLength = req.query.maxLength
-    let minAscent = req.query.minAscent
-    let maxAscent = req.query.maxAscent
-    let minTime = req.query.minTime
-    let maxTime = req.query.maxTime
-    let city = req.query.city
-    let province = req.query.province
-    let longitude = req.query.longitude
-    let latitude = req.query.latitude
 
     dao.getVisitorHikes(
-        difficulty,
-        minLength,
-        maxLength,
-        minAscent,
-        maxAscent,
-        minTime,
-        maxTime,
-        city,
-        province,
-        longitude,
-        latitude
+        req.query
     )
         .then((hikes) => { res.json(hikes); })
         .catch((error) => { res.status(500).json(error); });
@@ -166,7 +145,7 @@ const upload = multer({
 
 app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        const hikeId = await dao.saveNewHike(req.body.title, req.body.time, req.body.difficulty, req.body.description, req.file, req.body.city, req.body.province, (await dao.getUserByEmail(req.user.email))._id);
+        const hikeId = await dao.saveNewHike(req.body, req.file, (await dao.getUserByEmail(req.user.email))._id);
         return res.status(201).json(hikeId);
     } catch (err) {
         return res.status(500).json(err);
@@ -319,17 +298,18 @@ app.post('/huts', verifyUserToken, async (req, res) => {
     }
 
     try {
-        await dao.createHut(
-            name,
-            description,
-            beds,
-            longitude,
-            latitude,
-            altitude,
-            phone,
-            email,
-            website
-        );
+        const container = {
+            name:name,
+            description:description,
+            beds:beds,
+            longitude:longitude,
+            latitude:latitude,
+            altitude:altitude,
+            phone:phone,
+            email:email,
+            website:website
+        }
+        await dao.createHut(container);
         res.sendStatus(201);
     } catch (error) {
         res.sendStatus(error);

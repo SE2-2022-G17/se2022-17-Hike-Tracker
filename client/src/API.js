@@ -98,6 +98,30 @@ async function getHut(hutId) {
     return hut
 }
 
+//used in getVisitorHikes to reduce cognitive complexity
+function parametersCheck(
+    difficulty,
+    minLength,
+    maxLength,
+    minAscent,
+    maxAscent,
+    minTime,
+    parametes
+    ){
+    if (difficulty !== undefined)
+        parametes.push("difficulty=" + difficulty)
+    if (minLength !== undefined && minLength.trim().length !== 0)
+        parametes.push("minLength=" + minLength)
+    if (maxLength !== undefined && maxLength.trim().length !== 0)
+        parametes.push("maxLength=" + maxLength)
+    if (minAscent !== undefined && minAscent.trim().length !== 0)
+        parametes.push("minAscent=" + minAscent)
+    if (maxAscent !== undefined && maxAscent.trim().length !== 0)
+        parametes.push("maxAscent=" + maxAscent)
+    if (minTime !== undefined && minTime.trim().length !== 0)
+        parametes.push("minTime=" + minTime)
+}
+
 async function getVisitorHikes(
     difficulty,
     minLength,
@@ -114,19 +138,7 @@ async function getVisitorHikes(
     let query = "?"
 
     let parametes = []
-
-    if (difficulty !== undefined)
-        parametes.push("difficulty=" + difficulty)
-    if (minLength !== undefined && minLength.trim().length !== 0)
-        parametes.push("minLength=" + minLength)
-    if (maxLength !== undefined && maxLength.trim().length !== 0)
-        parametes.push("maxLength=" + maxLength)
-    if (minAscent !== undefined && minAscent.trim().length !== 0)
-        parametes.push("minAscent=" + minAscent)
-    if (maxAscent !== undefined && maxAscent.trim().length !== 0)
-        parametes.push("maxAscent=" + maxAscent)
-    if (minTime !== undefined && minTime.trim().length !== 0)
-        parametes.push("minTime=" + minTime)
+    parametersCheck(difficulty,minLength,maxLength,minAscent,maxAscent,minTime,parametes)
     if (maxTime !== undefined && maxTime.trim().length !== 0)
         parametes.push("maxTime=" + maxTime)
     if (city !== undefined && city.trim().length !== 0)
@@ -137,7 +149,6 @@ async function getVisitorHikes(
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
-
     query += parametes.join("&")
 
     const response = await fetch(url + '/visitor/hikes' + query)
