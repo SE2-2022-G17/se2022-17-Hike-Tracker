@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === "development") {
     mongoose.connect("mongodb://localhost/hike_tracker");
 }
 
-exports.getVisitorHikes = async (
+exports.getVisitorHikes= async function(
     difficulty,
     minLength,
     maxLength,
@@ -37,7 +37,7 @@ exports.getVisitorHikes = async (
     province,
     longitude,
     latitude
-) => {
+){
 
     try {
         let nearPositions = await Position
@@ -210,7 +210,7 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
     return parking._id;
 }
 
-exports.saveNewHike = async (title, time, difficulty, description, track, city, province, userId) => {
+exports.saveNewHike = async function (title, time, difficulty, description, track, city, province, userId){
     let startPosition = undefined
     let endPosition = undefined
 
@@ -326,7 +326,7 @@ exports.getHikeTrack = async (id) => {
     }
 }
 
-exports.createHut = async (
+exports.createHut = async function (
     name,
     description,
     beds,
@@ -336,7 +336,7 @@ exports.createHut = async (
     phone,
     email,
     website
-) => {
+){
     if (name === undefined || description === undefined || phone === undefined || email === undefined)
         throw new TypeError(400)
 
@@ -383,6 +383,30 @@ exports.linkHutToHike = async (hutId, hike, userId) => {
     }
 }
 
+//used in modifyStartArrivalLinkToHutParking to reduce cognitive complex
+function startArrivalLinkToHutParkingInsert(point,reference,updateHike,id){
+    if (point == "start") {
+        if (reference == "huts") {
+            updateHike.startPointHut_id = id
+        }
+        else {
+            updateHike.startPointParking_id = id
+        }
+    }
+    else {
+        if (reference == "huts") {
+            updateHike.endPointHut_id = id
+        }
+        else {
+            updateHike.endPointParking_id = id
+        }
+    }
+}
+//used in modifyStartArrivalLinkToHutParking to reduce cognitive complex
+function startArrivalLinkToHutParkingCheck(point,reference,id,hikeId){
+    return point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")
+}
+
 exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId, userId) => {
     const updateHike = {};
     if (!(await Hike.findOne({
@@ -391,23 +415,8 @@ exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId
     }))) {
         throw new TypeError(401)
     } else {
-        if (point && reference && id && hikeId && (point === "start" || point === "end") && (reference === "huts" || reference === "parking")) {
-            if (point == "start") {
-                if (reference == "huts") {
-                    updateHike.startPointHut_id = id
-                }
-                else {
-                    updateHike.startPointParking_id = id
-                }
-            }
-            else {
-                if (reference == "huts") {
-                    updateHike.endPointHut_id = id
-                }
-                else {
-                    updateHike.endPointParking_id = id
-                }
-            }
+        if (startArrivalLinkToHutParkingCheck(point,reference,id,hikeId)) {
+            startArrivalLinkToHutParkingInsert(point,reference,updateHike,id)
             try {
                 const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
                     if (err) {
@@ -499,13 +508,13 @@ exports.getPreferredHikes = async (
 exports.createReferencePoint = async (hikeId, name, description, longitude, latitude) => {
 
     if (!hikeId || !longitude || !latitude || !name || !description) {
-        throw { description: "wrong parameters", status: 400 };
+        throw new HTTPError( "wrong parameters", 400 );
     }
 
     const hike = await Hike.findById(hikeId);
 
     if (hike === null)
-        throw { description: "Hike not found", status: 404 }
+        throw new HTTPError( "Hike not found", 404 )
 
     const position = await Position.create({
         "location.coordinates": [longitude, latitude]
@@ -528,7 +537,7 @@ exports.getHikeTrace = async (hikeId) => {
     const hike = await Hike.findById(hikeId);
 
     if (hike === null)
-        throw { description: "Hike not found", status: 404 }
+        throw new HTTPError( "Hike not found", 404 )
 
 
     try {
@@ -538,7 +547,7 @@ exports.getHikeTrace = async (hikeId) => {
         return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
 
     } catch (e) {
-        throw { description: "Trace not found", status: 404 };
+        throw new HTTPError( "Trace not found", 404 );
     }
 }
 

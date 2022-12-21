@@ -98,7 +98,8 @@ async function getHut(hutId) {
     return hut
 }
 
-async function getVisitorHikes(
+//used in getVisitorHikes to reduce cognitive complexity
+function parametersCheck(
     difficulty,
     minLength,
     maxLength,
@@ -109,12 +110,9 @@ async function getVisitorHikes(
     city,
     province,
     longitude,
-    latitude
-) {
-    let query = "?"
-
-    let parametes = []
-
+    latitude,
+    parametes
+    ){
     if (difficulty !== undefined)
         parametes.push("difficulty=" + difficulty)
     if (minLength !== undefined && minLength.trim().length !== 0)
@@ -137,7 +135,25 @@ async function getVisitorHikes(
         parametes.push("longitude=" + longitude)
     if (latitude !== undefined && latitude.trim().length !== 0)
         parametes.push("latitude=" + latitude)
+}
 
+async function getVisitorHikes(
+    difficulty,
+    minLength,
+    maxLength,
+    minAscent,
+    maxAscent,
+    minTime,
+    maxTime,
+    city,
+    province,
+    longitude,
+    latitude
+) {
+    let query = "?"
+
+    let parametes = []
+    parametersCheck(difficulty,minLength,maxLength,minAscent,maxAscent,minTime,maxTime,city,province,longitude,latitude,parametes)
     query += parametes.join("&")
 
     const response = await fetch(url + '/visitor/hikes' + query)
