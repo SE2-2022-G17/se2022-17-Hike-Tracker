@@ -337,6 +337,7 @@ function ShowHike(props) {
 
             </Row>
             {
+                props.role === "localGuide" ?
                 refFormVisible ? 
                 <Row>
                     <Col>
@@ -367,6 +368,7 @@ function ShowHike(props) {
                     </Col>
                 </Row>
                 : <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
+                :<></>
             }
             {
                 //only localguide can link hut to a hike
