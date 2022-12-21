@@ -26,32 +26,22 @@ if (process.env.NODE_ENV === "development") {
 }
 
 exports.getVisitorHikes= async function(
-    difficulty,
-    minLength,
-    maxLength,
-    minAscent,
-    maxAscent,
-    minTime,
-    maxTime,
-    city,
-    province,
-    longitude,
-    latitude
+    queryContainer
 ){
 
     try {
         let nearPositions = await Position
             .find()
-            .filterByDistance(longitude, latitude, 200) // finds positions close to 200km
+            .filterByDistance(queryContainer.longitude, queryContainer.latitude, 200) // finds positions close to 200km
 
         const hikes = await Hike.find()
             .select({ "__v": 0 })
-            .filterByDifficulty(difficulty)
-            .filterBy("length", minLength, maxLength)
-            .filterBy("ascent", minAscent, maxAscent)
-            .filterBy("expectedTime", minTime, maxTime)
-            .filterByCityAndProvince(city, province)
-            .filterByPositions(longitude, latitude, nearPositions)
+            .filterByDifficulty(queryContainer.difficulty)
+            .filterBy("length", queryContainer.minLength, queryContainer.maxLength)
+            .filterBy("ascent", queryContainer.minAscent, queryContainer.maxAscent)
+            .filterBy("expectedTime", queryContainer.minTime, queryContainer.maxTime)
+            .filterByCityAndProvince(queryContainer.city, queryContainer.province)
+            .filterByPositions(queryContainer.longitude, queryContainer.latitude, nearPositions)
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
 
@@ -210,7 +200,14 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
     return parking._id;
 }
 
-exports.saveNewHike = async function (title, time, difficulty, description, track, city, province, userId){
+exports.saveNewHike = async function (bodyContainer,track,userId){
+    const title = bodyContainer.title;
+    const time = bodyContainer.time;
+    const difficulty = bodyContainer.difficulty;
+    const description = bodyContainer.description;
+    const city = bodyContainer.city;
+    const province = bodyContainer.province;
+    
     let startPosition = undefined
     let endPosition = undefined
 
@@ -326,17 +323,16 @@ exports.getHikeTrack = async (id) => {
     }
 }
 
-exports.createHut = async function (
-    name,
-    description,
-    beds,
-    longitude,
-    latitude,
-    altitude,
-    phone,
-    email,
-    website
-){
+exports.createHut = async function (container){
+    const name = container.name
+    const description = container.description
+    const beds = container.beds
+    const longitude = container.longitude
+    const latitude = container.latitude
+    const altitude = container.altitude
+    const phone = container.phone
+    const email = container.email
+    const website = container.website
     if (name === undefined || description === undefined || phone === undefined || email === undefined)
         throw new TypeError(400)
 

@@ -106,11 +106,6 @@ function parametersCheck(
     minAscent,
     maxAscent,
     minTime,
-    maxTime,
-    city,
-    province,
-    longitude,
-    latitude,
     parametes
     ){
     if (difficulty !== undefined)
@@ -125,16 +120,6 @@ function parametersCheck(
         parametes.push("maxAscent=" + maxAscent)
     if (minTime !== undefined && minTime.trim().length !== 0)
         parametes.push("minTime=" + minTime)
-    if (maxTime !== undefined && maxTime.trim().length !== 0)
-        parametes.push("maxTime=" + maxTime)
-    if (city !== undefined && city.trim().length !== 0)
-        parametes.push("city=" + city)
-    if (province !== undefined && province.trim().length !== 0)
-        parametes.push("province=" + province)
-    if (longitude !== undefined && longitude.trim().length !== 0)
-        parametes.push("longitude=" + longitude)
-    if (latitude !== undefined && latitude.trim().length !== 0)
-        parametes.push("latitude=" + latitude)
 }
 
 async function getVisitorHikes(
@@ -153,7 +138,17 @@ async function getVisitorHikes(
     let query = "?"
 
     let parametes = []
-    parametersCheck(difficulty,minLength,maxLength,minAscent,maxAscent,minTime,maxTime,city,province,longitude,latitude,parametes)
+    parametersCheck(difficulty,minLength,maxLength,minAscent,maxAscent,minTime,parametes)
+    if (maxTime !== undefined && maxTime.trim().length !== 0)
+        parametes.push("maxTime=" + maxTime)
+    if (city !== undefined && city.trim().length !== 0)
+        parametes.push("city=" + city)
+    if (province !== undefined && province.trim().length !== 0)
+        parametes.push("province=" + province)
+    if (longitude !== undefined && longitude.trim().length !== 0)
+        parametes.push("longitude=" + longitude)
+    if (latitude !== undefined && latitude.trim().length !== 0)
+        parametes.push("latitude=" + latitude)
     query += parametes.join("&")
 
     const response = await fetch(url + '/visitor/hikes' + query)
