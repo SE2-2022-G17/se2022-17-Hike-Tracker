@@ -159,6 +159,9 @@ function SearchHut(props) {
             map.current.on('dblclick', (e) => {
                 setLongitude(e.lngLat.lng.toFixed(5).toString());
                 setLatitude(e.lngLat.lat.toFixed(5).toString());
+                if(circles === 0){
+                    setCircles(old=>old+1);
+                }
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
