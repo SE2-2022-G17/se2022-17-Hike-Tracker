@@ -24,7 +24,7 @@ function CreateParking(props)
                 </Row>
     }
 
-    return <Container className="form-container">>
+    return <Container className="form-container">
         {body}
     </Container>
 }
