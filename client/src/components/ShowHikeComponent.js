@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import Utils from '../Utils';
 import UserType from '../models/UserType';
 import CloseButton from 'react-bootstrap/CloseButton';
+import { get } from "https";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -40,8 +41,9 @@ function ShowHike(props) {
     const [refFormVisible,setrefFormVisible] = useState(false);
     const [refMarker,setRefMarker] = useState([]);
     const [hikeTrace,setHikeTrace] = useState(undefined);
+    const [cursorPosition,setCursorPosition] = useState(undefined);
 
-    function handleMarker(point, marker) {
+    function getNearestPointOnTrace(point){
         let choise = point;
         let minDistance = -1;
         for (const p1 of hikeTrace) {
@@ -57,9 +59,40 @@ function ShowHike(props) {
                 choise = p1;
             }
         }
+        return choise;
+    }
+
+    function handleMarker(point, marker) {
+        let choise = getNearestPointOnTrace(point);
         marker.setLngLat([choise.lng, choise.lat])
         return point;
     }
+
+    useEffect(()=>{
+        if(cursorPosition && refFormVisible){
+            const pos = getNearestPointOnTrace(cursorPosition);
+            const data = {
+                'type': 'Feature',
+                'properties': {},
+                'geometry': {
+                'type': 'LineString',
+                'coordinates': [[cursorPosition.lng,cursorPosition.lat],[pos.lng,pos.lat]]
+                }
+                }
+            map.current.getSource('route').setData(data);
+            
+        }
+    },[cursorPosition])
+
+    useEffect(()=>{
+        if(map.current){
+            if(refFormVisible){
+                map.current.getCanvas().style.cursor = 'crosshair'; 
+            }else{
+                map.current.getCanvas().style.cursor = ''; 
+            } 
+        }  
+    },[refFormVisible])
 
     useEffect(() => {
         // scroll to top on page load
@@ -236,6 +269,50 @@ function ShowHike(props) {
                             })
                             .setLngLat([e.lngLat.lng.toFixed(5), e.lngLat.lat.toFixed(5)]);
                             setRefMarker(old=>[marker,...old]);
+                        });
+
+                        map.current.on('mousemove', (e) => {
+                            setCursorPosition(e.lngLat);
+                            });                       
+
+                        map.current.addSource('route', {
+                                'type': 'geojson',
+                                'data': {
+                                'type': 'Feature',
+                                'properties': {},
+                                'geometry': {
+                                'type': 'LineString',
+                                'coordinates': []
+                                }
+                                }
+                        });
+                        map.current.addLayer({
+                            'id': 'route',
+                            'type': 'line',
+                            'source': 'route',
+                            'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                            },
+                            'paint': {
+                            'line-color': '#d91616',
+                            'line-width': 2,
+                            'line-dasharray': [2,2]
+                            }
+                        });
+                        mapContainer.current.addEventListener("mouseleave", e => {
+                            const data = {
+                                'type': 'Feature',
+                                'properties': {},
+                                'geometry': {
+                                'type': 'LineString',
+                                'coordinates': []
+                                }
+                                }
+                            map.current.getSource('route').setData(data);
+                        });
+                        mapContainer.current.addEventListener("mouseenter", e => {
+         
                         });
                     }
                 });
