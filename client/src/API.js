@@ -541,7 +541,7 @@ async function recordReferencePoint(recordId, positionId, token) {
         headers: {
             'Authorization': `Bearer ${token}`, // notice the Bearer before your token
         },
-        credentials: 'include',
+        credentials: 'include'
     });
     return response.status;
 }
@@ -552,6 +552,18 @@ async function getReferencePointByPosition(positionId) {
     });
     const referencePoint = await response.json();
     return referencePoint;
+}
+
+async function getToApprove(authToken){
+    const response = await fetch(url + '/getUsersToApprove',{
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${authToken}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const users = await response.json();
+    return await users;
 }
 
 const API = {
@@ -587,7 +599,8 @@ const API = {
     getOngoingRecord,
     getRecord,
     recordReferencePoint,
-    getReferencePointByPosition
+    getReferencePointByPosition,
+    getToApprove
 };
 
 

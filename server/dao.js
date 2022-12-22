@@ -112,6 +112,7 @@ exports.registerUser = async (firstName, lastName, email, password, role, phoneN
         activationCode: activationCode,
         role: role,
         phoneNumber: phoneNumber,
+        approved: role==="localGuide" || role==="hutWorker" ? false : true
     })
 
     await user.save()
@@ -133,7 +134,8 @@ exports.loginUser = async (email, password) => {
         'fullName': user.firstName + " " + user.lastName,
         'email': user.email,
         'role': user.role,
-        'active': user.active
+        'active': user.active,
+        'approved': user.approved
     }, 'my_secret_key')
 
     const res = {
@@ -734,4 +736,18 @@ exports.getReferencePointByPosition = async (positionId) => {
         .exec();
 
     return referencePoint;
+}
+
+//HT-31
+exports.getUsersToApprove = async () => {
+    try{
+        const users = await User.find({
+            approved:false
+        })
+        const response = [];
+        users.forEach((user)=>response.push({firstName:user.firstName,lastName:user.lastName,email:user.email,role:user.role}))
+        return response
+    } catch(error){
+        throw HTTPError("Server internal error",500)
+    }
 }

@@ -679,6 +679,16 @@ app.get('/getStats', verifyUserToken, async (req,res) => {
     }
 })
 
+//HT-31
+app.get('/getUsersToApprove', verifyUserToken,async (req,res)=>{
+    try{
+        const response = await dao.getUsersToApprove();
+        res.status(200).json(response)
+    } catch(error){
+        res.status(error.status).send(error.message);
+    }
+})
+
 const server = http.createServer(app);
 
 
