@@ -237,14 +237,6 @@ app.get('/hiker/hikes/:id', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
-app.get('/huts/hut/:id', (req, res) => {
-    const hutId = req.params.id;
-
-    dao.getHut(hutId)
-        .then((hut) => { res.json(hut); })
-        .catch((error) => { res.status(500).json(error); });
-});
-
 app.get('/hiker/hike-track/:id', (req, res) => {
     const hikeId = req.params.id;
 
@@ -354,7 +346,6 @@ app.put('/linkStartArrival', verifyUserToken, async (req, res) => {
             return res.status(500).json(result);
         }
     } catch (err) {
-        console.log(typeof (err.message))
         if (err.message === "401") {
             return res.status(401).end()
         }
@@ -424,11 +415,6 @@ app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
 
 app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
     const hikeId = req.params.id;
-    const user = req.user; // this is received from verifyUserToken middleware
-
-    if (!user) {
-        res.sendStatus(401);
-    }
 
     dao.getHikeTrace(hikeId)
         .then((trace) => { res.json(trace); })
@@ -471,11 +457,7 @@ app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], asy
 
 app.get('/hikes/:id/image', verifyUserToken, async (req, res) => {
     const hikeId = req.params.id;
-    const user = req.user; // this is received from verifyUserToken middleware
 
-    if (!user) {
-        res.sendStatus(401);
-    }
     dao.getHikeImage(hikeId)
         .then((image) => { res.json(image); })
         .catch((error) => { res.status(error.status).send(error.message); });
