@@ -7,8 +7,7 @@ import Button from 'react-bootstrap/Button';
 import UserType from '../models/UserType';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine, faArrowRightFromBracket, faInfo, faLightbulb } from "@fortawesome/free-solid-svg-icons";
-import { Navigate, useNavigate } from 'react-router-dom';
-import { Card } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 import React from "react";
 
 
@@ -44,6 +43,10 @@ function ResponsiveNavBar(props) {
                                 }
                                 {props.role === UserType.hiker ?
                                     <Nav.Link href="/recordedHikes">Record Hikes</Nav.Link>
+                                    : <></>
+                                }
+                                {props.role === UserType.platformManager ?
+                                    <Nav.Link href="/platformManager">Manager Page</Nav.Link>
                                     : <></>
                                 }
                                 <NavDropdown
