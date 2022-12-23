@@ -137,11 +137,30 @@ describe('Test API for creating and viewing huts (US5)', () => {
     });
 
     it("get all huts", async () => {
-        const token = localGuide.token;
 
         const response = await request(app)
             .get("/huts")
 
         expect(response.statusCode).to.equal(200);
-    })
+    });
+
+    it('test create hut - wrong parameters', async () => {
+        const token = localGuide.token;
+
+        const response = await request(app)
+            .post("/huts")
+            .set('Authorization', "Bearer " + token)
+            .send({
+                description: "hut_descr",
+                beds: 4,
+                longitude: 7.662,
+                latitude: 45.062,
+                altitude: 239,
+                phone: "123456789",
+                email: "hut@email.com",
+                website: "optional.com"
+            });
+
+        expect(response.statusCode).to.equal(400);
+    });
 });

@@ -377,7 +377,7 @@ exports.linkHutToHike = async (hutId, hike, userId) => {
                 console.log(err);
             });
     } catch (err) {
-        return err;
+        throw new TypeError(500);
     }
 }
 
@@ -418,19 +418,15 @@ exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId
             try {
                 const hike = await Hike.findByIdAndUpdate(hikeId, updateHike, (err, docs) => {
                     if (err) {
-                        console.log("line " + console.trace() + " " + err)
+                        throw new TypeError("DB error");
                     } else {
                         return docs;
                     }
                 }).clone();
                 return hike._id;
             } catch (err) {
-                console.log("line " + console.trace() + " " + err)
                 throw new TypeError("DB error");
             }
-        } else {
-            console.log("wrong parameter when calling modifyStartArrivalLinkToHutParking in dao.js, params: " + point + " - " + reference + " - " + id + " - " + hikeId);
-            throw new TypeError("DB error");
         }
     }
 }

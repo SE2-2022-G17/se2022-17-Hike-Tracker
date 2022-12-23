@@ -26,13 +26,13 @@ describe('Test API for visitor to register', () => {
         }
         await User.deleteMany();
         const user = await User.create({
-            _id: userId,
+            _id: new mongoose.Types.ObjectId(userId),
             firstName: "Elon",
             lastName: "Musk",
             email: "grimes@twitter.com",
             role: UserType.hiker,
-            active: ValidationType.mailOnly,
-            hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2"
+            hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2",
+            activationCode: "123456"
         });
         await user.save();
     });
@@ -92,24 +92,51 @@ describe('Test API for visitor to register', () => {
         expect(response.statusCode).to.equal(400); // Error code to be defined
     });
 
-    it('test validation email API', async () => {
+    it('test validation email API - wrong parameters', async () => {
         const response = await request(app).post("/user/validateEmail").send()
         expect(response.statusCode).to.equal(400);
     })
 
+    it('test validation email API - wrong activation code', async () => {
+        const response = await request(app).post("/user/validateEmail").send(JSON.stringify({
+            email:"grimes@twitter.com",
+            verificationCode:''
+        }))
+        expect(response.statusCode).to.equal(400);
+    })
+
+    it('test validation email API - right', async () => {
+        const user = await User.findOne({ email: "grimes@twitter.com" });
+        console.log(user.activationCode)
+        const response = await request(app).post("/user/validateEmail").send({
+            email:"grimes@twitter.com",
+            verificationCode:user.activationCode
+        })
+        expect(response.statusCode).to.equal(201);
+    })
+
     it('test login', async () => {
         const response = await request(app).post("/user/login").send({
-            "email": "grimes@twitter.com",
-            "password": "password"
+            email: "grimes@twitter.com",
+            password: "password"
         })
         expect(response.statusCode).to.equal(200);
     })
 
-    it('test wrong login', async () => {
+    it('test login - wrong password', async () => {
+        const response = await request(app).post("/user/login").send({
+            email: "grimes@twitter.com",
+            password: ''
+        })
+        expect(response.statusCode).to.equal(401);
+    })
+
+
+    it('test login - wrong user', async () => {
         const randomArray = randomBytes(1);
         const response = await request(app).post("/user/login").send({
-            "email": "wrong@email.com",
-            "password": randomArray[0].toString()
+            email: "wrong@email.com",
+            password: randomArray[0].toString()
         })
         expect(response.statusCode).to.equal(404);
     })

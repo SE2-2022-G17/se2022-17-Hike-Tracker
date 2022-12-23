@@ -10,6 +10,7 @@ const fs = require('fs');
 const User = require('../models/User.js');
 const Position = require('../models/Position.js');
 const Difficulty = require('../constants/Difficulty');
+const HikeImage = require('../models/HikeImage.js');
 
 
 let mongoServer;
@@ -67,6 +68,14 @@ describe('Test API for get hike information and insert hike', () => {
         });
 
         await hike.save()
+
+        const hikeImage = await HikeImage.create(
+            {
+                _id: "63a5d5ecfe5f0edb1f8c21e1",
+                hikeId:  hikeId2
+            }
+        )
+        await hikeImage.save();
     });
 
     after(async () => {
@@ -174,6 +183,16 @@ describe('Test API for get hike information and insert hike', () => {
             .set('Authorization', "Bearer " + token)
 
         expect(response.statusCode).to.equal(404);
+    });
+
+    it('test get hike image - right', async () => {
+        const token = localGuide.token;
+        
+        const response = await request(app)
+            .get("/hikes/" + hikeId2 + "/image")
+            .set('Authorization', "Bearer " + token)
+
+        expect(response.statusCode).to.equal(200);
     });
 
     it("test get hike's file - right",async () => {
