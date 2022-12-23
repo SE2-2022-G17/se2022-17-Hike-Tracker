@@ -89,6 +89,7 @@ function UserView(props){
             props.setError("Something went wrong");
             setTimeout(()=>props.setError(""),2000);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props.user.id,authToken])
 
     useEffect(()=>{
