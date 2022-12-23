@@ -112,6 +112,7 @@ exports.registerUser = async (firstName, lastName, email, password, role, phoneN
         activationCode: activationCode,
         role: role,
         phoneNumber: phoneNumber,
+        approved: role==="localGuide" || role==="hutWorker" ? false : true
     })
 
     await user.save()
@@ -133,7 +134,8 @@ exports.loginUser = async (email, password) => {
         'fullName': user.firstName + " " + user.lastName,
         'email': user.email,
         'role': user.role,
-        'active': user.active
+        'active': user.active,
+        'approved': user.approved
     }, 'my_secret_key')
 
     const res = {
@@ -734,4 +736,31 @@ exports.getReferencePointByPosition = async (positionId) => {
         .exec();
 
     return referencePoint;
+}
+
+//HT-31
+exports.getUsersToApprove = async () => {
+    try{
+        const users = await User.find({
+            approved:false
+        })
+        const response = [];
+        users.forEach((user)=>response.push({id:user._id,firstName:user.firstName,lastName:user.lastName,email:user.email,role:user.role}))
+        return response
+    } catch(error){
+        throw new HTTPError("Server internal error",500)
+    }
+}
+
+//HT-31
+exports.changeApprovalStatus = async (status,id) => {
+    try{
+        if(status=== "ok"){
+            await User.findByIdAndUpdate(id,{approved:true});
+        } else {
+            await User.findByIdAndDelete(id);
+        }
+    } catch(error){
+        throw new HTTPError("Server internal error",500)
+    }
 }

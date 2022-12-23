@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import Utils from '../Utils';
 import UserType from '../models/UserType';
 import CloseButton from 'react-bootstrap/CloseButton';
-import { get } from "https";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;

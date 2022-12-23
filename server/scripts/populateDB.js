@@ -140,6 +140,21 @@ async function run() {
     await user3.save()
     console.log(user3);
 
+    const user4 = await User.create({
+        _id: "73a1a48e31d3c6a9e5202502",
+        firstName: "Norberto",
+        lastName: "Bobbio",
+        email: "platformmanager@email.com",
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+        activationCode: "123456",
+        role: UserType.platformManager,
+        active: true,
+        approved: true
+    })
+
+    await user4.save()
+    console.log(user4);
+
     for (const h of testDataHikes) {
         try {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')

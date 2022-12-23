@@ -31,6 +31,7 @@ import Type from './models/UserType';
 import Utils from './Utils';
 import UserStatistics from './components/UserStatistics';
 import RecordedHikes from './components/RecordedHikes';
+import PlatformManager from './components/PlatformManager';
 
 function App() {
   return (
@@ -77,13 +78,13 @@ function MainApp() {
         setRole(payload.role);
         if (payload.active === ValidationType.notValidated) {
           navigate('/verifyAccount/' + payload.email);
-        }
-        else {
+        }else{
           setUser(user.user);
           localStorage.setItem('token', user.token);
           if ((payload.role === Type.platformManager
             || payload.role === Type.emergencyOperator)
-            && payload.active === ValidationType.mailOnly) {
+            && payload.active === ValidationType.mailOnly
+            && payload.approved === false) {
             navigate('/HighLevelVerification');
           }
           else {
@@ -124,7 +125,8 @@ function MainApp() {
       else {
         if ((tokenPayload.role === Type.platformManager
           || tokenPayload.role === Type.emergencyOperator)
-          && tokenPayload.active === ValidationType.mailOnly) {
+          && tokenPayload.active === ValidationType.mailOnly
+          && tokenPayload.approved === false) {
           navigate('/HighLevelVerification');
         }
         else {
@@ -199,6 +201,7 @@ function MainApp() {
         <Route path="/preferredHikes" element={<PreferredHikes />} />
         <Route path="/recordedHikes" element={<RecordedHikes />} />
         <Route path="/records/:id" element={<Record />} />
+        <Route path="/platformManager" element={<PlatformManager user={user}/>} />
       </Routes>
     </>
   );
