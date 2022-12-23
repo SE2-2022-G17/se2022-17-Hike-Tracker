@@ -141,12 +141,12 @@ describe('Test approve hut workers (US13)', () => {
         }, 'my_secret_key');
 
         const response = await request(app)
-            .get('/usersToApprove')
+            .put('/usersToApprove')
             .set('Authorization', "Bearer " + token)
-            .send(JSON.stringify({
+            .send({
                 status:"ok",
                 id:userId2
-            }))
+            })
 
         expect(response.statusCode).to.equal(200);
     });
@@ -164,12 +164,12 @@ describe('Test approve hut workers (US13)', () => {
         }, 'my_secret_key');
 
         const response = await request(app)
-            .get('/usersToApprove')
+            .put('/usersToApprove')
             .set('Authorization', "Bearer " + token)
-            .send(JSON.stringify({
+            .send({
                 status:"no",
                 id:userId3
-            }))
+            })
 
         expect(response.statusCode).to.equal(200);
     });

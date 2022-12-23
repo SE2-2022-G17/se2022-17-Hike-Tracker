@@ -304,7 +304,7 @@ app.post('/huts', verifyUserToken, async (req, res) => {
         await dao.createHut(container);
         res.sendStatus(201);
     } catch (error) {
-        res.sendStatus(error);
+        res.sendStatus(error.message);
     }
 
 });
@@ -331,7 +331,7 @@ app.post('/hike/linkhut', verifyUserToken, async (req, res) => {
 
     return dao.linkHutToHike(hutId, hike, userId)
         .then(() => { res.status(201).end(); })
-        .catch((error) => { res.status(parseInt(error.message)).json(error); })
+        .catch((error) => { res.status(500).end(); })
 });
 
 app.put('/linkStartArrival', verifyUserToken, async (req, res) => {
@@ -674,7 +674,7 @@ app.get('/usersToApprove', verifyUserToken,async (req,res)=>{
 //HT-31
 app.put('/usersToApprove', verifyUserToken,async (req,res)=>{
     try{
-        if(!req.body || req.body.status !== "ok" && req.body.status !== "no" || !req.body.id){
+        if(!(req.body && req.body.id && (req.body.status === "ok" || req.body.status === "no"))){
             res.status(400).end();
         }
         const response = await dao.changeApprovalStatus(req.body.status,req.body.id);

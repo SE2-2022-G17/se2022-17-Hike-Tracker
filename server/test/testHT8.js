@@ -230,4 +230,22 @@ describe('Test API for adding huts or parking as startPoint/arrivals', () => {
 
         expect(response.statusCode).to.equal(401);
     });
+
+    it('test add parking as start point - wrong point', async () => {
+        const token = localGuide.token;
+
+        const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
+        const parkHut = await Hut.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'));
+
+        const response = await request(app)
+            .put("/linkStartArrival")
+            .set('Authorization', "Bearer " + token)
+            .send({
+                point: "wrong",
+                reference: "parking",
+                id: parkHut._id,
+                hikeId: hike.id
+            });
+        expect(response.statusCode).to.equal(422);
+    });
 });
