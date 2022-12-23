@@ -215,7 +215,6 @@ describe('Test API for adding huts or parking as startPoint/arrivals', () => {
     it('test wrong id', async () => {
         const token = localGuide.token;
 
-        const hike = await Hike.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9a'));
         const parkHut = await Hut.findById(new mongoose.Types.ObjectId('0000000194e4c1e796231d9b'));
 
 

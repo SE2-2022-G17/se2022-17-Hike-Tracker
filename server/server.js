@@ -415,7 +415,6 @@ app.post('/hikes/:id/reference-points', verifyUserToken, async (req, res) => {
 
 app.get('/hikes/:id/trace', verifyUserToken, (req, res) => {
     const hikeId = req.params.id;
-    const user = req.user; // this is received from verifyUserToken middleware
 
     dao.getHikeTrace(hikeId)
         .then((trace) => { res.json(trace); })
@@ -458,7 +457,6 @@ app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], asy
 
 app.get('/hikes/:id/image', verifyUserToken, async (req, res) => {
     const hikeId = req.params.id;
-    const user = req.user; // this is received from verifyUserToken middleware
 
     dao.getHikeImage(hikeId)
         .then((image) => { res.json(image); })
