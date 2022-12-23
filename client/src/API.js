@@ -92,11 +92,6 @@ async function getHutsCloseToHike(hikeId) {
     return huts
 }
 
-async function getHut(hutId) {
-    const response = await fetch(url + '/huts/hut/' + hutId)
-    const hut = await response.json()
-    return hut
-}
 
 //used in getVisitorHikes to reduce cognitive complexity
 function parametersCheck(
@@ -592,7 +587,6 @@ const API = {
     getHikeTrackUrl,
     createHut,
     createParking,
-    getHut,
     getHuts,
     getAllHuts,
     linkStartArrival,
