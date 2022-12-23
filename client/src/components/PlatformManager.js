@@ -1,29 +1,29 @@
 import { faSquareXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import API from "../API";
 
 //PROPS: user
 function PlatformManager(props){
     
-    let body = useRef("");
+    let [body,setBody] = useState("");
     useEffect(()=>{
         if (props.user !== null && props.user.role === "platformManager") {
             if (props.user.approved)
-                body.current = <MainContent/>;
+                setBody(<MainContent/>);
             else
-                body.current =<> <div className={'text-center'}>
+                setBody(<> <div className={'text-center'}>
                     <FontAwesomeIcon icon={faSquareXmark} size="4x" className={'text-danger'} />
                     <p>You are not approved</p>
-                </div> </>;
+                </div> </>);
         }
     },[props.user])
 
     return <Container>
         <Row>
             <Col>
-                {body.current}
+                {body}
             </Col>
         </Row>
     </Container>
@@ -31,12 +31,11 @@ function PlatformManager(props){
 
 function MainContent(){
     const [users,setUsers] = useState([]);
-    const authToken = localStorage.getItem('token')
+    const authToken = localStorage.getItem('token');
     useEffect(()=>{
         try{
             (async ()=>{
-                await setUsers(await API.getToApprove(authToken));
-                console.log(users);
+                setUsers(await API.getToApprove(authToken));
             })()
         } catch(error){
             console.log(error)
@@ -74,20 +73,34 @@ function MainContent(){
     </>
 }
 
+//PROPS: key:just functional not used, user, i
 function UserView(props){
-    
-    return <>
-        <tr>
-            <td>{props.i+1}</td>
-            <td>{props.user.firstName}</td>
-            <td>{props.user.lastName}</td>
-            <td>{props.user.email}</td>
-            <td>{props.user.role}</td>
-            <td><Button variant="success">Approve</Button>
-                <Button variant="danger">Refuse</Button>
-            </td>
-        </tr>
-    </>
+    const authToken = localStorage.getItem('token');
+    const [body,setBody] = useState(<></>);
+
+    const buttonSubmit = useCallback( (status) =>{
+        if(API.changeApprovalStatus(status,props.user.id,authToken)){
+            setBody(<></>);
+        } else {
+            console.log("Something went wrong");
+        }
+    },[props.user.id,authToken])
+
+    useEffect(()=>{
+        setBody(<>
+            <tr>
+                <td>{props.i+1}</td>
+                <td>{props.user.firstName}</td>
+                <td>{props.user.lastName}</td>
+                <td>{props.user.email}</td>
+                <td>{props.user.role}</td>
+                <td><Button variant="success" onClick={()=>buttonSubmit("ok")}>Approve</Button>
+                    <Button variant="danger" onClick={()=>buttonSubmit("no")}>Refuse</Button>
+                </td>
+            </tr>
+        </>)
+    },[buttonSubmit,props.i,props.user.email,props.user.firstName,props.user.lastName,props.user.role])
+    return body;
 }
 
 export default PlatformManager

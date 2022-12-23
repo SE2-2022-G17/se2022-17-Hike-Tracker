@@ -680,10 +680,23 @@ app.get('/getStats', verifyUserToken, async (req,res) => {
 })
 
 //HT-31
-app.get('/getUsersToApprove', verifyUserToken,async (req,res)=>{
+app.get('/usersToApprove', verifyUserToken,async (req,res)=>{
     try{
         const response = await dao.getUsersToApprove();
         res.status(200).json(response)
+    } catch(error){
+        res.status(error.status).send(error.message);
+    }
+})
+
+//HT-31
+app.put('/usersToApprove', verifyUserToken,async (req,res)=>{
+    try{
+        if(!req.body || req.body.status !== "ok" && req.body.status !== "no" || !req.body.id){
+            res.status(400).end();
+        }
+        const response = await dao.changeApprovalStatus(req.body.status,req.body.id);
+        res.status(200).send(response).end();
     } catch(error){
         res.status(error.status).send(error.message);
     }

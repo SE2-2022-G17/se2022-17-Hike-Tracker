@@ -555,7 +555,7 @@ async function getReferencePointByPosition(positionId) {
 }
 
 async function getToApprove(authToken){
-    const response = await fetch(url + '/getUsersToApprove',{
+    const response = await fetch(url + '/usersToApprove',{
         method: "GET",
         headers: {
             'Authorization': `Bearer ${authToken}`, // notice the Bearer before your token
@@ -564,6 +564,22 @@ async function getToApprove(authToken){
     });
     const users = await response.json();
     return await users;
+}
+
+async function changeApprovalStatus(status,id,authToken){
+    const response = await fetch(url + '/usersToApprove',{
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${authToken}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            status:status,
+            id:id
+        })
+    });
+    return response.ok;
 }
 
 const API = {
@@ -600,7 +616,8 @@ const API = {
     getRecord,
     recordReferencePoint,
     getReferencePointByPosition,
-    getToApprove
+    getToApprove,
+    changeApprovalStatus
 };
 
 

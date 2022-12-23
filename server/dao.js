@@ -745,8 +745,21 @@ exports.getUsersToApprove = async () => {
             approved:false
         })
         const response = [];
-        users.forEach((user)=>response.push({firstName:user.firstName,lastName:user.lastName,email:user.email,role:user.role}))
+        users.forEach((user)=>response.push({id:user._id,firstName:user.firstName,lastName:user.lastName,email:user.email,role:user.role}))
         return response
+    } catch(error){
+        throw HTTPError("Server internal error",500)
+    }
+}
+
+//HT-31
+exports.changeApprovalStatus = async (status,id) => {
+    try{
+        if(status=== "ok"){
+            await User.findByIdAndUpdate(id,{approved:true});
+        } else {
+            await User.findByIdAndDelete(id);
+        }
     } catch(error){
         throw HTTPError("Server internal error",500)
     }
