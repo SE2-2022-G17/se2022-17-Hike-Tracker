@@ -748,7 +748,7 @@ exports.getUsersToApprove = async () => {
         users.forEach((user)=>response.push({id:user._id,firstName:user.firstName,lastName:user.lastName,email:user.email,role:user.role}))
         return response
     } catch(error){
-        throw HTTPError("Server internal error",500)
+        throw new HTTPError("Server internal error",500)
     }
 }
 
@@ -761,6 +761,6 @@ exports.changeApprovalStatus = async (status,id) => {
             await User.findByIdAndDelete(id);
         }
     } catch(error){
-        throw HTTPError("Server internal error",500)
+        throw new HTTPError("Server internal error",500)
     }
 }
