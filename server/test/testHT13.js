@@ -16,7 +16,7 @@ const userId2 = "0000000196e4c1e796231da0"
 const userId3 = "0000000196e4c1e796231da1"
 
 
-describe('Test API approve local guides (US32)', () => {
+describe('Test approve hut workers (US13)', () => {
     before(async () => {
         // if readyState is 0, mongoose is not connected
         if (mongoose.connection.readyState === 0) {
@@ -43,7 +43,7 @@ describe('Test API approve local guides (US32)', () => {
             firstName: "Leopoldina",
             lastName: "Fortunati",
             email: "non@dormire.it",
-            role: UserType.localGuide,
+            role: UserType.hutWorker,
             active: ValidationType.mailOnly,
             hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2",
             approved: false
@@ -54,7 +54,7 @@ describe('Test API approve local guides (US32)', () => {
             firstName: "David",
             lastName: "Graeber",
             email: "aska@47.org",
-            role: UserType.localGuide,
+            role: UserType.hutWorker,
             active: ValidationType.mailOnly,
             hash: "$2a$10$oiE6MIbxed8cTOfk5WcHXOnRxFzO0beCUc3.uQKuzTvLAJ2NsAlP2",
             approved: false
