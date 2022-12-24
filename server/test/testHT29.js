@@ -127,7 +127,7 @@ describe('Test API to set weather notification (US27)', () => {
             'active': ValidationType.mailOnly
         }, 'my_secret_key');
 
-        const query = "?longitude=3&latitude=5&searchRadius=1";
+        const query = "?longitude=3&latitude=5&searchRadius=50";
 
         const response = await request(app)
             .post('/weatherAlert' + query)
@@ -147,7 +147,7 @@ describe('Test API to set weather notification (US27)', () => {
         }, 'my_secret_key');
         
 
-        const query = "?longitude=7&latitude=8&searchRadius=1";
+        const query = "?longitude=7&latitude=8&searchRadius=4";
 
         const response = await request(app)
             .post('/weatherAlert' + query)
@@ -166,7 +166,7 @@ describe('Test API to set weather notification (US27)', () => {
         }, 'my_secret_key');
         
 
-        const query = "?longitude=10&latitude=11&searchRadius=1";
+        const query = "?longitude=10&latitude=11&searchRadius=2";
 
         const response = await request(app)
             .post('/weatherAlert' + query)
@@ -184,7 +184,7 @@ describe('Test API to set weather notification (US27)', () => {
             'active': ValidationType.mailOnly
         }, 'my_secret_key');
 
-        const query = "?longitude=1&latitude=1&searchRadius=1";
+        const query = "?longitude=30&latitude=30&searchRadius=1";
 
         const response = await request(app)
             .post('/weatherAlert' + query)
