@@ -28,34 +28,30 @@ app.use(express.json());
 
 const server = http.createServer(app);
 
-const webSocketServer = new webSocket.Server({port:8080});
+const webSocketServer = new webSocket.Server({server:server});
 
 const clients = {};
 
 function socketService (webSocket){
     webSocket.on("message", msg =>{
-        try {
-            clients[`${msg.toString()}`] = webSocket;
-        } catch (err) {
-            webSocket.close(401,"Wrong token")
-        }
+        clients[`${msg.toString()}`] = webSocket;
     })
 
-    webSocket.on('close', function () {
+    webSocket.on('close', () => {
         console.log(`Closed`);
+        webSocket.close();
     });
 
-    webSocket.on('error', function () {
+    webSocket.on('error', () => {
         console.log(`error`);
         webSocket.close();
     });
 
-    setInterval(function () { webSocket.ping()}, 5000);
+    setInterval(() => { webSocket.ping()}, 5000);
 }
 
 webSocketServer.on("connection", webSocket => {
     new socketService(webSocket)
-    console.log("connected")
 })
 
 function distanceCalc(p1, p2) {

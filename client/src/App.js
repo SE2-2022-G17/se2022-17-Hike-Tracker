@@ -65,7 +65,7 @@ function MainApp() {
   const [state,setState] = useState(CONNECTING);
 
   useEffect(()=>{
-    socket = new WebSocket('ws://127.0.0.1:8080',"echo-protocol")
+    socket = new WebSocket('ws://127.0.0.1:3001',"echo-protocol")
 
     setState(CONNECTING);
     

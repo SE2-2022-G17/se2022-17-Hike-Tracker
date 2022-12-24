@@ -15,19 +15,16 @@ const jwt = require('jsonwebtoken');
 const RecordStatus = require('../constants/RecordStatus.js');
 const { WebSocket } = require('ws');
 
-
+let ws;
 let mongoServer;
 const hikeId1 = "0000000194e4c1e796231d9f"
-const hikeId2 = "0000001194e4c1e796231d9f"
-const hikeId3 = "0000010194e4c1e796231d9f"
 const terminatedRecordId1 = "0000000197e4c1e796231d9f"
-const terminatedRecordId2 = "0000001197e4c1e796231d9f"
-const terminatedRecordId3 = "0000010197e4c1e796231d9f"
 const userId1 = "0000000196e4c1e796231d9f"
 const userId2 = "0000002196e4c1e796231d9f"
 
 
-describe('Test API to get user statistics (US27)', () => {
+describe('Test API to set weather notification (US27)', () => {
+    
     before(async () => {
         // if readyState is 0, mongoose is not connected
         if (mongoose.connection.readyState === 0) {
@@ -36,6 +33,12 @@ describe('Test API to get user statistics (US27)', () => {
             await mongoose.connect(mongoUri);
         }
 
+        //ws = new WebSocket('ws://127.0.0.1:3001',"echo-protocol");
+        //await new Promise(resolve => ws.once('open', resolve));
+
+        //ws.send(userId1)
+
+        await Position.deleteMany();
         await Hike.deleteMany();
         await User.deleteMany();
         await Record.deleteMany();
@@ -107,6 +110,8 @@ describe('Test API to get user statistics (US27)', () => {
     });
 
     after(async () => {
+        //ws.close();
+        //await new Promise(resolve => ws.once('close', resolve));
         await mongoose.disconnect();
         if (mongoServer !== undefined)
             await mongoServer.stop();
@@ -121,12 +126,6 @@ describe('Test API to get user statistics (US27)', () => {
             'role': UserType.platformManager,
             'active': ValidationType.mailOnly
         }, 'my_secret_key');
-        
-        const ws = new WebSocket('ws://127.0.0.1:8080',"echo-protocol"); 
-        await new Promise(resolve => ws.once('open', resolve));
-        
-        ws.send(userId1)
-        
 
         const query = "?longitude=3&latitude=5&searchRadius=1";
 
@@ -135,12 +134,7 @@ describe('Test API to get user statistics (US27)', () => {
             .set('Authorization', "Bearer " + token)
 
         expect(response.statusCode).to.equal(201);
-
-        ws.onmessage = (event)=>{
-            expect(event.data.toString).to.equal('Be careful, there is a weather ALERT on the hike you are doing!')
-        }
-
-        ws.close();
+        
     });
 
     it('test weather alert - successful 2', async () => {
@@ -152,11 +146,6 @@ describe('Test API to get user statistics (US27)', () => {
             'active': ValidationType.mailOnly
         }, 'my_secret_key');
         
-        const ws = new WebSocket('ws://127.0.0.1:8080',"echo-protocol"); 
-        await new Promise(resolve => ws.once('open', resolve));
-        
-        ws.send(userId1)
-        
 
         const query = "?longitude=7&latitude=8&searchRadius=1";
 
@@ -165,12 +154,6 @@ describe('Test API to get user statistics (US27)', () => {
             .set('Authorization', "Bearer " + token)
 
         expect(response.statusCode).to.equal(201);
-
-        ws.onmessage = (event)=>{
-            expect(event.data.toString).to.equal('Be careful, there is a weather ALERT on the hike you are doing!')
-        }
-
-        ws.close();
     });
 
     it('test weather alert - successful 3', async () => {
@@ -182,11 +165,6 @@ describe('Test API to get user statistics (US27)', () => {
             'active': ValidationType.mailOnly
         }, 'my_secret_key');
         
-        const ws = new WebSocket('ws://127.0.0.1:8080',"echo-protocol"); 
-        await new Promise(resolve => ws.once('open', resolve));
-        
-        ws.send(userId1)
-        
 
         const query = "?longitude=10&latitude=11&searchRadius=1";
 
@@ -195,12 +173,6 @@ describe('Test API to get user statistics (US27)', () => {
             .set('Authorization', "Bearer " + token)
 
         expect(response.statusCode).to.equal(201);
-
-        ws.onmessage = (event)=>{
-            expect(event.data.toString).to.equal('Be careful, there is a weather ALERT on the hike you are doing!')
-        }
-
-        ws.close();
     });
 
 });
