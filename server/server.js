@@ -39,13 +39,11 @@ function socketService (webSocket,i){
     })
 
     webSocket.on('close', () => {
-        console.log(`Closed`);
         serverIstances = serverIstances.filter((v,index)=>index!==i)
         webSocket.close();
     });
 
     webSocket.on('error', () => {
-        console.log(`error`);
         webSocket.close();
     });
 
@@ -729,8 +727,8 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
         for(let record of records){
             let hike = await dao.getHike(record.hikeId)
             let validate = false;
-            if(!distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius){
-                if(!distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius){
+            if(distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
+                if(distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
                     hike.referencePoints.forEach((rp)=>{
                         if(distanceCalc({lat:rp.location.coordinates[1],lng:rp.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius)
                             validate = true

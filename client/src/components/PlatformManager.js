@@ -127,7 +127,6 @@ function AddWeatherAlert(){
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
     const [searchRadius,setSearchRadius] = useState('');
-    const [center,setCenter] = useState(null);
     const [searchCircle,setsearchCircle] = useState(null);
     const [circles,setCircles] = useState(0);
 
@@ -147,15 +146,18 @@ function AddWeatherAlert(){
                     circleObj.setRadius(1*1000)
                 }
                 setSearchRadius((circleObj.getRadius()/1000).toString());
+
             });
 
             circle.on('centerchanged', (circleObj) => {
+                
                 setLatitude(circleObj.getCenter().lat.toFixed(5).toString());
                 setLongitude(circleObj.getCenter().lng.toFixed(5).toString());
-                setCenter(circleObj.getCenter());
+
             });
 
             circle.addTo(map.current);
+            
             setsearchCircle(circle);
         }
         else{
@@ -167,6 +169,7 @@ function AddWeatherAlert(){
                 searchCircle.remove();
             }    
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[circles]);
 
@@ -180,14 +183,15 @@ function AddWeatherAlert(){
         });
             
         map.current.addControl(new mapboxgl.FullscreenControl());
-
         map.current.addControl(new mapboxgl.ScaleControl());
         map.current.addControl(new mapboxgl.NavigationControl());
+
         map.current.doubleClickZoom.disable();
 
         map.current.on('dblclick', (e) => {
             setLongitude(e.lngLat.lng.toFixed(5).toString());
             setLatitude(e.lngLat.lat.toFixed(5).toString());
+        
             if(circles === 0){
                 setCircles(old=>old+1);
             }
@@ -240,16 +244,13 @@ function AddWeatherAlert(){
 function CoordinatesPicker(props) {
     const { setLongitude, setLatitude, latitude, longitude,circles,setCircles,setSearchRadius } = props;
 
-    return (
+    return (<>
         <Row className='two-options-filter'>
             <Col>
                 <Form>
                     <Form.Group className="mb-3">
                         <Form.Label>{"Longitude "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={longitude}
-                            onChange={(ev) => {
+                        <Form.Control type="text" value={longitude} onChange={(ev) => {
                                 setLongitude(ev.target.value);
                                 if(circles>0){
                                     setCircles(old=>old-1);
@@ -260,14 +261,12 @@ function CoordinatesPicker(props) {
                     </Form.Group>
                 </Form>
             </Col>
+
             <Col>
                 <Form>
                     <Form.Group className="mb-3">
                         <Form.Label>{"Latitude "}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={latitude}
-                            onChange={(ev) => {
+                        <Form.Control type="text" value={latitude} onChange={(ev) => {
                                 setLatitude(ev.target.value);
                                 if(circles>0){
                                     setCircles(old=>old-1);
@@ -279,7 +278,8 @@ function CoordinatesPicker(props) {
                 </Form>
             </Col>
         </Row>
-    );
+    </>);
+    
 }
 
 export default PlatformManager

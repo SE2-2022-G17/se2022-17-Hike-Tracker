@@ -577,19 +577,19 @@ async function changeApprovalStatus(status,id,authToken){
     return response.ok;
 }
 
-async function addWeatherAlert(longitude,latitude,searchRadius,token){
+async function addWeatherAlert(lon,lat,radius,token){
     let query = "?"
 
-    let parametes = []
+    let params = []
 
-    if (longitude !== undefined && longitude.trim().length !== 0)
-        parametes.push("longitude=" + longitude)
-    if (latitude !== undefined && latitude.trim().length !== 0)
-        parametes.push("latitude=" + latitude)
-    if (searchRadius !== undefined && searchRadius.trim().length !== 0)
-        parametes.push("searchRadius=" + searchRadius)
+    if (lon !== undefined && lon.trim().length !== 0)
+        params.push("longitude=" + lon)
+    if (lat !== undefined && lat.trim().length !== 0)
+        params.push("latitude=" + lat)
+    if (radius !== undefined && radius.trim().length !== 0)
+        params.push("searchRadius=" + radius)
 
-    query += parametes.join("&")
+    query += params.join("&")
     const response = await fetch(url + '/weatherAlert' + query, {
         method: "POST",
         headers: {

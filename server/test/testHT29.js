@@ -175,4 +175,42 @@ describe('Test API to set weather notification (US27)', () => {
         expect(response.statusCode).to.equal(201);
     });
 
+    it('test weather alert - successful 4', async () => {
+        const token = jwt.sign({
+            'id': userId2,
+            'fullName': "Elon Musk",
+            'email': "grimes@twitter.com",
+            'role': UserType.platformManager,
+            'active': ValidationType.mailOnly
+        }, 'my_secret_key');
+
+        const query = "?longitude=1&latitude=1&searchRadius=1";
+
+        const response = await request(app)
+            .post('/weatherAlert' + query)
+            .set('Authorization', "Bearer " + token)
+
+        expect(response.statusCode).to.equal(201);
+        
+    });
+
+    it('test weather alert - successful 5', async () => {
+        const token = jwt.sign({
+            'id': userId2,
+            'fullName': "Elon Musk",
+            'email': "grimes@twitter.com",
+            'role': UserType.platformManager,
+            'active': ValidationType.mailOnly
+        }, 'my_secret_key');
+        
+
+        const query = "?longitude=7&latitude=8";
+
+        const response = await request(app)
+            .post('/weatherAlert' + query)
+            .set('Authorization', "Bearer " + token)
+
+        expect(response.statusCode).to.equal(201);
+    });
+
 });
