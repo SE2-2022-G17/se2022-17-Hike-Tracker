@@ -289,10 +289,10 @@ exports.getHike = async (id) => {
                 return doc;
             })
             .catch(err => {
-                throw new TypeError(err);
+                throw new HTTPError(500,err);
             });
     } catch (e) {
-        throw new TypeError(e);
+        throw new HTTPError(500,e);
     }
 }
 
@@ -630,6 +630,16 @@ exports.getOngoingRecord = async (hikeId, userId) => {
             hikeId: hikeId,
             userId: userId,
             status: { $ne: RecordStatus.CLOSED }
+        })
+        .exec();
+
+    return record;
+}
+
+exports.getAllOngoingRecord = async () =>{
+    const record = await Record
+        .find({
+            status:RecordStatus.ONGOING
         })
         .exec();
 
