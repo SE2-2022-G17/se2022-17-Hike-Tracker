@@ -31,14 +31,16 @@ const server = http.createServer(app);
 const webSocketServer = new webSocket.Server({server:server});
 
 const clients = {};
+const serverIstances = [];
 
-function socketService (webSocket){
+function socketService (webSocket,i){
     webSocket.on("message", msg =>{
         clients[`${msg.toString()}`] = webSocket;
     })
 
     webSocket.on('close', () => {
         console.log(`Closed`);
+        serverIstances.filter((v,index)=>index!==i)
         webSocket.close();
     });
 
@@ -51,7 +53,7 @@ function socketService (webSocket){
 }
 
 webSocketServer.on("connection", webSocket => {
-    new socketService(webSocket)
+    serverIstances.push( new socketService(webSocket,serverIstances.length) )
 })
 
 function distanceCalc(p1, p2) {
@@ -724,25 +726,24 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
 
         const records= await dao.getAllOngoingRecord();
         
-        for(let i=0;i<records.length;i++){
-            let record = records[i]
+        for(let record of records){
             let hike = await dao.getHike(record.hikeId)
             let validate = false;
-            distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius ?
-                validate = true
-                :
-                distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius ?
-                    validate = true
-                    :
+            if(!distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius){
+                if(!distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius){
                     hike.referencePoints.forEach((rp)=>{
                         if(distanceCalc({lat:rp.location.coordinates[1],lng:rp.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius)
                             validate = true
                     })
+                }else{
+                    validate = true;
+                }
+            }else{
+                validate=true;
+            }
             if(validate){
                 if(clients && clients[`${record.userId}`]){
                     clients[`${record.userId}`].send('Be careful, there is a weather ALERT on the hike you are doing!')
-                }else{
-
                 }
             }
         }
