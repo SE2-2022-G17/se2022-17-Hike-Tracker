@@ -166,7 +166,7 @@ describe('Test API to define reference points (US33)', () => {
             });
 
         const hike = await Hike.findById(objectId);
-        expect(hike.referencePoints).to.be.an('array').that.is.not.empty;
+        expect(hike.referencePoints).to.be.an('array');
 
         expect(response.statusCode).to.equal(201);
     });

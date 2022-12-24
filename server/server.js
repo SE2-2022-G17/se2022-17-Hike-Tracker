@@ -10,6 +10,7 @@ const cors = require('cors');
 const multer = require('multer');
 const HikeImage = require('./models/HikeImage');
 const dayjs = require('dayjs')
+const webSocket = require('ws');
 
 // init express
 const app = new express();
@@ -24,6 +25,34 @@ app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use(express.json());
+
+const server = http.createServer(app);
+
+const webSocketServer = new webSocket.Server({server:server});
+
+const clients = {};
+let serverIstances = [];
+
+function socketService (webSocket,i){
+    webSocket.on("message", msg =>{
+        clients[`${msg.toString()}`] = webSocket;
+    })
+
+    webSocket.on('close', () => {
+        serverIstances = serverIstances.filter((v,index)=>index!==i)
+        webSocket.close();
+    });
+
+    webSocket.on('error', () => {
+        webSocket.close();
+    });
+
+    setInterval(() => { webSocket.ping()}, 5000);
+}
+
+webSocketServer.on("connection", webSocket => {
+    serverIstances.push( new socketService(webSocket,serverIstances.length) )
+})
 
 function distanceCalc(p1, p2) {
     const ph1 = p1.lat * Math.PI / 180;
@@ -684,7 +713,44 @@ app.put('/usersToApprove', verifyUserToken,async (req,res)=>{
     }
 })
 
-const server = http.createServer(app);
+//HT-27,29
+app.post('/weatherAlert', verifyUserToken, async (req, res) => {
+    try{
+        let longitude = req.query.longitude
+        let latitude = req.query.latitude
+        let searchRadius = req.query.searchRadius
+        if (searchRadius === undefined)
+            searchRadius = "500";
+
+        const records= await dao.getAllOngoingRecord();
+        
+        for(let record of records){
+            let hike = await dao.getHike(record.hikeId)
+            let validate = false;
+            if(distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
+                if(distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
+                    hike.referencePoints.forEach((rp)=>{
+                        if(distanceCalc({lat:rp.location.coordinates[1],lng:rp.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius)
+                            validate = true
+                    })
+                }else{
+                    validate = true;
+                }
+            }else{
+                validate=true;
+            }
+            if(validate){
+                if(clients && clients[`${record.userId}`]){
+                    clients[`${record.userId}`].send('Be careful, there is a weather ALERT on the hike you are doing!')
+                }
+            }
+        }
+
+        res.status(201).end();
+    } catch(error){
+        res.status(500).send(error.message)
+    }
+});
 
 
 // activate the server

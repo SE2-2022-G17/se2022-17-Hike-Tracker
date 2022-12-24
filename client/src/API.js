@@ -577,6 +577,29 @@ async function changeApprovalStatus(status,id,authToken){
     return response.ok;
 }
 
+async function addWeatherAlert(lon,lat,radius,token){
+    let query = "?"
+
+    let params = []
+
+    if (lon !== undefined && lon.trim().length !== 0)
+        params.push("longitude=" + lon)
+    if (lat !== undefined && lat.trim().length !== 0)
+        params.push("latitude=" + lat)
+    if (radius !== undefined && radius.trim().length !== 0)
+        params.push("searchRadius=" + radius)
+
+    query += params.join("&")
+    const response = await fetch(url + '/weatherAlert' + query, {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    })
+    return response.ok;
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -611,7 +634,8 @@ const API = {
     recordReferencePoint,
     getReferencePointByPosition,
     getToApprove,
-    changeApprovalStatus
+    changeApprovalStatus,
+    addWeatherAlert
 };
 
 

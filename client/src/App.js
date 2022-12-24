@@ -33,6 +33,8 @@ import UserStatistics from './components/UserStatistics';
 import RecordedHikes from './components/RecordedHikes';
 import PlatformManager from './components/PlatformManager';
 
+let socket;
+
 function App() {
   return (
     <BrowserRouter>
@@ -41,20 +43,59 @@ function App() {
   )
 }
 
-function MainApp() {
 
+
+function MainApp() {
+  
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [modalShow, setModalShow] = useState(false);
   const [performanceModal, setPerformanceModal] = useState(false);
   const [userStatistics, setUserStatistics] = useState(false);
   const [role, setRole] = useState("");
-  const [id, setId] = useState("");
   const [user, setUser] = useState(null);
 
-
-
   const navigate = useNavigate();
+
+  // state constants
+  const CONNECTING=0;
+  const CONNECTED=1;
+  const DISCONNECTED=2;
+
+  const [state,setState] = useState(CONNECTING);
+
+  useEffect(()=>{
+    socket = new WebSocket('ws://127.0.0.1:3001',"echo-protocol")
+
+    setState(CONNECTING);
+    
+    socket.onopen = () => {
+      setState(CONNECTED);
+      console.log('connected');
+      if(user){
+        socket.send(user._id)
+      }
+    };
+
+    socket.onclose = () => {
+      setState(DISCONNECTED);
+      console.log('disconnected.');
+    }
+
+    socket.onerror = error => {
+      if (state===CONNECTED)
+          console.log('fatal error. Closing...', error)
+      else if (state===CONNECTING)
+          console.log('failed to connect. ', error);
+      else // state is DISCONNECTED
+          console.log('error while in disconnected mode. ', error);
+          socket.close();
+    };
+
+    socket.onmessage = event => {
+      alert(event.data.toString())
+    }
+  },[user])
 
   let SavePreferenceUser = (data) => {
 
