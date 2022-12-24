@@ -639,7 +639,7 @@ exports.getOngoingRecord = async (hikeId, userId) => {
 exports.getAllOngoingRecord = async () =>{
     const record = await Record
         .find({
-            status:RecordStatus.ONGOING
+            $or:[{status:RecordStatus.ONGOING},  {status:RecordStatus.STARTED}]
         })
         .exec();
 

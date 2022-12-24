@@ -721,9 +721,7 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
         let searchRadius = req.query.searchRadius
         if (searchRadius === undefined)
             searchRadius = "500";
-
         const records= await dao.getAllOngoingRecord();
-        
         for(let record of records){
             let hike = await dao.getHike(record.hikeId)
             let validate = false;
@@ -739,7 +737,9 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
             }else{
                 validate=true;
             }
+            console.log(validate)
             if(validate){
+                console.log(clients[`${record.userId}`])
                 if(clients && clients[`${record.userId}`]){
                     clients[`${record.userId}`].send('Be careful, there is a weather ALERT on the hike you are doing!')
                 }
