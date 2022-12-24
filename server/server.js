@@ -31,7 +31,7 @@ const server = http.createServer(app);
 const webSocketServer = new webSocket.Server({server:server});
 
 const clients = {};
-const serverIstances = [];
+let serverIstances = [];
 
 function socketService (webSocket,i){
     webSocket.on("message", msg =>{
@@ -40,7 +40,7 @@ function socketService (webSocket,i){
 
     webSocket.on('close', () => {
         console.log(`Closed`);
-        serverIstances.filter((v,index)=>index!==i)
+        serverIstances = serverIstances.filter((v,index)=>index!==i)
         webSocket.close();
     });
 
