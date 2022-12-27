@@ -23,7 +23,7 @@ const userId1 = "0000000196e4c1e796231d9f"
 const userId2 = "0000002196e4c1e796231d9f"
 
 
-describe('Test API to set weather notification (US27)', () => {
+describe('Test API to recive weather alert notification (US29)', () => {
     
     before(async () => {
         // if readyState is 0, mongoose is not connected
