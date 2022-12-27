@@ -116,7 +116,7 @@ describe('Test API to recive weather alert notification (US29)', () => {
         if (mongoServer !== undefined)
             await mongoServer.stop();
         app.close();
-        process.exit();
+        //process.exit();
     });
 
     it('test weather alert - successful 1', async () => {
