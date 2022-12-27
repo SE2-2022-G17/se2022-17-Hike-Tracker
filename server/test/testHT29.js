@@ -23,7 +23,7 @@ const userId1 = "0000000196e4c1e796231d9f"
 const userId2 = "0000002196e4c1e796231d9f"
 
 
-describe('Test API to recive weather alert notification (US29)', () => {
+describe('Test API to set weather notification (US27)', () => {
     
     before(async () => {
         // if readyState is 0, mongoose is not connected
@@ -130,16 +130,12 @@ describe('Test API to recive weather alert notification (US29)', () => {
 
         const query = "?longitude=3&latitude=5&searchRadius=50";
 
-        ws.onmessage = event => {
-            expect(event.data.toString().localeCompare('Be careful, there is a weather ALERT on the hike you are doing!')).to.equal(0);
-        }
-
         const response = await request(app)
             .post('/weatherAlert' + query)
             .set('Authorization', "Bearer " + token)
 
         expect(response.statusCode).to.equal(201);
-
+        
     });
 
     it('test weather alert - successful 2', async () => {
@@ -154,9 +150,6 @@ describe('Test API to recive weather alert notification (US29)', () => {
 
         const query = "?longitude=7&latitude=8&searchRadius=4";
 
-        ws.onmessage = event => {
-            expect(event.data.toString().localeCompare('Be careful, there is a weather ALERT on the hike you are doing!')).to.equal(0);
-        }
         const response = await request(app)
             .post('/weatherAlert' + query)
             .set('Authorization', "Bearer " + token)
@@ -176,10 +169,6 @@ describe('Test API to recive weather alert notification (US29)', () => {
 
         const query = "?longitude=10&latitude=11&searchRadius=2";
 
-        ws.onmessage = event => {
-            expect(event.data.toString().localeCompare('Be careful, there is a weather ALERT on the hike you are doing!')).to.equal(0);
-        }
-
         const response = await request(app)
             .post('/weatherAlert' + query)
             .set('Authorization', "Bearer " + token)
@@ -197,10 +186,6 @@ describe('Test API to recive weather alert notification (US29)', () => {
         }, 'my_secret_key');
 
         const query = "?longitude=30&latitude=30&searchRadius=1";
-
-        ws.onmessage = event => {
-            expect(event.data.toString().localeCompare('Be careful, there is a weather ALERT on the hike you are doing!')).to.equal(0);
-        }
 
         const response = await request(app)
             .post('/weatherAlert' + query)
@@ -221,10 +206,6 @@ describe('Test API to recive weather alert notification (US29)', () => {
         
 
         const query = "?longitude=7&latitude=8";
-
-        ws.onmessage = event => {
-            expect(event.data.toString().localeCompare('Be careful, there is a weather ALERT on the hike you are doing!')).to.equal(0);
-        }
 
         const response = await request(app)
             .post('/weatherAlert' + query)
