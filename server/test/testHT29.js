@@ -33,8 +33,8 @@ describe('Test API to recive weather alert notification (US29)', () => {
             await mongoose.connect(mongoUri);
         }
 
-        ws = new WebSocket('ws://127.0.0.1:8080');
-        await new Promise(resolve => ws.once('open', resolve));
+        ws = new WebSocket('ws://127.0.0.1:8080')
+        await new Promise(resolve => ws.once('open', resolve))
 
         ws.send(userId1)
 
@@ -110,8 +110,8 @@ describe('Test API to recive weather alert notification (US29)', () => {
     });
 
     after(async () => {
-        ws.close();
-        await new Promise(resolve => ws.once('close', resolve));
+        ws.close()
+        await new Promise(resolve => ws.once('close', resolve))
         await mongoose.disconnect();
         if (mongoServer !== undefined)
             await mongoServer.stop();
