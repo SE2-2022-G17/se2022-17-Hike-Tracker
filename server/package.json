@@ -6,7 +6,7 @@
     "scripts": {
         "test": "cross-env NODE_ENV=test mocha --timeout 60000 --exit",
         "start": "node server.js",
-        "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov mocha --timeout 60000"
+        "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov mocha --timeout 60000 --exit"
     },
     "author": "Andrea Amato",
     "license": "ISC",
