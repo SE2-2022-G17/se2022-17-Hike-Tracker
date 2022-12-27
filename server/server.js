@@ -737,9 +737,7 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
             }else{
                 validate=true;
             }
-            console.log(validate)
             if(validate){
-                console.log(clients[`${record.userId}`])
                 if(clients && clients[`${record.userId}`]){
                     clients[`${record.userId}`].send('Be careful, there is a weather ALERT on the hike you are doing!')
                 }
