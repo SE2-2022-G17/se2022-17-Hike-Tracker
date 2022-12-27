@@ -23,7 +23,7 @@ const userId1 = "0000000196e4c1e796231d9f"
 const userId2 = "0000002196e4c1e796231d9f"
 
 
-describe('Test API to set weather notification (US27)', () => {
+describe('Test API to recive weather alert notification (US29)', () => {
     
     before(async () => {
         // if readyState is 0, mongoose is not connected
@@ -33,10 +33,10 @@ describe('Test API to set weather notification (US27)', () => {
             await mongoose.connect(mongoUri);
         }
 
-        //ws = new WebSocket('ws://127.0.0.1:3001',"echo-protocol");
-        //await new Promise(resolve => ws.once('open', resolve));
+        ws = new WebSocket('ws://127.0.0.1:8080')
+        await new Promise(resolve => ws.once('open', resolve))
 
-        //ws.send(userId1)
+        ws.send(userId1)
 
         await Position.deleteMany();
         await Hike.deleteMany();
@@ -110,12 +110,13 @@ describe('Test API to set weather notification (US27)', () => {
     });
 
     after(async () => {
-        //ws.close();
-        //await new Promise(resolve => ws.once('close', resolve));
+        ws.close()
+        await new Promise(resolve => ws.once('close', resolve))
         await mongoose.disconnect();
         if (mongoServer !== undefined)
             await mongoServer.stop();
         app.close();
+        //process.exit();
     });
 
     it('test weather alert - successful 1', async () => {
