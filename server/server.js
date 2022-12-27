@@ -28,7 +28,7 @@ app.use(express.json());
 
 const server = http.createServer(app);
 
-const webSocketServer = new webSocket.Server({port:8080});
+const webSocketServer = new webSocket.Server({server:server});
 
 const clients = {};
 let serverIstances = [];
