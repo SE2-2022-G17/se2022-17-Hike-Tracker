@@ -33,7 +33,7 @@ describe('Test API to recive weather alert notification (US29)', () => {
             await mongoose.connect(mongoUri);
         }
 
-        ws = new WebSocket('ws://127.0.0.1:3001',"echo-protocol");
+        ws = new WebSocket('ws://127.0.0.1:8080');
         await new Promise(resolve => ws.once('open', resolve));
 
         ws.send(userId1)
