@@ -161,7 +161,6 @@ async function verifyUserToken(req, res, next) {
         req.user = decodedUser;
         next();
     } catch (err) {
-        console.log(err);
         res.status(400).send("Invalid token.");
     }
 };
@@ -212,7 +211,6 @@ app.post('/localGuide/addParking', verifyUserToken, async (req, res) => {
             req.body.longitude);
         return res.status(201).end();
     } catch (err) {
-        console.log(err);
         return res.status(500).json(err);
     }
 });
@@ -253,7 +251,6 @@ app.get('/hutsCloseTo/:id', async (req, res) => {
         })
         res.json(huts);
     } catch (err) {
-        console.log(err);
         return res.status(500).json(err);
     }
 });
@@ -387,7 +384,6 @@ app.get('/parking', async (req, res) => {
         const result = await dao.getAllParking();
         return res.status(200).json(result);
     } catch (e) {
-        console.log(e.message);
         return res.status(500);
     }
 })
@@ -737,9 +733,7 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
             }else{
                 validate=true;
             }
-            console.log(validate)
             if(validate){
-                console.log(clients[`${record.userId}`])
                 if(clients && clients[`${record.userId}`]){
                     clients[`${record.userId}`].send('Be careful, there is a weather ALERT on the hike you are doing!')
                 }

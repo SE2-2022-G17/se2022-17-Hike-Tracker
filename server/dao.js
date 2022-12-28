@@ -195,7 +195,6 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
 
     parking.save((err) => {
         if (err) {
-            console.log(err);
             throw new TypeError(JSON.stringify(err));
         }
     });
@@ -249,7 +248,6 @@ exports.saveNewHike = async function (bodyContainer,track,userId){
 
             hike.save(function (err, hike) {
                 if (err) {
-                    console.log(err);
                     throw new TypeError(JSON.stringify(err));
                 }
                 else
@@ -275,54 +273,42 @@ function generateActivationCode(length = 6) {
 }
 
 exports.getHike = async (id) => {
-    try {
-        return await Hike.findById(ObjectId(id))
-            .populate('startPoint') // populate is basically a join
-            .populate('endPoint')
-            .populate({
-                path: 'huts',
-                // Populate across multiple level: point of huts
-                populate: { path: 'point' }
-            })
-            .populate('referencePoints')
-            .then(doc => {
-                return doc;
-            })
-            .catch(err => {
-                throw new HTTPError(500,err);
-            });
-    } catch (e) {
-        throw new HTTPError(500,e);
-    }
+    return Hike.findById(ObjectId(id))
+        .populate('startPoint') // populate is basically a join
+        .populate('endPoint')
+        .populate({
+            path: 'huts',
+            // Populate across multiple level: point of huts
+            populate: { path: 'point' }
+        })
+        .populate('referencePoints')
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            throw new HTTPError(500,err);
+        });
 }
 
 
 exports.getAllHuts = async () => {
-    try {
-        return await Hut.find()
-            .then(huts => {
-                return huts;
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    } catch (e) {
-        console.log(e.message);
-    }
+    return Hut.find()
+        .then(huts => {
+            return huts;
+        })
+        .catch(err => {
+            console.log(err);
+        });
 }
 
 exports.getHikeTrack = async (id) => {
-    try {
-        return await Hike.findById(ObjectId(id), { _id: 0, track_file: 1 })
-            .then(doc => {
-                return doc;
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    } catch (e) {
-        console.log(e.message)
-    }
+    return Hike.findById(ObjectId(id), { _id: 0, track_file: 1 })
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            console.log(err);
+        });
 }
 
 exports.createHut = async function (container){
@@ -370,12 +356,6 @@ exports.linkHutToHike = async (hutId, hike, userId) => {
     hike.huts.push(hutId);
     try {
         return await Hike.findByIdAndUpdate(hike._id, { huts: hike.huts })
-            .then(doc => {
-                return doc;
-            })
-            .catch(err => {
-                console.log(err);
-            });
     } catch (err) {
         throw new TypeError(500);
     }
@@ -431,18 +411,14 @@ exports.modifyStartArrivalLinkToHutParking = async (point, reference, id, hikeId
     }
 }
 
-exports.getAllParking = async () => {
-    try {
-        return await Parking.find(null, (err, docs) => {
-            if (err) {
-                console.log(err);
-            } else {
-                return docs;
-            }
-        }).clone();
-    } catch (e) {
-        console.log(e.message);
-    }
+exports.getAllParking = () => {
+    return Parking.find(null, (err, docs) => {
+        if (err) {
+            console.log(err);
+        } else {
+            return docs;
+        }
+    }).clone();
 }
 
 exports.getParking = async (

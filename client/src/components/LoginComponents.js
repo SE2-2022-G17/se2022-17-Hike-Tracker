@@ -1,5 +1,5 @@
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 
@@ -7,7 +7,7 @@ function LoginForm(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = useCallback( (event) => {
     event.preventDefault();
     props.setErrorMessage('');
     const credentials = { username, password };
@@ -24,7 +24,7 @@ function LoginForm(props) {
     if (valid) {
       props.login(credentials);
     }
-  };
+  },[password,username]);
 
   return (
     <Container className='login-container'>

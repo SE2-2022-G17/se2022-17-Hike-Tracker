@@ -1,5 +1,5 @@
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import API from '../API';
@@ -42,7 +42,7 @@ function VisitorHikes() {
             .catch(err => console.log(err));
     }, []);
 
-    const getVisitorHikes = async (ev) => {
+    const getVisitorHikes = useCallback( async (ev) => {
         ev.preventDefault();
 
         // start validation
@@ -85,7 +85,7 @@ function VisitorHikes() {
             latitude
         );
         setHikes(retrivedHikes);
-    }
+    },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province])
 
     return (
         <Container className='visitor-hike'>
@@ -212,9 +212,9 @@ function HikesList(props) {
 
     const navigator = useNavigate();
 
-    let goToHike = (id) => {
+    const goToHike = useCallback((id) => {
         navigator('/hiker/hikes/' + id);
-    }
+    },[])
 
     return (
         <>

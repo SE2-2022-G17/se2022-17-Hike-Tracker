@@ -17,15 +17,18 @@ function PreferredHikes(props) {
 
         const authToken = localStorage.getItem('token');
         const tokenPayload = Utils.parseJwt(authToken);
-        API.getUserByEmail(tokenPayload.email, authToken).then(response => {
-        const user = response;
+        API.getUserByEmail(tokenPayload.email, authToken)
+            .then(response => {
+                const user = response ;
+                
+                if(user.preferenceAltitude || user.preferenceDuration){
+                    setPreferences(true);
 
-        if(user.preferenceAltitude || user.preferenceDuration)
-            setPreferences(true);
-
-              
-        API.getPreferredHikes(user.preferenceDuration, user.preferenceAltitude, authToken).then((response) => setHikes(response)).catch(err => console.log(err));
-      }).catch(error => console.log(error));
+                    API.getPreferredHikes(user.preferenceDuration, user.preferenceAltitude, authToken)
+                        .then((response) => setHikes(response))
+                        .catch(err => console.log(err));
+                }
+            }).catch(error => console.log(error));
     }, []);
 
 
