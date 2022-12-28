@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Card, Col, Row, Container, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
@@ -42,7 +42,7 @@ function ShowHike(props) {
     const [hikeTrace,setHikeTrace] = useState(undefined);
     const [cursorPosition,setCursorPosition] = useState(undefined);
 
-    function getNearestPointOnTrace(point){
+    const getNearestPointOnTrace = useCallback( (point) => {
         let choise = point;
         let minDistance = -1;
         for (const p1 of hikeTrace) {
@@ -59,13 +59,13 @@ function ShowHike(props) {
             }
         }
         return choise;
-    }
+    },[hikeTrace])
 
-    function handleMarker(point, marker) {
+    const handleMarker = useCallback( (point, marker) => {
         let choise = getNearestPointOnTrace(point);
         marker.setLngLat([choise.lng, choise.lat])
         return point;
-    }
+    },[])
 
     useEffect(()=>{
         if(cursorPosition && refFormVisible){
@@ -124,7 +124,6 @@ function ShowHike(props) {
     },[refMarker.length])
 
     useEffect(() => {
-
         if (id !== null && hike === null) {
             API.getHike(id).then(function (hike) {
                 setHike(hike);
@@ -331,7 +330,7 @@ function ShowHike(props) {
         </Row>
     }
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = useCallback( async (event) => {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
         const response = await API.startRecordingHike(hike._id, authToken);
@@ -344,7 +343,7 @@ function ShowHike(props) {
             setVariant('danger')
             setMessage("An error occurred during the recording of the hike")
         }
-    }
+    },[hike ? hike._id : hike])
 
     return (
         <Container>

@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Row, Col, Alert } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 //import VisitorHikes from './components/VisitorHikes';
 import HikesView from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
@@ -65,39 +65,41 @@ function MainApp() {
   const [state,setState] = useState(CONNECTING);
 
   useEffect(()=>{
-    socket = new WebSocket('ws://127.0.0.1:8080');
+    if(user && user._id){
+      socket = new WebSocket('ws://127.0.0.1:8080');
 
-    setState(CONNECTING);
-    
-    socket.onopen = () => {
-      setState(CONNECTED);
-      console.log('connected');
-      if(user){
-        socket.send(user._id)
+      setState(CONNECTING);
+      
+      socket.onopen = () => {
+        setState(CONNECTED);
+        console.log('connected');
+        if(socket){
+          socket.send(user._id)
+        }
+      };
+
+      socket.onclose = () => {
+        setState(DISCONNECTED);
+        console.log('disconnected.');
       }
-    };
 
-    socket.onclose = () => {
-      setState(DISCONNECTED);
-      console.log('disconnected.');
+      socket.onerror = error => {
+        if (state===CONNECTED)
+            console.log('fatal error. Closing...', error)
+        else if (state===CONNECTING)
+            console.log('failed to connect. ', error);
+        else // state is DISCONNECTED
+            console.log('error while in disconnected mode. ', error);
+            socket.close();
+      };
+
+      socket.onmessage = event => {
+        alert(event.data.toString())
+      }
     }
+  },[user ? user._id : user])
 
-    socket.onerror = error => {
-      if (state===CONNECTED)
-          console.log('fatal error. Closing...', error)
-      else if (state===CONNECTING)
-          console.log('failed to connect. ', error);
-      else // state is DISCONNECTED
-          console.log('error while in disconnected mode. ', error);
-          socket.close();
-    };
-
-    socket.onmessage = event => {
-      alert(event.data.toString())
-    }
-  },[user])
-
-  let SavePreferenceUser = (data) => {
+  let SavePreferenceUser = useCallback( (data) => {
 
     const authToken = localStorage.getItem('token');
 
@@ -108,11 +110,11 @@ function MainApp() {
       console.log(error);
       return false;
     })
-  }
+  },[])
 
 
 
-  const doLogIn = (credentials) => {
+  const doLogIn = useCallback( (credentials) => {
     API.logIn(credentials)
       .then(user => {
         const payload = Utils.parseJwt(user.token);
@@ -138,15 +140,15 @@ function MainApp() {
         setErrorMessage("Username or password incorrect.");
       }
       )
-  }
+  },[])
 
-  const doLogOut = async () => {
+  const doLogOut = useCallback( async () => {
     localStorage.clear()
     setLoggedIn(false);
     setUser(null);
     setRole("");
     navigate('/');
-  }
+  },[])
 
   useEffect(() => {
     const authToken = localStorage.getItem('token');
@@ -224,7 +226,6 @@ function MainApp() {
       }
       <></>
 
-
       <Routes>
         <Route path="/" element={<HikesView.VisitorHikes />} />
         <Route path="visitor/hikes" element={<HikesView.VisitorHikes />} />
@@ -244,6 +245,7 @@ function MainApp() {
         <Route path="/records/:id" element={<Record />} />
         <Route path="/platformManager" element={<PlatformManager user={user}/>} />
       </Routes>
+
     </>
   );
 }

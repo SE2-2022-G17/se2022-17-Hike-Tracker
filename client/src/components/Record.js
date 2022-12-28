@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Card, Col, Row, Container, Button, Spinner } from 'react-bootstrap';
 import { useParams } from "react-router-dom";
 import API from "../API";
@@ -47,11 +47,11 @@ function RecordInfo(props) {
     const { record, trace, setDirty, disabled, setDisabled } = props;
     const [referencePoint, setReferencePoint] = useState(undefined);
 
-    const readableDate = (date) => {
+    const readableDate = useCallback( (date) => {
         return new Date(date).toLocaleString();
-    }
+    },[])
 
-    const isRefPointReached = (trace, current, selected) => {
+    const isRefPointReached = useCallback( (trace, current, selected) => {
         const traceArray = trace.map(p => [p.lng, p.lat].toString());
         const currentString = current.toString();
         const selectedString = selected.toString();
@@ -63,7 +63,7 @@ function RecordInfo(props) {
             return false;
 
         return true;
-    }
+    },[])
 
     useEffect(() => {
 
@@ -124,9 +124,9 @@ function Map(props) {
     const mapContainer = useRef(null);
     const map = useRef(null);
 
-    const arrayOfCoordinates = (trace) => {
+    const arrayOfCoordinates = useCallback( (trace) => {
         return trace.map(t => [t.lng, t.lat])
-    }
+    },[])
 
     useEffect(() => {
         if (map.current) return; // initialize map only once
@@ -204,7 +204,7 @@ function Map(props) {
 function ReferencePointCard(props) {
     const { referencePoint, record, setDirty, disabled, setDisabled } = props;
 
-    const markAsReached = () => {
+    const markAsReached = useCallback( () => {
         const authToken = localStorage.getItem('token');
         setDisabled(true);
         setDirty(true);
@@ -212,7 +212,7 @@ function ReferencePointCard(props) {
         API.recordReferencePoint(record._id, referencePoint.point._id, authToken)
             .then(() => setDirty(true))
             .catch(e => console.log(e));
-    }
+    },[record ? record._id : record, referencePoint ? (referencePoint.point ? referencePoint.point._id : referencePoint.point) : referencePoint,setDirty,setDisabled])
 
     return (
         referencePoint ?

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Col, Row, Container, Button, Form } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import API from '../API';
@@ -16,19 +16,19 @@ function RecordedHikes(props) {
             .catch(e => console.log(e));
     }, [dirty]);
 
-    const getRecords = () => {
+    const getRecords = useCallback (() => {
         const authToken = localStorage.getItem('token');
         API.getRecords(authToken)
             .then(recs => setRecords(recs))
             .catch(e => console.log(e));
-    }
+    },[])
 
-    const getCompletedRecords = () => {
+    const getCompletedRecords = useCallback( () => {
         const authToken = localStorage.getItem('token');
         API.getCompletedRecords(authToken)
             .then(recs => setRecords(recs))
             .catch(e => console.log(e));
-    }
+    },[])
 
     return (
         <Container className='records'>
@@ -92,16 +92,16 @@ function RecordCard(props) {
     const { record, setDirty, goToRecord } = props;
     const [disabled, setDisabled] = useState(false);
 
-    const readableDate = (date) => {
+    const readableDate = useCallback((date) => {
         return new Date(date).toLocaleString();
-    }
+    },[])
 
-    const terminateHike = () => {
+    const terminateHike = useCallback( () => {
         const authToken = localStorage.getItem('token');
         API.terminateRecordingHike(record._id, authToken);
         setDisabled(true);
         setDirty(true);
-    }
+    },[record ? record._id : record,setDirty])
 
     return (
         record.hikeId !== null ?
