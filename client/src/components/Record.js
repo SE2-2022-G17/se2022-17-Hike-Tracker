@@ -56,7 +56,7 @@ function RecordInfo(props) {
         const currentIndex = traceArray.indexOf(currentString);
         const selectedIndex = traceArray.indexOf(selectedString);
 
-        return !(selectedIndex > currentIndex)
+        return selectedIndex < currentIndex
     },[])
 
     useEffect(() => {

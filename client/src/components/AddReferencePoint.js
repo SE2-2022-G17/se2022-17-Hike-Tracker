@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import API from "../API";
 import mapboxgl from 'mapbox-gl'
@@ -11,7 +11,7 @@ function AddReferencePoint(props) {
 
     const [description, setDescription] = useState("");
 
-    function handleConfirm() {
+    const handleConfirm= useCallback(() => {
         if (name !== "" && description!=="" && props.refMarker.length>0) {
             const authToken = localStorage.getItem('token');
             const id = props.id;
@@ -34,7 +34,8 @@ function AddReferencePoint(props) {
                 })
                 .catch(err => console.log(err))
         }
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[description, name])
 
     return (
         <>

@@ -1,7 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
 import Utils from '../Utils';
 import Button from "react-bootstrap/Button";
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useEffect, useState} from "react";
 import {Form, Alert} from "react-bootstrap";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
