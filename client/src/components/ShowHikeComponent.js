@@ -29,7 +29,6 @@ function ShowHike(props) {
     const [lat, setLat] = useState(0);
     const [lng, setLng] = useState(0);
     const zoom = 11;
-    const [linkHut, setLinkHut] = useState(false);
     let { id } = useParams();
 
     const [hikeImage, setHikeImage] = useState(undefined);
@@ -318,16 +317,6 @@ function ShowHike(props) {
             });
         }
     },[hike, id, lat, lng]);
-
-    //only localguide can link hut to a hike, check if this user created this hike
-    if (props.role === "localGuide" && props.user !== null && props.user.approved &&
-        linkHut === false && hike !== null) {
-        <Row className="m-3">
-            <Col className="text-center">
-                <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
-            </Col>
-        </Row>
-    }
 
     const handleSubmit = useCallback( async (event) => {
         event.preventDefault();
