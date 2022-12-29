@@ -37,7 +37,8 @@ function SignUpForm(props) {
                 setRegButtonDisabled(false);
             }
           })    
-      },[])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        },[])
 
     const handleSubmit = useCallback( (event) => {
         event.preventDefault();
@@ -72,6 +73,7 @@ function SignUpForm(props) {
         else{
             setRegButtonDisabled(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[name, surname, username, password, type, phoneNumber,confirmPassword,signUp]);
 
     let phoneNUmberBlock = '';

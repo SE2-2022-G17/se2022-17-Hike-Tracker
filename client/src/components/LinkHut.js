@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import API from "../API";
 
@@ -30,18 +30,18 @@ function LinkHut(props) {
     }, [props.hike]);
 
 
-    function handleConfirm() {
+    const handleConfirm = useCallback(() => {
         if (hut !== "") {
             const authToken = localStorage.getItem('token');
             API.linkHut(hut, props.hike, authToken)
                 .then((res) => { console.log(res); setHut("") })
                 .catch(err => console.log(err))
         }
-    }
+    },[hut,props.hike])
 
     useEffect(() => {
         setHutsFiltered(hutsList.filter((hut) => hut.name.toLowerCase() === hutsFilter.toLowerCase()));
-    }, [hutsFilter]);
+    }, [hutsFilter,hutsList]);
 
     return (
         <>
@@ -54,17 +54,16 @@ function LinkHut(props) {
                                 <option value=""></option>
                                 {
                                     hutsFilter === "" ?
-                                        hutsList.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
+                                        hutsList.map((hut, index) => <option value={hut._id} key={hut._id}>{hut.name}</option>)
                                         :
-                                        hutsFiltered.map((hut, index) => <option value={hut._id} key={index}>{hut.name}</option>)
+                                        hutsFiltered.map((hut, index) => <option value={hut._id} key={hut._id}>{hut.name}</option>)
                                 }
                                 {
                                     searching ?
                                         <option value="" disabled>Searching huts...</option>
                                         :
-                                        hutsList.length === 0 ?
-                                            <option value="" disabled>No huts found.</option>
-                                            : <></>
+                                        hutsList.length === 0 &&
+                                            (<option value="" disabled>No huts found.</option>)
                                 }
                             </Form.Select>
                         </Col>
@@ -84,7 +83,7 @@ function LinkHut(props) {
                 </Form.Group>
                 <Row className="m-3">
                     <Col className="text-center">
-                        <Button variant="outline-dark" onClick={() => handleConfirm()} disabled={hut === "" ? true : false}>Confirm</Button>
+                        <Button variant="outline-dark" onClick={handleConfirm} disabled={hut === "" ? true : false}>Confirm</Button>
                     </Col>
                 </Row>
             </Form>

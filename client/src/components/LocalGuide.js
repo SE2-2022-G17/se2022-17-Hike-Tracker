@@ -1,5 +1,5 @@
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import API from "../API";
 import CityProvince from "./CityProvince";
 import Type from "../models/UserType";
@@ -46,7 +46,7 @@ function MainContent() {
             setTime('');
     }, [time])
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = useCallback( async (event) => {
         event.preventDefault();
         if (province === "" || city === "") {
             setErr("Province and city cannot be empty.");
@@ -55,7 +55,16 @@ function MainContent() {
         const authToken = localStorage.getItem('token');
         setLoading(true);
         //if the hike is not created (an error occurred) hikeId will be undefined
-        const hikeId = await API.sendHikeDescription(title, time, difficulty, description, track, city, province, authToken);
+        const hikeId = await API.sendHikeDescription({
+            title:title,
+            time:time,
+            difficulty:difficulty,
+            description:description,
+            track:track,
+            city:city,
+            province:province}, 
+            authToken
+            );
 
         if (hikeId === undefined) {
             setErr(hikeId);
@@ -68,7 +77,7 @@ function MainContent() {
         }
         setTimeout(() => setErr(""), 5000);
         setLoading(false);
-    }
+    },[city, description, difficulty, image, province, time, title, track])
 
     return <>
         <Container className="local-guide-form">

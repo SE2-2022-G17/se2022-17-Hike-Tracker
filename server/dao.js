@@ -505,7 +505,6 @@ exports.createReferencePoint = async (hikeId, name, description, longitude, lati
 
 exports.getHikeTrace = async (hikeId) => {
     const hike = await Hike.findById(hikeId);
-
     if (hike === null)
         throw new HTTPError( "Hike not found", 404 )
 

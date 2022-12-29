@@ -2,7 +2,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Row, Col, Alert } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from 'react';
-//import VisitorHikes from './components/VisitorHikes';
 import HikesView from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';
@@ -97,6 +96,7 @@ function MainApp() {
         alert(event.data.toString())
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[user ? user._id : user])
 
   let SavePreferenceUser = useCallback( (data) => {
@@ -140,6 +140,7 @@ function MainApp() {
         setErrorMessage("Username or password incorrect.");
       }
       )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   const doLogOut = useCallback( async () => {
@@ -148,6 +149,7 @@ function MainApp() {
     setUser(null);
     setRole("");
     navigate('/');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   useEffect(() => {
@@ -179,6 +181,7 @@ function MainApp() {
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

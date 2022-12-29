@@ -31,11 +31,11 @@ function VisitorHikes() {
     const [hikes, setHikes] = useState([]);
     const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = useCallback( () => setShow(false),[]);
+    const handleShow = useCallback( () => setShow(true),[]);
 
     useEffect(() => {
-        API.getVisitorHikes()
+        API.getVisitorHikes({})
             .then(retrivedHikes => {
                 setHikes(retrivedHikes);
             })
@@ -71,19 +71,19 @@ function VisitorHikes() {
             return
         }
 
-        const retrivedHikes = await API.getVisitorHikes(
-            difficulty,
-            minLength,
-            maxLength,
-            minAscent,
-            maxAscent,
-            minTime,
-            maxTime,
-            city,
-            province,
-            longitude,
-            latitude
-        );
+        const retrivedHikes = await API.getVisitorHikes({
+            difficulty:difficulty,
+            minLength:minLength,
+            maxLength:maxLength,
+            minAscent:minAscent,
+            maxAscent:maxAscent,
+            minTime:minTime,
+            maxTime:maxTime,
+            city:city,
+            province:province,
+            longitude:longitude,
+            latitude:latitude
+        });
         setHikes(retrivedHikes);
     },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province])
 
@@ -214,6 +214,7 @@ function HikesList(props) {
 
     const goToHike = useCallback((id) => {
         navigator('/hiker/hikes/' + id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     return (

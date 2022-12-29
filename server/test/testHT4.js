@@ -104,27 +104,10 @@ describe('Test API for get hike information and insert hike', () => {
 
     it('insert hike', async () => {
         const token = localGuide.token;
-        /*const body = new FormData();
-        
-        body.append("track",track);
-        body.append("title", "TestTrack" );
-        body.append("time", 46);
-        body.append("difficulty", "Tourist");
-        body.append("description", "Test description");
-        body.append("city", "Belveglio");
-        body.append("province", "AT");
-        console.log(body)*/
-        //myFile = fs.readFileSync("./test/mocks/Yosemite Grand Traverse.gpx")
-        /*const blob = new Blob(["a"], { type: 'text/html' });
-        blob["lastModifiedDate"] = "";
-        blob["name"] = "filename.gpx";*/
-
 
         const response = await request(app)
             .post('/localGuide/addHike')
             .set('Authorization', "Bearer " + token)
-            //.set('Content-Type',"multipart/form-data")
-            //.accept('application/json')
             .field("title", "TestTrack")
             .field("time", 46)
             .field("difficulty", "Tourist")
@@ -132,16 +115,6 @@ describe('Test API for get hike information and insert hike', () => {
             .field("city", "Belveglio")
             .field("province", "AT")
             .attach('track', "./test/mocks/Yosemite Grand Traverse.gpx")
-        /*.send({
-            "track": blob,
-            "title": "TestTrack",
-            "time": 46,
-            "difficulty": "Tourist",
-            "description": "Test description",
-            "city": "Belveglio",
-            "province": "AT"
-        })*/
-        //.send(body);
 
         expect(response.statusCode).to.equal(201);
 
@@ -170,7 +143,6 @@ describe('Test API for get hike information and insert hike', () => {
     it('test get hike image - unauthorized', async () => {
         const response = await request(app)
             .get("/hikes/" + hikeId + "/image")
-        //.set('Authorization', "Bearer " + token)
 
         expect(response.statusCode).to.equal(401);
     });
