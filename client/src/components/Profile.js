@@ -1,7 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
 import Utils from '../Utils';
 import Button from "react-bootstrap/Button";
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Form, Alert} from "react-bootstrap";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -67,19 +67,9 @@ function ProfileModal(props) {
                 <p className="mb-0">Role</p>
               </div>
               <div className="col-sm-7">
-                <p className="text-muted mb-0">{
-                  loggedUser.role === "hiker"? "Hiker"
-                  :
-                  loggedUser.role === "friend"? "Friend"
-                  :
-                  loggedUser.role === "localGuide"? "Local guide"
-                  :
-                  loggedUser.role === "hutWorker"? "Hut worker"
-                  :
-                  loggedUser.role === "emergencyOperator"? "Emergency operator"
-                  :<></>
-
-                }</p>
+                <p className="text-muted mb-0">
+                  <ProfileRender role = {loggedUser.role}/>
+                </p>
               </div>
             </div>
             <hr />
@@ -106,6 +96,33 @@ function ProfileModal(props) {
       </Modal>
       : undefined
   );
+}
+
+function ProfileRender(props){
+  const [body,setBody] = useState('')
+  useEffect(()=>{
+    switch(props.role) {
+      case 'hiker':
+        setBody("Hiker");
+        break;
+      case "friend":
+        setBody("Friend");
+        break;
+      case "localGuide":
+        setBody("Local guide");
+        break;
+      case "hutWorker":
+        setBody("Hut worker");
+        break;
+      case "emergencyOperator":
+        setBody("Emergency operator");
+        break;
+      default: 
+      setBody('');
+        break;
+    }
+  },[props.role])
+  return <>{body}</>
 }
 
 function PerformanceModal(props) {
@@ -179,12 +196,12 @@ function PerformanceModal(props) {
 
     if (showType === ShowType.create || showType === ShowType.edit)
       button = <>
-        <Button onClick={() => Save() }>Save</Button>
-        <Button variant={"secondary"} onClick={() => Cancel()}>Cancel</Button>
+        <Button onClick={Save}>Save</Button>
+        <Button variant={"secondary"} onClick={Cancel}>Cancel</Button>
       </>
 
     if (showType === ShowType.show) {
-      button = <Button onClick={() => Edit()}>Edit</Button>
+      button = <Button onClick={Edit}>Edit</Button>
       body = <><div className="row">
         <div className="col-sm-3">
           <p className="mb-0">Duration</p>

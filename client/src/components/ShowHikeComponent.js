@@ -7,7 +7,7 @@ import { DOMParser } from 'xmldom'
 import toGeoJson from '@mapbox/togeojson'
 import { faLayerGroup, faMountainSun, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import LinkHut from './LinkHut';
 import API from "../API";
 import ReferencePointsForm from "./ReferencePointsForm";
@@ -15,7 +15,6 @@ import Accordion from 'react-bootstrap/Accordion';
 import AddReferencePoint from "./AddReferencePoint";
 import { Buffer } from 'buffer';
 import { Record2 } from 'react-bootstrap-icons';
-import { useNavigate } from "react-router-dom";
 import Utils from '../Utils';
 import UserType from '../models/UserType';
 import CloseButton from 'react-bootstrap/CloseButton';
@@ -49,7 +48,6 @@ function ShowHike(props) {
             if (p1.lat === point.lat && p1.lng === point.lng) {
                 setLng(point.lng);
                 setLat(point.lng);
-                choise = point;
                 return
             }
             let tmpDistance = Utils.distanceCalc(point, p1);
@@ -318,12 +316,10 @@ function ShowHike(props) {
         }
     });
 
-    let linkHutBlock = '';
-
     //only localguide can link hut to a hike, check if this user created this hike
     if (props.role === "localGuide" && props.user !== null && props.user.approved &&
         linkHut === false && hike !== null) {
-        linkHutBlock = <Row className="m-3">
+        <Row className="m-3">
             <Col className="text-center">
                 <Button variant="outline-dark" onClick={() => { setLinkHut(true); }}>Link hut to this hike</Button>
             </Col>
@@ -413,7 +409,7 @@ function ShowHike(props) {
             </Row>
             {
                 props.role === "localGuide" ?
-                refFormVisible ? 
+                refFormVisible && ( 
                 <Row>
                     <Col>
                     <Card>
@@ -441,8 +437,8 @@ function ShowHike(props) {
                             </Card.Body>
                         </Card>
                     </Col>
-                </Row>
-                : <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
+                </Row>)
+                (!refFormVisible) && (<Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>)
                 :<></>
             }
             {

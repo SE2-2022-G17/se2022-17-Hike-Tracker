@@ -31,8 +31,8 @@ function VisitorHikes() {
     const [hikes, setHikes] = useState([]);
     const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = useCallback( () => setShow(false),[]);
+    const handleShow = useCallback( () => setShow(true),[]);
 
     useEffect(() => {
         API.getVisitorHikes()
