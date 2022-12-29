@@ -41,11 +41,7 @@ function VisitorHikes() {
             })
             .catch(err => console.log(err));
     }, []);
-
-    const getVisitorHikes = useCallback( async (ev) => {
-        ev.preventDefault();
-
-        // start validation
+    const partialValidation = () => {
         if (minLength !== undefined && !Number.isSafeInteger(Number(minLength))) {
             return
         }
@@ -58,6 +54,12 @@ function VisitorHikes() {
         if (maxAscent !== undefined && !Number.isSafeInteger(Number(maxAscent))) {
             return
         }
+    }
+    const getVisitorHikes = useCallback( async (ev) => {
+        ev.preventDefault();
+
+        // start validation
+        partialValidation();
         if (minTime !== undefined && Number.isNaN(Number(minTime))) {
             return
         }
@@ -85,6 +87,7 @@ function VisitorHikes() {
             latitude:latitude
         });
         setHikes(retrivedHikes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province])
 
     return (

@@ -1,7 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
 import Utils from '../Utils';
 import Button from "react-bootstrap/Button";
-import React, { useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState} from "react";
 import {Form, Alert} from "react-bootstrap";
 import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -131,11 +131,14 @@ function PerformanceModal(props) {
   let preferenceDuration = '';
   let preferenceAltitude = '';
 
-  if ( validateValue(props.user.preferenceDuration) || validateValue(props.user.preferenceAltitude) ) {
-    defaultShowType = ShowType.show;
-    preferenceDuration = validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '';
-    preferenceAltitude =  validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '';
+  const validatefx = ()=>{
+    if ( validateValue(props.user.preferenceDuration) || validateValue(props.user.preferenceAltitude) ) {
+      defaultShowType = ShowType.show;
+      preferenceDuration = validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '';
+      preferenceAltitude =  validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '';
+    }
   }
+  validatefx();
   const [showType, setShowType] = useState(defaultShowType);
   const [duration, setDuration] = useState(preferenceDuration);
   const [altitude, setAltitude] = useState(preferenceAltitude);
@@ -152,39 +155,40 @@ function PerformanceModal(props) {
   }
 
 
-    let Save = () => {
+  const Save = useCallback( () => {
 
-      if (
-          ( altitude !== '' && altitude !== 0 && altitude !== '0' ) ||
-          ( duration !== '' && duration !== 0 && duration !== '0' )
-      )
-      {
-        const data = {
-          altitude: altitude,
-          duration: duration
-        }
-
-        const result = props.SavePreferenceUser(data);
-        result.then(res => {
-          if (res) {
-            setShowAlert(true);
-            setShowType(ShowType.show);
-          }
-        });
+    if (
+        ( altitude !== '' && altitude !== 0 && altitude !== '0' ) ||
+        ( duration !== '' && duration !== 0 && duration !== '0' )
+    )
+    {
+      const data = {
+        altitude: altitude,
+        duration: duration
       }
-    }
 
-    let Cancel = () => {
-      setShowType(ShowType.show);
-      setDuration(validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '');
-      setAltitude(validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '');
+      const result = props.SavePreferenceUser(data);
+      result.then(res => {
+        if (res) {
+          setShowAlert(true);
+          setShowType(ShowType.show);
+        }
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[altitude,duration])
 
-  let Edit = () => {
+  const Cancel = useCallback( () => {
+    setShowType(ShowType.show);
+    setDuration(validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '');
+    setAltitude(validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '');
+  },[props.user.preferenceAltitude,props.user.preferenceDuration])
+
+  const Edit = useCallback( () => {
     setShowType(ShowType.edit);
     setDuration(validateValue(props.user.preferenceDuration) ? props.user.preferenceDuration : '');
     setAltitude(validateValue(props.user.preferenceAltitude) ? props.user.preferenceAltitude : '');
-  }
+  },[props.user.preferenceAltitude,props.user.preferenceDuration])
 
     if (showAlert)
       setTimeout(() => setShowAlert(false), 2000)
