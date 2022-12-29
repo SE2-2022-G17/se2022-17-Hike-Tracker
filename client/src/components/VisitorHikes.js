@@ -214,6 +214,7 @@ function HikesList(props) {
 
     const goToHike = useCallback((id) => {
         navigator('/hiker/hikes/' + id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     return (

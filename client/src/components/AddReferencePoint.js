@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import API from "../API";
 import mapboxgl from 'mapbox-gl'
@@ -10,7 +10,6 @@ function AddReferencePoint(props) {
     const [name, setName] = useState('');
 
     const [description, setDescription] = useState("");
-    const [longitude, setLongitude] = useState("");
 
     function handleConfirm() {
         if (name !== "" && description!=="" && props.refMarker.length>0) {

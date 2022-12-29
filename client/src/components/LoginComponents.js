@@ -24,6 +24,7 @@ function LoginForm(props) {
     if (valid) {
       props.login(credentials);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[password,username]);
 
   return (

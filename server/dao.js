@@ -505,7 +505,6 @@ exports.createReferencePoint = async (hikeId, name, description, longitude, lati
 
 exports.getHikeTrace = async (hikeId) => {
     const hike = await Hike.findById(hikeId);
-
     if (hike === null)
         throw new HTTPError( "Hike not found", 404 )
 
@@ -517,6 +516,7 @@ exports.getHikeTrace = async (hikeId) => {
         return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
 
     } catch (e) {
+        console.log(e)
         throw new HTTPError( "Trace not found", 404 );
     }
 }

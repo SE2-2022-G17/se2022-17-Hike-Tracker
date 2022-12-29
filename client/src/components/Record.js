@@ -12,7 +12,6 @@ function Record(props) {
     const { id } = useParams();
     const [record, setRecord] = useState(undefined);
     const [trace, setTrace] = useState([]);
-    const [dirty, setDirty] = useState(false);
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
@@ -20,7 +19,6 @@ function Record(props) {
         API.getRecord(id, authToken)
             .then(rec => {
                 setRecord(rec);
-                setDirty(false);
                 API.getHikeTrace(rec.hikeId._id, authToken)
                     .then(t => {
                         setTrace(t);
@@ -28,14 +26,13 @@ function Record(props) {
                     .catch(e => console.log(e));
             })
             .catch(e => console.log(e));
-    }, [dirty]);
+    }, [id]);
 
     return (
         record !== undefined ?
             <RecordInfo
                 record={record}
                 trace={trace}
-                setDirty={setDirty}
                 disabled={disabled}
                 setDisabled={setDisabled}
             />
@@ -84,8 +81,8 @@ function RecordInfo(props) {
 
         if (record.status === RecordStatus.CLOSED)
             setDisabled(true)
-
-    }, [referencePoint, record])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [referencePoint, record, trace])
 
     return (
         <Container>
@@ -212,6 +209,7 @@ function ReferencePointCard(props) {
         API.recordReferencePoint(record._id, referencePoint.point._id, authToken)
             .then(() => setDirty(true))
             .catch(e => console.log(e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[record ? record._id : record, referencePoint ? (referencePoint.point ? referencePoint.point._id : referencePoint.point) : referencePoint,setDirty,setDisabled])
 
     return (

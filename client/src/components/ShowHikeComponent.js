@@ -63,6 +63,7 @@ function ShowHike(props) {
         let choise = getNearestPointOnTrace(point);
         marker.setLngLat([choise.lng, choise.lat])
         return point;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     useEffect(()=>{
@@ -79,6 +80,7 @@ function ShowHike(props) {
             map.current.getSource('route').setData(data);
             
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[cursorPosition])
 
     useEffect(()=>{
@@ -105,7 +107,7 @@ function ShowHike(props) {
             }
         }
         fetchRecord();
-    }, [variant, message]);
+    }, [variant, message, id]);
 
     useEffect(()=>{
         if (map.current && refMarker.length>0 && refFormVisible){
@@ -119,7 +121,8 @@ function ShowHike(props) {
             if(!refFormVisible)
                 setRefMarker([]);
         }
-    },[refMarker.length])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[refMarker.length, refFormVisible])
 
     useEffect(() => {
         if (id !== null && hike === null) {
@@ -314,7 +317,7 @@ function ShowHike(props) {
                 });
             });
         }
-    });
+    },[hike, id, lat, lng]);
 
     //only localguide can link hut to a hike, check if this user created this hike
     if (props.role === "localGuide" && props.user !== null && props.user.approved &&
@@ -339,6 +342,7 @@ function ShowHike(props) {
             setVariant('danger')
             setMessage("An error occurred during the recording of the hike")
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[hike ? hike._id : hike])
 
     return (

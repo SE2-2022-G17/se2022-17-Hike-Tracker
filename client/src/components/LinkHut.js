@@ -41,7 +41,7 @@ function LinkHut(props) {
 
     useEffect(() => {
         setHutsFiltered(hutsList.filter((hut) => hut.name.toLowerCase() === hutsFilter.toLowerCase()));
-    }, [hutsFilter]);
+    }, [hutsFilter,hutsList]);
 
     return (
         <>

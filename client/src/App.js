@@ -97,6 +97,7 @@ function MainApp() {
         alert(event.data.toString())
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[user ? user._id : user])
 
   let SavePreferenceUser = useCallback( (data) => {
@@ -140,6 +141,7 @@ function MainApp() {
         setErrorMessage("Username or password incorrect.");
       }
       )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   const doLogOut = useCallback( async () => {
@@ -148,6 +150,7 @@ function MainApp() {
     setUser(null);
     setRole("");
     navigate('/');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   useEffect(() => {
@@ -179,6 +182,7 @@ function MainApp() {
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

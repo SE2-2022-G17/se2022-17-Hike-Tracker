@@ -101,6 +101,7 @@ function RecordCard(props) {
         API.terminateRecordingHike(record._id, authToken);
         setDisabled(true);
         setDirty(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[record ? record._id : record,setDirty])
 
     return (
