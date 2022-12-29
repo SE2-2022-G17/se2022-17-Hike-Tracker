@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import API from "../API";
 
@@ -30,14 +30,14 @@ function LinkHut(props) {
     }, [props.hike]);
 
 
-    function handleConfirm() {
+    const handleConfirm = useCallback(() => {
         if (hut !== "") {
             const authToken = localStorage.getItem('token');
             API.linkHut(hut, props.hike, authToken)
                 .then((res) => { console.log(res); setHut("") })
                 .catch(err => console.log(err))
         }
-    }
+    },[hut,props.hike])
 
     useEffect(() => {
         setHutsFiltered(hutsList.filter((hut) => hut.name.toLowerCase() === hutsFilter.toLowerCase()));
