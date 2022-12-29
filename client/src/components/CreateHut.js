@@ -83,7 +83,17 @@ function CreateHutForm() {
             setMessage('Latitude or longitude values not valid.');
         }
         else {
-            const response = await API.createHut(name, description, beds, authToken, longitude, latitude, altitude, phone, email, website);
+            const response = await API.createHut({
+                name:name, 
+                description:description, 
+                beds:beds, 
+                longitude:longitude, 
+                latitude:latitude, 
+                altitude:altitude, 
+                phone:phone, 
+                email:email, 
+                website:website}, 
+                authToken);
 
             if (response === 201) {
                 //HTTP status code 201 means Created (successful)

@@ -71,19 +71,19 @@ function VisitorHikes() {
             return
         }
 
-        const retrivedHikes = await API.getVisitorHikes(
-            difficulty,
-            minLength,
-            maxLength,
-            minAscent,
-            maxAscent,
-            minTime,
-            maxTime,
-            city,
-            province,
-            longitude,
-            latitude
-        );
+        const retrivedHikes = await API.getVisitorHikes({
+            difficulty:difficulty,
+            minLength:minLength,
+            maxLength:maxLength,
+            minAscent:minAscent,
+            maxAscent:maxAscent,
+            minTime:minTime,
+            maxTime:maxTime,
+            city:city,
+            province:province,
+            longitude:longitude,
+            latitude:latitude
+        });
         setHikes(retrivedHikes);
     },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province])
 

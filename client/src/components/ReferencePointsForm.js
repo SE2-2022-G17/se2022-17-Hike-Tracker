@@ -80,12 +80,11 @@ function ReferencePointsForm(props){
                         <Col lg={3}></Col>
                     </Form.Group>
                         {
-                            referenceOpt==="huts" ? 
+                            referenceOpt==="huts" && 
                                 <LocationForm type={"hut"} setId={setId} setOpenForm={setOpenForm} point={pointOpt} startLatitude={props.startLatitude} startLongitude={props.startLongitude} endLatitude={props.endLatitude} endLongitude={props.endLongitude}/>
-                            : referenceOpt==="parking" ?
+                        }
+                        {referenceOpt==="parking" &&
                                 <LocationForm type={"parking"} setId={setId} setOpenForm={setOpenForm} point={pointOpt} startLatitude={props.startLatitude} startLongitude={props.startLongitude} endLatitude={props.endLatitude} endLongitude={props.endLongitude}/>
-                            :
-                            <></>
                         }
                 </>
                 :
@@ -117,18 +116,19 @@ function LocationForm(props){
 
     useEffect(()=>{
         const authToken = localStorage.getItem('token');
-        (async()=>
-            props.type==="hut" ?
+        (async()=>{
+            if(props.type==="hut"){
                 props.point==="start" ?
                     setLocOpt(await API.getHuts(undefined,undefined,undefined,props.startLongitude.toString(),props.startLatitude.toString(),"5",authToken))
                 :
                     setLocOpt(await API.getHuts(undefined,undefined,undefined,props.endLongitude.toString(),props.endLatitude.toString(),"5",authToken))
-            :
+            }else {
                 props.point==="start" ?
                     setLocOpt(await API.getParking(undefined,undefined,undefined,props.startLongitude.toString(),props.startLatitude.toString(),"5",authToken))
                 :
                     setLocOpt(await API.getParking(undefined,undefined,undefined,props.endLongitude.toString(),props.endLatitude.toString(),"5",authToken))
-        )();
+            }
+        })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props.type,props.point])
 

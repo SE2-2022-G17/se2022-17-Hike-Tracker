@@ -56,10 +56,7 @@ function RecordInfo(props) {
         const currentIndex = traceArray.indexOf(currentString);
         const selectedIndex = traceArray.indexOf(selectedString);
 
-        if (selectedIndex > currentIndex)
-            return false;
-
-        return true;
+        return !(selectedIndex > currentIndex)
     },[])
 
     useEffect(() => {
@@ -213,7 +210,7 @@ function ReferencePointCard(props) {
     },[record ? record._id : record, referencePoint ? (referencePoint.point ? referencePoint.point._id : referencePoint.point) : referencePoint,setDirty,setDisabled])
 
     return (
-        referencePoint ?
+        referencePoint && (
             <Card className="reference-point">
                 <Card.Body>
                     <Row>
@@ -232,7 +229,7 @@ function ReferencePointCard(props) {
                     </Row>
                 </Card.Body>
             </Card>
-            : undefined
+        )
     );
 }
 

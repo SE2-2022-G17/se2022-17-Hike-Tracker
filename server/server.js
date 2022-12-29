@@ -709,6 +709,23 @@ app.put('/usersToApprove', verifyUserToken,async (req,res)=>{
     }
 })
 
+
+function weatherAlertDistanceValidation(longitude,latitude,hike,searchRadius){
+    let validate = false;
+    if(distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
+        if(distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
+            hike.referencePoints.forEach((rp)=>{
+                if(distanceCalc({lat:rp.location.coordinates[1],lng:rp.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius)
+                    validate = true
+            })
+        }else{
+            validate = true;
+        }
+    }else{
+        validate=true;
+    }
+    return validate;
+}
 //HT-27,29
 app.post('/weatherAlert', verifyUserToken, async (req, res) => {
     try{
@@ -720,19 +737,7 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
         const records= await dao.getAllOngoingRecord();
         for(let record of records){
             let hike = await dao.getHike(record.hikeId)
-            let validate = false;
-            if(distanceCalc({lat:hike.startPoint.location.coordinates[1],lng:hike.startPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
-                if(distanceCalc({lat:hike.endPoint.location.coordinates[1],lng:hike.endPoint.location.coordinates[0]},{lat:latitude,lng:longitude})/1000>searchRadius){
-                    hike.referencePoints.forEach((rp)=>{
-                        if(distanceCalc({lat:rp.location.coordinates[1],lng:rp.location.coordinates[0]},{lat:latitude,lng:longitude})/1000<searchRadius)
-                            validate = true
-                    })
-                }else{
-                    validate = true;
-                }
-            }else{
-                validate=true;
-            }
+            const validate = weatherAlertDistanceValidation(longitude,latitude,hike,searchRadius)
             if(validate){
                 if(clients && clients[`${record.userId}`]){
                     clients[`${record.userId}`].send('Be careful, there is a weather ALERT on the hike you are doing!')

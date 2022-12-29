@@ -2,7 +2,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Row, Col, Alert } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from 'react';
-//import VisitorHikes from './components/VisitorHikes';
 import HikesView from './components/VisitorHikes';
 import { LoginForm } from './components/LoginComponents';
 import { SignUpForm } from './components/SignUpComponents';

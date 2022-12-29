@@ -68,7 +68,7 @@ function VerifyAccount(){
                             </Col>
                         </Row>
                         {
-                            messageVisible ?
+                            messageVisible && (
                                 valid ?
                                     <Row>
                                         <Col>
@@ -83,7 +83,7 @@ function VerifyAccount(){
                                         <Alert variant='danger'>Uncorrect code.</Alert>
                                     </Col>
                                 </Row>
-                                :<></>
+                                )
                         }
                     </Container>
                 </Form>

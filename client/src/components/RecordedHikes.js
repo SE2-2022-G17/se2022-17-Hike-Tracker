@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import API from '../API';
 
 function RecordedHikes(props) {
-    //const { lng, setLng, lat, setLat } = props;
     const [records, setRecords] = useState([]);
     const [dirty, setDirty] = useState(false);
 

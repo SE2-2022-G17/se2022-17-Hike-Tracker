@@ -33,11 +33,6 @@ describe('Test API to set weather notification (US27)', () => {
             await mongoose.connect(mongoUri);
         }
 
-        //ws = new WebSocket('ws://127.0.0.1:3001',"echo-protocol");
-        //await new Promise(resolve => ws.once('open', resolve));
-
-        //ws.send(userId1)
-
         await Position.deleteMany();
         await Hike.deleteMany();
         await User.deleteMany();
@@ -110,8 +105,6 @@ describe('Test API to set weather notification (US27)', () => {
     });
 
     after(async () => {
-        //ws.close();
-        //await new Promise(resolve => ws.once('close', resolve));
         await mongoose.disconnect();
         if (mongoServer !== undefined)
             await mongoServer.stop();

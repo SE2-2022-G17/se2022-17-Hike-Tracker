@@ -68,7 +68,7 @@ function AddReferencePoint(props) {
             
                 <Row className="m-3">
                     <Col className="text-center">
-                        <Button variant="outline-dark" onClick={() => handleConfirm()} >Confirm</Button>
+                        <Button variant="outline-dark" onClick={handleConfirm} >Confirm</Button>
                     </Col>
                 </Row>
             </Form>

@@ -117,19 +117,19 @@ function parametersCheck(
         parametes.push("minTime=" + minTime)
 }
 
-async function getVisitorHikes(
-    difficulty,
-    minLength,
-    maxLength,
-    minAscent,
-    maxAscent,
-    minTime,
-    maxTime,
-    city,
-    province,
-    longitude,
-    latitude
-) {
+async function getVisitorHikes(container) {
+    const difficulty = container.difficulty;
+    const minLength = container.minLength;
+    const maxLength = container.maxLength;
+    const minAscent = container.minAscent;
+    const maxAscent = container.maxAscent;
+    const minTime = container.minTime;
+    const maxTime = container.maxTime;
+    const city = container.city;
+    const province = container.province;
+    const longitude = container.longitude;
+    const latitude = container.latitude;
+
     let query = "?"
 
     let parametes = []
@@ -223,7 +223,14 @@ async function storePerformance(data, token) {
     return (await response).json();
 }
 
-async function sendHikeDescription(title, time, difficulty, description, track, city, province, token) {
+async function sendHikeDescription(container, token) {
+    const title = container.title
+    const time = container.time
+    const difficulty = container.difficulty
+    const description = container.description
+    const track = container.track
+    const city = container.city
+    const province = container.province
     const body = new FormData();
     body.append("track", track);
     body.append("title", title);
@@ -258,7 +265,16 @@ async function getAllHuts() {
     return await response.json()
 }
 
-async function createHut(name, description, beds, token, longitude, latitude, altitude, phone, email, website) {
+async function createHut(container,token) {
+    const name = container.name
+    const description = container.description
+    const beds = container.beds
+    const longitude = container.longitude
+    const latitude = container.latitude
+    const altitude = container.altitude
+    const phone = container.phone
+    const email = container.email
+    const website = container.website
     const response = await fetch(url + '/huts', {
         method: "POST",
         headers: {
