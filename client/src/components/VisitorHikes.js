@@ -35,7 +35,7 @@ function VisitorHikes() {
     const handleShow = useCallback( () => setShow(true),[]);
 
     useEffect(() => {
-        API.getVisitorHikes()
+        API.getVisitorHikes({})
             .then(retrivedHikes => {
                 setHikes(retrivedHikes);
             })

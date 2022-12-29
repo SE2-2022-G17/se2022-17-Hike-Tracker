@@ -455,7 +455,7 @@ function ShowHike(props) {
                                 <Accordion.Item eventKey="0">
                                     <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
                                     <Accordion.Body>
-                                        <ReferencePointsForm hikeId={id} />
+                                        {hike && <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]}/>}
                                     </Accordion.Body>
                                 </Accordion.Item>
                                 <Accordion.Item eventKey="1">

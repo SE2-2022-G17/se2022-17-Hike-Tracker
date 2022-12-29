@@ -83,7 +83,8 @@ function ReferencePointsForm(props){
                             referenceOpt==="huts" && 
                                 <LocationForm type={"hut"} setId={setId} setOpenForm={setOpenForm} point={pointOpt} startLatitude={props.startLatitude} startLongitude={props.startLongitude} endLatitude={props.endLatitude} endLongitude={props.endLongitude}/>
                         }
-                        {referenceOpt==="parking" &&
+                        {
+                            referenceOpt==="parking" &&
                                 <LocationForm type={"parking"} setId={setId} setOpenForm={setOpenForm} point={pointOpt} startLatitude={props.startLatitude} startLongitude={props.startLongitude} endLatitude={props.endLatitude} endLongitude={props.endLongitude}/>
                         }
                 </>

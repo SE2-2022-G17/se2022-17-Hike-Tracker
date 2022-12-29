@@ -516,7 +516,6 @@ exports.getHikeTrace = async (hikeId) => {
         return gpx.tracks[0].points.map(p => { return { lng: p.lon, lat: p.lat } })
 
     } catch (e) {
-        console.log(e)
         throw new HTTPError( "Trace not found", 404 );
     }
 }
