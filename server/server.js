@@ -751,6 +751,14 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
     }
 });
 
+//get hut by id
+app.get('/hut/:id', verifyUserToken, (req, res) => {
+    const hutId = req.params.id;
+
+    dao.getHut(hutId)
+        .then((hut) => { res.json(hut); })
+        .catch((error) => { res.status(500).json(error); });
+});
 
 // activate the server
 server.listen(port, () => {

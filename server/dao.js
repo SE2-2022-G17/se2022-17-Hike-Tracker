@@ -745,3 +745,14 @@ exports.changeApprovalStatus = async (status,id) => {
         throw new HTTPError("Server internal error",500)
     }
 }
+
+exports.getHut = async (id) => {
+    return Hut.findById(ObjectId(id))
+        .populate('point')
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            throw new HTTPError(500,err);
+        });
+}
