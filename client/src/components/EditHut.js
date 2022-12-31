@@ -13,16 +13,33 @@ function EditHut(props) {
     const { id } = useParams();
 
     const [hut, setHut] = useState(null);
+    const [hikes, setHikes] = useState(null);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
         API.getHut(id, authToken)
             .then((hut) => {
                 setHut(hut);
+                
             })
             .catch(err => console.log(err))
-        console.log(hut)
-    }, []);
+        
+    }, [id]);
+
+
+    useEffect(() => {
+        if (id !== null) {
+            const authToken = localStorage.getItem('token');
+            API.getHikesLinkedToHut(id, authToken)
+                .then((h) => {
+                    setHikes(h);
+                })
+                .catch(err => console.log(err))
+            
+        }
+        console.log(hikes)
+    }, [hut]);
+
 
     let body = '';
 
@@ -32,7 +49,7 @@ function EditHut(props) {
             <p>You are not approved</p>
         </div>;
     } else {
-        body = <MainContent hut={hut} name={props.user.firstName} />;
+        body = <MainContent hikes={hikes} hut={hut} name={props.user.firstName} />;
     }
 
     return <Container>
@@ -45,7 +62,7 @@ function EditHut(props) {
 }
 
 function MainContent(props) {
-
+ 
     const [description, setDescription] = useState(props.hut.description);
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState("");
@@ -115,37 +132,45 @@ function MainContent(props) {
                     </Form>
                 </Card.Body>
             </Card>
-            <br/>
+            <br />
             <p>Hikes linked to {props.hut.name} hut: </p>
-            <Form>
-                <Form.Group as={Row}>
-                    <Form.Label className="mt-3 text-center" column sm="2" >Hike Name:</Form.Label>
-                    <Col className="p-0" sm={3}>
-                        <FloatingLabel className="m-0 p-0" controlId="floatingSelect" label="Select hike condition">
-                            <Form.Select>
-                                <option>Open</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </Form.Select>
-                        </FloatingLabel>
-                    </Col>
-                    <Col sm={5}>
-                        <FloatingLabel
-                            controlId="floatingTextarea"
-                            label="Details"
-                            className="m-3"
-                        >
-                            <Form.Control as="textarea" />
-                        </FloatingLabel>
-                    </Col>
-                    <Col sm={2}>
-                        <Button className='secondary mt-4 text-center'>Save</Button>
-                    </Col>
-                </Form.Group>
-            </Form>
+            {
+                props.hikes.map(hike => <HikeConditionForm hike={hike} />)
+            }
         </Container>
     </>
+}
+
+function HikeConditionForm(props) {
+    return (
+        <Form>
+            <Form.Group as={Row}>
+                <Form.Label className="mt-3 text-center" column sm="2" >{props.hike.title} hike:</Form.Label>
+                <Col className="p-0" sm={3}>
+                    <FloatingLabel className="m-0 p-0" controlId="floatingSelect" label="Select hike condition">
+                        <Form.Select>
+                            <option>Open</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </Form.Select>
+                    </FloatingLabel>
+                </Col>
+                <Col sm={5}>
+                    <FloatingLabel
+                        controlId="floatingTextarea"
+                        label="Details"
+                        className="m-3"
+                    >
+                        <Form.Control as="textarea" />
+                    </FloatingLabel>
+                </Col>
+                <Col sm={2}>
+                    <Button className='secondary mt-4 text-center'>Save</Button>
+                </Col>
+            </Form.Group>
+        </Form>
+    )
 }
 
 export default EditHut;
