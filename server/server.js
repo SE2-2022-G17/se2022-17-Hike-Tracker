@@ -760,6 +760,15 @@ app.get('/hut/:id', verifyUserToken, (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+//get hikes linked to the given hut
+app.get('/hikesLinked/:id', verifyUserToken, (req, res) => {
+    const hutId = req.params.id;
+
+    dao.getHikesLinkedToHut(hutId)
+        .then((hikes) => { res.json(hikes); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
 // activate the server
 server.listen(port, () => {
     console.log(`app listening at http://localhost:${port}`);

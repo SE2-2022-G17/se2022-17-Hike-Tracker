@@ -756,3 +756,16 @@ exports.getHut = async (id) => {
             throw new HTTPError(500,err);
         });
 }
+
+exports.getHikesLinkedToHut = async function(id){
+    try {
+        const hikes = await Hike.find(
+                { "huts": { "$in": id } }
+            ).exec();
+
+        return hikes
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
