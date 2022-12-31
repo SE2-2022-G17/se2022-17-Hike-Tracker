@@ -11,7 +11,8 @@ const Hut = require("../models/Hut")
 const Record = require("../models/Record")
 const Image = require("../models/Image")
 const HikeImage = require("../models/HikeImage")
-
+const Condition = require("../constants/Condition")
+const HikeCondition = require("../models/HikeCondition")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
@@ -174,6 +175,10 @@ async function run() {
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
 
+            const cond = await HikeCondition.create({
+                condition: Condition.open,
+                details: ""
+            })
 
             const hike = await Hike.create({
                 title: h.title,
@@ -188,7 +193,7 @@ async function run() {
                 startPoint: startPosition._id,
                 endPoint: endPosition._id,
                 authorId: user._id,
-
+                condition: cond
             })
             await hike.save()
             console.log(hike)

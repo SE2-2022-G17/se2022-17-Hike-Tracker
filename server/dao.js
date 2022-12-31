@@ -11,6 +11,7 @@ const RecordStatus = require("./constants/RecordStatus")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
 const HikeImage = require('./models/HikeImage')
+const Condition = require('./models/HikeCondition')
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -281,6 +282,7 @@ exports.getHike = async (id) => {
             // Populate across multiple level: point of huts
             populate: { path: 'point' }
         })
+        .populate('condition')
         .populate('referencePoints')
         .then(doc => {
             return doc;
@@ -761,7 +763,9 @@ exports.getHikesLinkedToHut = async function(id){
     try {
         const hikes = await Hike.find(
                 { "huts": { "$in": id } }
-            ).exec();
+            )
+            .populate('condition')
+            .exec();
 
         return hikes
 
