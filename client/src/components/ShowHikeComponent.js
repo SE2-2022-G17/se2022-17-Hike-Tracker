@@ -401,8 +401,7 @@ function ShowHike(props) {
 
             </Row>
             {
-                props.role === "localGuide" ?
-                refFormVisible ?
+                props.role === "localGuide" && refFormVisible?
                 <Row>
                     <Col>
                     <Card>
@@ -431,7 +430,11 @@ function ShowHike(props) {
                         </Card>
                     </Col>
                 </Row>
-                :<Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
+                :<></>
+            }
+            {
+                props.role === "localGuide" && !refFormVisible ?
+                <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
                 :<></>
             }
             {
