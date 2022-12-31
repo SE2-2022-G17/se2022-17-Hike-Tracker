@@ -204,6 +204,43 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
 
 exports.deleteHike = async function(hikeId){
     try{
+        Hike.findById(hikeId, function (err, docs) {
+            if (err){
+                console.log(err);
+            }
+            else{
+                Position.findOneAndDelete({_id:docs.startPoint}, function (err, _docs) {
+                    if (err){
+                        console.log(err)
+                    }
+                    else{
+                    }
+                });
+                Position.findOneAndDelete({_id:docs.endPoint}, function (err, _docs) {
+                    if (err){
+                        console.log(err)
+                    }
+                    else{
+                    }
+                });
+                docs.referencePoints.forEach(refPoint=>{
+                    Location.findOneAndDelete({point:refPoint},function (err, _docs) {
+                        if (err){
+                            console.log(err)
+                        }
+                        else{
+                        }
+                    });
+                    Position.findOneAndDelete({_id:refPoint},function (err, _docs) {
+                        if (err){
+                            console.log(err)
+                        }
+                        else{
+                        }
+                    });
+                })
+            }
+        });
         await Hike.findByIdAndDelete(hikeId);
     }catch (e) {
         throw new TypeError(400);
