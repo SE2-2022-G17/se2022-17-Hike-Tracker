@@ -74,6 +74,7 @@ app.get('/visitor/hikes', (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+
 app.get('/getHuts', verifyUserToken, (req, res) => {
     let bedsMin = req.query.bedsMin
     let altitudeMin = req.query.altitudeMin
@@ -175,6 +176,16 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
     try {
         const hikeId = await dao.saveNewHike(req.body, req.file, (await dao.getUserByEmail(req.user.email))._id);
         return res.status(201).json(hikeId);
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+});
+
+app.post('/LocalGuide/deleteHike',verifyUserToken, async (req, res) => {
+    try {
+        const hikeId = req.body.hikeId;
+        await dao.deleteHike(hikeId);
+        return res.status(204).json(hikeId);
     } catch (err) {
         return res.status(500).json(err);
     }

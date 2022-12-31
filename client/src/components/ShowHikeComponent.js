@@ -63,7 +63,7 @@ function ShowHike(props) {
         marker.setLngLat([choise.lng, choise.lat])
         return point;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[hikeTrace])
 
     useEffect(()=>{
         if(cursorPosition && refFormVisible){
@@ -77,7 +77,6 @@ function ShowHike(props) {
                 }
                 }
             map.current.getSource('route').setData(data);
-            
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[cursorPosition])

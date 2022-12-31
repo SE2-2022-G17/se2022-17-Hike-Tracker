@@ -88,7 +88,7 @@ function VisitorHikes() {
         });
         setHikes(retrivedHikes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province])
+    },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province, hikes.length])
 
     return (
         <Container className='visitor-hike'>
@@ -116,7 +116,7 @@ function VisitorHikes() {
                     </Container>
                 </Col>
                 <Col xl={9}>
-                    <HikesList hikes={hikes} />
+                    <HikesList hikes={hikes} setHikes={setHikes}/>
                 </Col>
             </Row>
             <Modal show={show} onHide={handleClose}>
@@ -226,7 +226,7 @@ function HikesList(props) {
             {
                 props.hikes.map((hike, index) => {
                     return (
-                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} />
+                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} setHikes={props.setHikes}/>
                     );
                 })
             }

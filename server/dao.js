@@ -25,6 +25,7 @@ if (process.env.NODE_ENV === "development") {
     mongoose.connect("mongodb://localhost/hike_tracker");
 }
 
+
 exports.getVisitorHikes= async function(
     queryContainer
 ){
@@ -199,6 +200,14 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
         }
     });
     return parking._id;
+}
+
+exports.deleteHike = async function(hikeId){
+    try{
+        await Hike.findByIdAndDelete(hikeId);
+    }catch (e) {
+        throw new TypeError(400);
+    }
 }
 
 exports.saveNewHike = async function (bodyContainer,track,userId){

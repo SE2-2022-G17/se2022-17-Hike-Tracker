@@ -223,6 +223,24 @@ async function storePerformance(data, token) {
     return (await response).json();
 }
 
+async function deleteHike(hikeId,token){
+    console.log(hikeId);
+    const response = fetch(url + '/localGuide/deleteHike', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({hikeId:hikeId})
+    });
+    if (response.ok) {
+        return await response.json();
+    } else {
+        return undefined;
+    }
+}
+
 async function sendHikeDescription(container, token) {
     const title = container.title
     const time = container.time
@@ -651,7 +669,8 @@ const API = {
     getReferencePointByPosition,
     getToApprove,
     changeApprovalStatus,
-    addWeatherAlert
+    addWeatherAlert,
+    deleteHike
 };
 
 
