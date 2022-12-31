@@ -247,7 +247,7 @@ function MainApp() {
         <Route path="/preferredHikes" element={<PreferredHikes />} />
         <Route path="/recordedHikes" element={<RecordedHikes />} />
         <Route path="/records/:id" element={<Record />} />
-        <Route path='/edit/:hutId' element={<EditHut user={user}/>}/>
+        <Route path='/edit/:id' element={<EditHut user={user}/>}/>
         <Route path="/platformManager" element={<PlatformManager user={user}/>} />
       </Routes>
 
