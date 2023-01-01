@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Utils from "../Utils"
 import Modal from 'react-bootstrap/Modal';
 import API from "../API";
+import { Navigate } from "react-router";
 
 
 function HikeCard(props) {
@@ -25,6 +26,8 @@ function HikeCard(props) {
         setShow(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
+    const showDelete = useCallback(() => setShow(true),[]);
+    const modify = useCallback(() => props.goToModify(hike._id),[]);
 
     useEffect(()=>{
         const token = localStorage.getItem('token');
@@ -61,13 +64,14 @@ function HikeCard(props) {
                             <Col lg="2">
                             <Button variant="outline-dark" 
                                 onMouseEnter={handleMouseEnter} 
-                                onMouseLeave={handleMouseLeave}>
+                                onMouseLeave={handleMouseLeave}
+                                onClick={modify}>
                                 <PencilSquare/></Button>
                             {" "}
                             <Button variant="outline-dark" 
                                 onMouseEnter={handleMouseEnter}
                                 onMouseLeave={handleMouseLeave}
-                                onClick={()=>{setShow(true)}}>
+                                onClick={showDelete}>
                                 <Trash3/></Button>
                             </Col>:<></>
                         }

@@ -241,6 +241,40 @@ async function deleteHike(hikeId,token){
     }
 }
 
+async function updateHikeDescription(container, token) {
+    const id = container.id
+    const title = container.title
+    const time = container.time
+    const difficulty = container.difficulty
+    const description = container.description
+    const track = container.track
+    const city = container.city
+    const province = container.province
+    const body = new FormData();
+    body.append("track", track);
+    body.append("id", id);
+    body.append("title", title);
+    body.append("time", time);
+    body.append("difficulty", difficulty);
+    body.append("description", description);
+    body.append("city", city);
+    body.append("province", province);
+
+    const response = await fetch(url + '/localGuide/modifyHike', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+        body: body
+    })
+    if (response.ok) {
+        return await response.json();
+    } else {
+        return undefined;
+    }
+}
+
 async function sendHikeDescription(container, token) {
     const title = container.title
     const time = container.time
@@ -670,7 +704,8 @@ const API = {
     getToApprove,
     changeApprovalStatus,
     addWeatherAlert,
-    deleteHike
+    deleteHike,
+    updateHikeDescription
 };
 
 

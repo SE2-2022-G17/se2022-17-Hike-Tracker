@@ -247,6 +247,84 @@ exports.deleteHike = async function(hikeId){
     }
 }
 
+exports.updateHike = async function (bodyContainer,track,userId){
+    const id = bodyContainer.id;
+    const title = bodyContainer.title;
+    const time = bodyContainer.time;
+    const difficulty = bodyContainer.difficulty;
+    const description = bodyContainer.description;
+    const city = bodyContainer.city;
+    const province = bodyContainer.province;
+    
+    let startPosition = undefined
+    let endPosition = undefined
+
+    try {
+        if (track) {
+            fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+            const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+            let gpx = new gpxParser()
+            gpx.parse(content)
+            let length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            let points = gpx.tracks[0].points
+            let startPoint = points[0]
+            let endPoint = points[points.length - 1]
+
+            startPosition = await Position.create({
+                "location.coordinates": [startPoint.lon, startPoint.lat]
+            })
+
+            endPosition = await Position.create({
+                "location.coordinates": [endPoint.lon, endPoint.lat]
+            })
+            let doc = await Hike.findOneAndUpdate({_id:id}, {
+                title: title,
+                length: length,
+                expectedTime: time,
+                ascent: ascent,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                difficulty: difficulty,
+                description: description,
+                referencePoints: [],
+                huts: [],
+                city: city,
+                province: province,
+                track_file: track !== undefined ? track.originalname : null,
+                authorId: userId
+            });
+            return doc.id;
+        }
+        else{
+            let doc;
+            if(city && province){
+                doc = await Hike.findOneAndUpdate({_id:id}, {
+                    title: title,
+                    expectedTime: time,
+                    difficulty: difficulty,
+                    description: description,
+                    city: city,
+                    province: province,
+                    authorId: userId
+                });
+            }
+            else{
+                doc = await Hike.findOneAndUpdate({_id:id}, {
+                    title: title,
+                    expectedTime: time,
+                    difficulty: difficulty,
+                    description: description,
+                    authorId: userId
+                });
+            }
+            return doc.id;
+        }
+    } catch (e) {
+        throw new TypeError(400);
+    }
+}
+
 exports.saveNewHike = async function (bodyContainer,track,userId){
     const title = bodyContainer.title;
     const time = bodyContainer.time;

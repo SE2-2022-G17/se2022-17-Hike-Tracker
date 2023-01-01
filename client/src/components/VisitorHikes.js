@@ -220,13 +220,18 @@ function HikesList(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
+    const goToModify = useCallback((id) => {
+        navigator('/ModifyHike/' + id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
     return (
         <>
             {props.hikes.length === 0 ? <h3>No hikes available</h3> : undefined}
             {
                 props.hikes.map((hike, index) => {
                     return (
-                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} setHikes={props.setHikes}/>
+                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} setHikes={props.setHikes} goToModify={goToModify}/>
                     );
                 })
             }
