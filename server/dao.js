@@ -298,8 +298,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
         }
         else{
             let doc;
-            if(city && province){
-                doc = await Hike.findOneAndUpdate({_id:id}, {
+            doc = await Hike.findOneAndUpdate({_id:id}, {
                     title: title,
                     expectedTime: time,
                     difficulty: difficulty,
@@ -307,17 +306,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
                     city: city,
                     province: province,
                     authorId: userId
-                });
-            }
-            else{
-                doc = await Hike.findOneAndUpdate({_id:id}, {
-                    title: title,
-                    expectedTime: time,
-                    difficulty: difficulty,
-                    description: description,
-                    authorId: userId
-                });
-            }
+            });
             return doc.id;
         }
     } catch (e) {
