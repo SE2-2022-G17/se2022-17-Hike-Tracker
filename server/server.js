@@ -184,7 +184,7 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
 app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
         const hikeId = await dao.updateHike(req.body, req.file, (await dao.getUserByEmail(req.user.email))._id);
-        return res.status(201).json(hikeId);
+        return res.status(204).json(hikeId);
     } catch (err) {
         return res.status(500).json(err);
     }
