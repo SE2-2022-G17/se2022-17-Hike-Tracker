@@ -705,7 +705,7 @@ const API = {
     changeApprovalStatus,
     addWeatherAlert,
     deleteHike,
-    updateHikeDescription
+    updateHikeDescription,
 };
 
 

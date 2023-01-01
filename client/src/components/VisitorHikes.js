@@ -24,8 +24,8 @@ function VisitorHikes() {
     const [maxAscent, setMaxAscent] = useState(undefined);
     const [minTime, setMinTime] = useState(undefined);
     const [maxTime, setMaxTime] = useState(undefined);
-    const [city, setCity] = useState(undefined)
-    const [province, setProvince] = useState(undefined)
+    const [city, setCity] = useState("Select city");
+    const [province, setProvince] = useState("Select province");
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
@@ -72,6 +72,17 @@ function VisitorHikes() {
         if (latitude !== undefined && Number.isNaN(Number(latitude))) {
             return
         }
+        let citySend;
+        if(city==="Select city")
+            citySend=undefined;
+        else
+            citySend=city;
+        let provinceSend;
+        if(province==="Select province")
+            provinceSend=undefined;
+        else
+            provinceSend=province;
+            
 
         const retrivedHikes = await API.getVisitorHikes({
             difficulty:difficulty,
@@ -81,8 +92,8 @@ function VisitorHikes() {
             maxAscent:maxAscent,
             minTime:minTime,
             maxTime:maxTime,
-            city:city,
-            province:province,
+            city:citySend,
+            province:provinceSend,
             longitude:longitude,
             latitude:latitude
         });
@@ -104,6 +115,7 @@ function VisitorHikes() {
                             province={province}
                             setProvince={setProvince}
                             setCity={setCity}
+                            city={city}
                         />
                         <SelectPointFromMap handleShow={handleShow} />
                         <Coordinates lng={longitude} lat={latitude} />

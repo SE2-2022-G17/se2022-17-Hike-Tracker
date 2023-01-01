@@ -400,7 +400,7 @@ function ShowHike(props) {
 
             </Row>
             {
-                props.role === "localGuide" && refFormVisible?
+                props.role === "localGuide" && refFormVisible && props.user.approved ?
                 <Row>
                     <Col>
                     <Card>
@@ -432,13 +432,13 @@ function ShowHike(props) {
                 :<></>
             }
             {
-                props.role === "localGuide" && !refFormVisible ?
+                props.role === "localGuide" && !refFormVisible && props.user.approved ?
                 <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
                 :<></>
             }
             {
                 //only localguide can link hut to a hike
-                props.role === "localGuide" ? <>
+                props.role === "localGuide" && props.user.approved ? <>
                     <Row>
                         <Col>
                         <br></br>

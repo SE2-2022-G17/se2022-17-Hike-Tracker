@@ -484,6 +484,7 @@ const imageUpload = multer({
     limits: { fileSize: 8000000 } //max file size
 });
 
+
 app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], async (req, res) => {
     // req.file can be used to access all file properties
     if (!req.file) {

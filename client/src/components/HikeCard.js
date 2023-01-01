@@ -6,7 +6,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Utils from "../Utils"
 import Modal from 'react-bootstrap/Modal';
 import API from "../API";
-import { Navigate } from "react-router";
 
 
 function HikeCard(props) {
@@ -27,16 +26,19 @@ function HikeCard(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
     const showDelete = useCallback(() => setShow(true),[]);
-    const modify = useCallback(() => props.goToModify(hike._id),[]);
+    const modify = useCallback(() => props.goToModify(hike._id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ,[]);
 
     useEffect(()=>{
         const token = localStorage.getItem('token');
         if(token)setUser(Utils.parseJwt(token));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
     useEffect(()=>{
         if(user){
-            if(user.role==="localGuide" && user.id===hike.authorId){
+            if(user.role==="localGuide" && user.id===hike.authorId && user.approved){
                 setButtonsVisible(true);
             }
         }

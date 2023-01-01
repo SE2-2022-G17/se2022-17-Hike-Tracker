@@ -271,6 +271,44 @@ exports.updateHike = async function (bodyContainer,track,userId){
             let startPoint = points[0]
             let endPoint = points[points.length - 1]
 
+            Hike.findById(id, function (err, docs) {
+                if (err){
+                    console.log(err);
+                }
+                else{
+                    Position.findOneAndDelete({_id:docs.startPoint}, function (err, _docs) {
+                        if (err){
+                            console.log(err)
+                        }
+                        else{
+                        }
+                    });
+                    Position.findOneAndDelete({_id:docs.endPoint}, function (err, _docs) {
+                        if (err){
+                            console.log(err)
+                        }
+                        else{
+                        }
+                    });
+                    docs.referencePoints.forEach(refPoint=>{
+                        Location.findOneAndDelete({point:refPoint},function (err, _docs) {
+                            if (err){
+                                console.log(err)
+                            }
+                            else{
+                            }
+                        });
+                        Position.findOneAndDelete({_id:refPoint},function (err, _docs) {
+                            if (err){
+                                console.log(err)
+                            }
+                            else{
+                            }
+                        });
+                    })
+                }
+            });
+
             startPosition = await Position.create({
                 "location.coordinates": [startPoint.lon, startPoint.lat]
             })
@@ -647,6 +685,15 @@ exports.getHikeImage = async (hikeId) => {
 exports.addImageToHike = async (hikeId, file) => {
 
     try {
+
+        HikeImage.findOneAndDelete({ hikeId:hikeId }, function (err, _docs) {
+            if (err){
+                console.log(err)
+            }
+            else{
+            }
+        });
+
         let imageUploadObject = {
             hikeId: hikeId,
             file: {

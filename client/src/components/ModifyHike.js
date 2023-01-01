@@ -3,11 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../API";
 import CityProvince from "./CityProvince";
-import Type from "../models/UserType";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquareXmark } from "@fortawesome/free-solid-svg-icons";
 
-function ModifyHike(props) {
+function ModifyHike() {
 
     let body = <MainContent />;
 
@@ -27,8 +24,8 @@ function MainContent() {
     const [description, setDescription] = useState("");
     const [track, setTrack] = useState("");
     const [trackFileName,setTrackFileName] = useState("");
-    const [city, setCity] = useState("")
-    const [province, setProvince] = useState("")
+    const [city, setCity] = useState("Select city")
+    const [province, setProvince] = useState("Select province")
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
     const [image, setImage] = useState("");
@@ -47,13 +44,17 @@ function MainContent() {
               setTrackFileName(hike.track_file);
               setStartCity(hike.city);
               setStartProvince(hike.province);
+              setProvince("Select province");
+              setCity("Select city");
         })
         .catch(err=>console.log(err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[title,time,difficulty,description,trackFileName,city,province]);
 
     useEffect(() => {
         if (time <= 0)
             setTime('');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [time])
 
     useEffect(()=>{
@@ -68,12 +69,26 @@ function MainContent() {
               setStartProvince(hike.province);
         })
         .catch(err=>console.log(err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     const handleSubmit = useCallback( async (event) => {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
         setLoading(true);
+        let citySend;
+        let provinceSend;
+
+        if(!city || !province || city==="Select city" || province==="Select province"){
+            citySend=startCity;
+            provinceSend=startProvince;
+        }
+        else{
+            citySend=city;
+            provinceSend=province;
+            setStartCity(city);
+            setStartProvince(province);
+        }
         //if the hike is not created (an error occurred) hikeId will be undefined
         const hikeId = await API.updateHikeDescription({
             id:id,
@@ -82,10 +97,10 @@ function MainContent() {
             difficulty:difficulty,
             description:description,
             track:track,
-            city:city,
-            province:province}, 
+            city:citySend,
+            province:provinceSend}, 
             authToken
-            );
+        );
 
         if (hikeId === undefined) {
             setErr(hikeId);
@@ -98,11 +113,13 @@ function MainContent() {
         }
         setTimeout(() => setErr(""), 5000);
         setLoading(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[city, description, difficulty, image, province, time, title, track])
 
     useEffect(()=>{
         if(track!=="" && track)
             setTrackFileName(track.name);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[track]);
 
 
@@ -139,7 +156,7 @@ function MainContent() {
                     <Form.Control as="textarea" type="text" required={true} value={description} onChange={event => setDescription(event.target.value)} placeholder="Enter the description" />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
-                    <Form.Label>GPX track: {trackFileName}</Form.Label>
+                    <Form.Label>Current GPX track: {trackFileName}</Form.Label>
                     <Form.Control type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
