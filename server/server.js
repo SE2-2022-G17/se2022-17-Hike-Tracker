@@ -190,6 +190,15 @@ app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], as
     }
 });
 
+app.post('/localGuide/removeImage', [verifyUserToken], async (req, res) => {
+    try {
+        await dao.deleteImage(req.body.hikeId);
+        return res.status(200).json(req.body.hikeId);
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+});
+
 app.post('/localGuide/deleteHike',verifyUserToken, async (req, res) => {
     try {
         const hikeId = req.body.hikeId;

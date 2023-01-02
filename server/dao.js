@@ -202,9 +202,23 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
     return parking._id;
 }
 
+exports.deleteImage = async function(hikeId){
+    try{
+        HikeImage.findOneAndDelete({ hikeId:hikeId }, function (err, _docs) {
+            if (err){
+                console.log(err)
+            }
+            else{
+            }
+        });
+
+    }catch (e) {
+        throw new TypeError(400);
+    }
+}
+
 exports.deleteHike = async function(hikeId){
     try{
-
         HikeImage.findOneAndDelete({ hikeId:hikeId }, function (err, _docs) {
             if (err){
                 console.log(err)

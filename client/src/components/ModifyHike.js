@@ -31,6 +31,8 @@ function MainContent() {
     const [image, setImage] = useState("");
     const [startCity,setStartCity] = useState("");
     const [startProvince,setStartProvince] = useState("");
+    const [imagePresent,setImagePresent] = useState(false);
+    const [removingImage,setRemovingImage] = useState(false);
 
     let { id } = useParams();
 
@@ -51,10 +53,18 @@ function MainContent() {
               e.preventDefault();
               e.target.form.elements.GPXControl.value = "";
               e.target.form.elements.ImageControl.value = "";
+              setRemovingImage(false);
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[title,time,difficulty,description,trackFileName,city,province]);
+
+    const removeImageClick = useCallback( (e) => {
+        setRemovingImage(true);
+        setImage('');
+        e.target.form.elements.ImageControl.value = "";
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[removingImage]);
 
     useEffect(() => {
         if (time <= 0)
@@ -65,17 +75,35 @@ function MainContent() {
     useEffect(()=>{
         API.getHike(id)
         .then(hike=>{
-              setTitle(hike.title);  
-              setTime(hike.expectedTime);
-              setDifficulty(hike.difficulty);
-              setDescription(hike.description);
-              setTrackFileName(hike.track_file);
-              setStartCity(hike.city);
-              setStartProvince(hike.province);
+            setTitle(hike.title);  
+            setTime(hike.expectedTime);
+            setDifficulty(hike.difficulty);
+            setDescription(hike.description);
+            setTrackFileName(hike.track_file);
+            setStartCity(hike.city);
+            setStartProvince(hike.province);
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
+
+    useEffect(()=>{
+        const authToken = localStorage.getItem('token');
+        API.getHikeImage(id, authToken)
+        .then(image=>{
+            if (image!==null) {
+                setImagePresent(true);
+            }
+        })
+        .catch(err=>console.log(err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
+    useEffect(()=>{
+        if(image)
+            setImagePresent(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[image])
 
     const handleSubmit = useCallback( async (event) => {
         event.preventDefault();
@@ -107,19 +135,25 @@ function MainContent() {
             authToken
         );
 
+        if(removingImage){
+            await API.removeImageFromHike(id,authToken);
+            setImagePresent(false);
+        }
+
         if (hikeId === undefined) {
             setErr(hikeId);
         } else {
             //image addition is optional
             if (image !== "") {
                 await API.addImageToHike(image, hikeId, authToken);
+                setImagePresent(true);
             }
             setErr(true);
         }
         setTimeout(() => setErr(""), 5000);
         setLoading(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[city, description, difficulty, image, province, time, title, track])
+    },[city, description, difficulty, image, province, time, title, track, removingImage])
 
     useEffect(()=>{
         if(track!=="" && track)
@@ -165,6 +199,22 @@ function MainContent() {
                     <Form.Control name="GPXControl" type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
+                    {
+                        imagePresent && !removingImage?
+                        <>
+                        <Button variant="outline-secondary" onClick={removeImageClick}>Remove current image</Button>
+                        <br></br><br></br>
+                        </>
+                        :<></>
+                    }
+                    {
+                        imagePresent && removingImage?
+                        <>
+                        <h6>Save changes before leaving.</h6>
+                        <br></br>
+                        </>
+                        :<></>
+                    }
                     <Form.Label>Image file:</Form.Label>
                     <Form.Control name="ImageControl" type="file" size="sm" onChange={event => setImage(event.target.files[0])} />
                 </Form.Group>

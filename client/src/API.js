@@ -497,6 +497,19 @@ async function getHikeImage(hikeId, token) {
     return image;
 }
 
+async function removeImageFromHike(hikeId,token){
+    const response = await fetch(url + '/localGuide/removeImage', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({hikeId:hikeId})
+    })
+    return response.status;
+}
+
 async function addImageToHike(image, hikeId, token) {
 
     const body = new FormData();
@@ -705,6 +718,7 @@ const API = {
     addWeatherAlert,
     deleteHike,
     updateHikeDescription,
+    removeImageFromHike
 };
 
 
