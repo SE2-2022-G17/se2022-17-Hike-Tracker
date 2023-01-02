@@ -294,3 +294,7 @@
 .edit:hover{
   color: green;
 }
+
+.pbold{
+  font-weight: bold;
+}

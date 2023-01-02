@@ -1,8 +1,7 @@
-import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
-import { useCallback, useEffect, useState } from 'react';
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../API";
-import CityProvince from "./CityProvince";
 import Type from "../models/UserType";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquareXmark } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +9,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Condition from '../constants/Condition';
 import Toast from 'react-bootstrap/Toast'
 import ToastContainer from 'react-bootstrap/ToastContainer'
+import '../App.css';
 
 function EditHut(props) {
 
@@ -23,25 +23,16 @@ function EditHut(props) {
         API.getHut(id, authToken)
             .then((hut) => {
                 setHut(hut);
-                
-            })
-            .catch(err => console.log(err))
-        
-    }, [id]);
-
-
-    useEffect(() => {
-        if (id !== null) {
-            const authToken = localStorage.getItem('token');
-            API.getHikesLinkedToHut(id, authToken)
+                API.getHikesLinkedToHut(id, authToken)
                 .then((h) => {
                     setHikes(h);
                 })
                 .catch(err => console.log(err))
             
-        }
-        console.log(hikes)
-    }, [hut]);
+            })
+            .catch(err => console.log(err))
+        
+    }, [id]);
 
 
     let body = '';
@@ -52,7 +43,10 @@ function EditHut(props) {
             <p>You are not approved</p>
         </div>;
     } else {
-        body = <MainContent hikes={hikes} hut={hut} name={props.user.firstName} />;
+        if(hut !== null && hikes !== null){
+            body = <MainContent hikes={hikes} hut={hut} name={props.user.firstName} />;
+        }
+        <p>Loading info...</p>
     }
 
     return <Container>
@@ -66,9 +60,6 @@ function EditHut(props) {
 
 function MainContent(props) {
  
-    const [description, setDescription] = useState(props.hut.description);
-    const [loading, setLoading] = useState(false);
-    const [err, setErr] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -77,41 +68,6 @@ function MainContent(props) {
         setShowSuccess(true);
       }
 
-    const handleSubmit = useCallback(async (event) => {
-        event.preventDefault();
-        if (description === "") {
-            setErr("Description cannot be empty.");
-            return;
-        }
-        setLoading(true);
-        /* 
-        const authToken = localStorage.getItem('token');
-        
-        //if the hike is not created (an error occurred) hikeId will be undefined
-        const hikeId = await API.sendHikeDescription({
-            title: title,
-            time: time,
-            difficulty: difficulty,
-            description: description,
-            track: track,
-            city: city,
-            province: province
-        },
-            authToken
-        );
- 
-        if (hikeId === undefined) {
-            setErr(hikeId);
-        } else {
-            //image addition is optional
-            if (image !== "") {
-                await API.addImageToHike(image, hikeId, authToken);
-            }
-            setErr(true);
-        }
-        setTimeout(() => setErr(""), 5000);
-        setLoading(false); */
-    }, [])
 
     return <>
         <Container className="local-guide-form">
@@ -137,22 +93,11 @@ function MainContent(props) {
                     <Card.Subtitle className="mb-2 text-muted">Coordinates: ({
                         props.hut.point.location.coordinates[1]},{props.hut.point.location.coordinates[0]})
                     </Card.Subtitle>
-                    <Form>
-                        <Form.Group className="local-guide-form">
-                            <Form.Label>Description:</Form.Label>
-                            <Form.Control as="textarea" type="text" value={description} onChange={event => setDescription(event.target.value)} />
-                        </Form.Group>
-                        {
-                            !loading &&
-                            <Button variant="primary" size='sm' type="submit">
-                                Submit
-                            </Button>
-                        }
-                    </Form>
+                    <Card.Text>{props.hut.description}</Card.Text>
                 </Card.Body>
             </Card>
             <br />
-            <p>Hikes linked to {props.hut.name} hut: </p>
+            <p className="pbold">Hikes linked to {props.hut.name} hut: </p>
             {
                 props.hikes.map(hike => <HikeConditionForm hike={hike} success={handleSuccess}/>)
             }
@@ -169,7 +114,7 @@ function HikeConditionForm(props) {
         const authToken = localStorage.getItem('token');
         API.updateHike(hikeId, condition, description, authToken)
           .then(() => {
-            props.success("Hike correctly updated!")
+            props.success("Hike correctly updated!");
           })
           .catch(err => {
             console.log(err);
@@ -185,7 +130,7 @@ function HikeConditionForm(props) {
                     <FloatingLabel className="m-0 p-0" controlId="floatingSelect" label="Select hike condition">
                         <Form.Select value={condition} onChange={(event) => { setCondition(event.target.value); }}>
                             {
-                                Object.keys(Condition).map(key => <option value={key}>{Condition[key]}</option>)
+                                Object.keys(Condition).map(k => <option key={k} value={Condition[k]} >{Condition[k]}</option>)
                             }
                         </Form.Select>
                     </FloatingLabel>
