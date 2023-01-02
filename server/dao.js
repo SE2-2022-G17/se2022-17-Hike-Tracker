@@ -271,7 +271,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
             let startPoint = points[0]
             let endPoint = points[points.length - 1]
 
-            Hike.findById(id, function (err, docs) {
+            Hike.findOne({_id:id}, function (err, docs) {
                 if (err){
                     console.log(err);
                 }

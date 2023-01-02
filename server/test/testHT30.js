@@ -5,15 +5,16 @@ const app = require("../server.js");
 const chai = require('chai');
 const expect = chai.expect;
 const User = require('../models/User.js');
-const UserType = require('../constants/UserType.js');
-const ValidationType = require('../models/ValidationType.js');
+const Hike = require('../models/Hike.js');
+const Position = require('../models/Position.js');
 const Difficulty = require('../constants/Difficulty.js');
-const email = "test@email.com";
+const localGuide = require('./mocks/localGuideToken.js');
 
 let mongoServer;
 const hikeId = "0000000194e4c1e796231daf"
+const hikeId2 = "0000000194e4c1e796231dab"
 
-describe('Test API local guide modify hike (US30)', () => {
+describe('Test API local guide modify and delete hikes (US30)', () => {
     before(async () => {
         // if readyState is 0, mongoose is not connected
         if (mongoose.connection.readyState === 0) {
@@ -21,8 +22,6 @@ describe('Test API local guide modify hike (US30)', () => {
             const mongoUri = mongoServer.getUri();
             await mongoose.connect(mongoUri);
         }
-
-        await Hike.deleteMany();
 
         const startPosition = await Position.create({
             "location.coordinates": [3, 5]
@@ -32,7 +31,7 @@ describe('Test API local guide modify hike (US30)', () => {
             "location.coordinates": [4, 6]
         })
 
-
+        await Hike.deleteMany();
         const hike = await Hike.create({
             _id: new mongoose.Types.ObjectId(hikeId),
             title: 'prova',
@@ -47,8 +46,36 @@ describe('Test API local guide modify hike (US30)', () => {
             startPoint: startPosition._id,
             endPoint: endPosition._id
         });
-
         await hike.save();
+
+        const hike2 = await Hike.create({
+            _id: new mongoose.Types.ObjectId(hikeId2),
+            title: 'prova2',
+            expectedTime: 20,
+            difficulty: Difficulty.Hiker,
+            city: 'Torino',
+            province: 'Torino',
+            description: 'test',
+            track_file: "rocciamelone.gpx",
+            length: 2,
+            ascent: 5,
+            startPoint: startPosition._id,
+            endPoint: endPosition._id
+        });
+        await hike2.save();
+
+        await User.deleteMany();
+        const user = await User.create({
+            _id: new mongoose.Types.ObjectId('6395425a66dff0ef2277239b'),
+            firstName: "Pietro",
+            lastName: "Bertorelle",
+            email: "localguide@email.com",
+            hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
+            activationCode: "123456",
+            role: "localGuide",
+            active: true
+        });
+        await user.save();
     });
 
     after(async () => {
@@ -60,18 +87,58 @@ describe('Test API local guide modify hike (US30)', () => {
 
 
     it('test update hike description', async () => {
+        const token = localGuide.token;
         const response = await request(app)
         .post("/localGuide/modifyHike")
         .set('Authorization', "Bearer " + token)
         .send({
+            id: hikeId,
             title: "NewTitle",
-            expectedTime: 11,
+            time: 11,
             difficulty: Difficulty.ProfessionalHiker,
+            description: "NewDescription",
             city: "NewCity",
             province: "NewProvince",
-            description: "NewDescription"
         })
 
-    expect(response.statusCode).to.equal(204);
+        expect(response.statusCode).to.equal(200);
+    })
+
+    it('test delete an hike', async () => {
+        const token = localGuide.token;
+        const response = await request(app)
+        .post("/localGuide/deleteHike")
+        .set('Authorization', "Bearer " + token)
+        .send({
+            hikeId:hikeId2
+        })
+
+        expect(response.statusCode).to.equal(204);
+    })
+
+    it('test delete an hike - unauthorized', async () => {
+        const response = await request(app)
+        .post("/localGuide/deleteHike")
+        .send({
+            hikeId:hikeId2
+        })
+
+        expect(response.statusCode).to.equal(401);
+    })
+
+    it('test update hike description - unauthorized', async () => {
+        const response = await request(app)
+        .post("/localGuide/modifyHike")
+        .send({
+            id: hikeId,
+            title: "NewTitle",
+            time: 11,
+            difficulty: Difficulty.ProfessionalHiker,
+            description: "NewDescription",
+            city: "NewCity",
+            province: "NewProvince",
+        })
+
+    expect(response.statusCode).to.equal(401);
     })
 });
