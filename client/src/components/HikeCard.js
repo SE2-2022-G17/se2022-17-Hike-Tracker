@@ -1,6 +1,7 @@
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, Button } from "react-bootstrap";
 import { ArrowUpRight, Clock, GeoAlt, Award } from 'react-bootstrap-icons';
 import DistanceIcon from '../distance.svg';
+import { TiInfoOutline } from "react-icons/ti";
 
 
 function HikeCard(props) {
@@ -17,7 +18,11 @@ function HikeCard(props) {
                 else return {};
             }}>
                 <Card.Body>
-                    <Card.Title>{hike.title}</Card.Title>
+                    <Card.Title>{hike.title}
+                    {hike !== null ? 
+                    <Button className="mx-4 mb-" size="sm" variant="outline-dark" disabled><TiInfoOutline size="1.4em" /> {hike.condition.condition}</Button>
+                    : false}
+                    </Card.Title>
                     <Card.Text>
                         {hike.description}
                     </Card.Text>

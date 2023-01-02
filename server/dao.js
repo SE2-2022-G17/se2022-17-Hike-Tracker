@@ -46,6 +46,7 @@ exports.getVisitorHikes= async function(
             .filterByPositions(queryContainer.longitude, queryContainer.latitude, nearPositions)
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
+            .populate('condition')
 
         return hikes
 

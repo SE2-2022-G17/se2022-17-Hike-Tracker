@@ -1,8 +1,8 @@
 const Condition = {
-	open: "open",
-	closed: "closed",
-	partlyBlocked: "partly blocked",
-	requiresSpecialGear: "requires special gear",
+	open: "Open",
+	closed: "Closed",
+	partlyBlocked: "Partly Blocked",
+	requiresSpecialGear: "Requires Special Gear",
 }
 
 module.exports = Condition

@@ -18,6 +18,7 @@ import { Record2 } from 'react-bootstrap-icons';
 import Utils from '../Utils';
 import UserType from '../models/UserType';
 import CloseButton from 'react-bootstrap/CloseButton';
+import { TiInfoOutline } from "react-icons/ti";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
 Axios.defaults.baseURL = API.getHikeTrackUrl;
@@ -62,7 +63,7 @@ function ShowHike(props) {
         let choise = getNearestPointOnTrace(point);
         marker.setLngLat([choise.lng, choise.lat])
         return point;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     useEffect(()=>{
@@ -72,24 +73,24 @@ function ShowHike(props) {
                 'type': 'Feature',
                 'properties': {},
                 'geometry': {
-                'type': 'LineString',
+                    'type': 'LineString',
                 'coordinates': [[cursorPosition.lng,cursorPosition.lat],[pos.lng,pos.lat]]
                 }
-                }
+            }
             map.current.getSource('route').setData(data);
-            
+
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[cursorPosition])
 
     useEffect(()=>{
         if(map.current){
             if(refFormVisible){
-                map.current.getCanvas().style.cursor = 'crosshair'; 
+                map.current.getCanvas().style.cursor = 'crosshair';
             }else{
-                map.current.getCanvas().style.cursor = ''; 
-            } 
-        }  
+                map.current.getCanvas().style.cursor = '';
+            }
+        }
     },[refFormVisible])
 
     useEffect(() => {
@@ -115,12 +116,12 @@ function ShowHike(props) {
             const point = refMarker[0].getLngLat();
             handleMarker(point,refMarker[0]);
             refMarker[0].addTo(map.current);
-        } 
+        }
         else{
             if(!refFormVisible)
                 setRefMarker([]);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[refMarker.length, refFormVisible])
 
     useEffect(() => {
@@ -134,10 +135,10 @@ function ShowHike(props) {
                 }
                 const authToken = localStorage.getItem('token');
                 API.getHikeTrace(hike._id, authToken)
-                .then(trace => {
-                    setHikeTrace(trace);
-                })
-                .catch(err => { console.log(err); })
+                    .then(trace => {
+                        setHikeTrace(trace);
+                    })
+                    .catch(err => { console.log(err); })
 
             }).catch(function (error) {
                 console.log(error);
@@ -265,36 +266,36 @@ function ShowHike(props) {
                                 color: "red",
                                 draggable: false
                             })
-                            .setLngLat([e.lngLat.lng.toFixed(5), e.lngLat.lat.toFixed(5)]);
+                                .setLngLat([e.lngLat.lng.toFixed(5), e.lngLat.lat.toFixed(5)]);
                             setRefMarker(old=>[marker,...old]);
                         });
 
                         map.current.on('mousemove', (e) => {
                             setCursorPosition(e.lngLat);
-                            });                       
+                        });
 
                         map.current.addSource('route', {
-                                'type': 'geojson',
-                                'data': {
+                            'type': 'geojson',
+                            'data': {
                                 'type': 'Feature',
                                 'properties': {},
                                 'geometry': {
-                                'type': 'LineString',
-                                'coordinates': []
+                                    'type': 'LineString',
+                                    'coordinates': []
                                 }
-                                }
+                            }
                         });
                         map.current.addLayer({
                             'id': 'route',
                             'type': 'line',
                             'source': 'route',
                             'layout': {
-                            'line-join': 'round',
-                            'line-cap': 'round'
+                                'line-join': 'round',
+                                'line-cap': 'round'
                             },
                             'paint': {
-                            'line-color': '#d91616',
-                            'line-width': 2,
+                                'line-color': '#d91616',
+                                'line-width': 2,
                             'line-dasharray': [2,2]
                             }
                         });
@@ -303,14 +304,14 @@ function ShowHike(props) {
                                 'type': 'Feature',
                                 'properties': {},
                                 'geometry': {
-                                'type': 'LineString',
-                                'coordinates': []
+                                    'type': 'LineString',
+                                    'coordinates': []
                                 }
-                                }
+                            }
                             map.current.getSource('route').setData(data);
                         });
                         mapContainer.current.addEventListener("mouseenter", e => {
-         
+
                         });
                     }
                 });
@@ -331,13 +332,19 @@ function ShowHike(props) {
             setVariant('danger')
             setMessage("An error occurred during the recording of the hike")
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[hike ? hike._id : hike])
 
     return (
         <Container>
             <h1 className={'my-2'}>
-                {hike !== null ? hike.title : ''} <RecordButton record={record} />
+                {hike !== null ? hike.title : ''}
+                {hike !== null ? <Button className="mx-4 mb-" variant="outline-dark" disabled><TiInfoOutline size="1.3em" />  Condition: {hike.condition.condition} {
+                    (hike.condition.details !== "") ?
+                        " , " + hike.condition.details : false
+                }</Button>
+                    : false}
+                <RecordButton record={record} />
             </h1>
             {hikeImage !== undefined ?
                 <img className="hike-image" src={hikeImage} alt=""></img>
@@ -402,35 +409,35 @@ function ShowHike(props) {
             </Row>
             {
                 props.role === "localGuide" ?
-                refFormVisible && ( 
-                <Row>
-                    <Col>
-                    <Card>
-                        <Card.Body>
-                                <Row>
-                                    <Col xl={11}>
-                                    </Col>
-                                    <Col xl={1}>
+                    refFormVisible && (
+                        <Row>
+                            <Col>
+                                <Card>
+                                    <Card.Body>
+                                        <Row>
+                                            <Col xl={11}>
+                                            </Col>
+                                            <Col xl={1}>
                                         <CloseButton onClick={()=>{
-                                            setrefFormVisible(false);
+                                                    setrefFormVisible(false);
                                             if(refMarker.length>0){
                                                 refMarker.forEach(r=>{
-                                                    r.remove();
-                                                })
-                                                setRefMarker([]);
-                                            }
+                                                            r.remove();
+                                                        })
+                                                        setRefMarker([]);
+                                                    }
                                         }}/>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
                                         <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map}/>
-                                    </Col>
-                                </Row>   
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>)
+                                            </Col>
+                                        </Row>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>)
                 (!refFormVisible) && (<Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>)
                 :<></>
             }
@@ -439,7 +446,7 @@ function ShowHike(props) {
                 props.role === "localGuide" ? <>
                     <Row>
                         <Col>
-                        <br></br>
+                            <br></br>
                             <Accordion className="mb-3">
                                 <Accordion.Item eventKey="0">
                                     <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
