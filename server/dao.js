@@ -11,7 +11,8 @@ const RecordStatus = require("./constants/RecordStatus")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
 const HikeImage = require('./models/HikeImage')
-const Condition = require('./models/HikeCondition')
+const HikeCondition = require('./models/HikeCondition')
+const Condition = require('./constants/Condition');
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -771,5 +772,23 @@ exports.getHikesLinkedToHut = async function(id){
 
     } catch (e) {
         console.log(e.message)
+    }
+}
+
+exports.updateHike = async (hikeId, condition, description) => {
+
+    if (hikeId === undefined || condition === undefined || description === undefined)
+        throw new TypeError(400);
+
+    const cond = await HikeCondition.create({
+        condition: condition,
+        details: description
+    });
+    cond.save()
+
+    try {
+        return await Hike.findByIdAndUpdate(hikeId, { condition: cond})
+    } catch (err) {
+        throw new TypeError(500);
     }
 }

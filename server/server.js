@@ -769,6 +769,22 @@ app.get('/hikesLinked/:id', verifyUserToken, (req, res) => {
         .catch((error) => { res.status(500).json(error); });
 });
 
+//link hut to the hike
+app.put('/updateHike', verifyUserToken, async (req, res) => {
+    const hikeId = req.body.hikeId;
+    const condition = req.body.condition;
+    const description = req.body.description;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (user.role !== Type.hutWorker) {
+        res.sendStatus(403);
+        return;
+    }
+    return dao.updateHike(hikeId, condition, description)
+        .then(() => { res.sendStatus(200); })
+        .catch(() => { res.status(500).end(); })
+});
+
 // activate the server
 server.listen(port, () => {
     console.log(`app listening at http://localhost:${port}`);
