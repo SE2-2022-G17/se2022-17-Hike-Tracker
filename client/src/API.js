@@ -268,7 +268,7 @@ async function updateHikeDescription(container, token) {
         body: body
     })
     if (response.ok) {
-        return "OK";
+        return await response.json();
     } else {
         return undefined;
     }
