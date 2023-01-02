@@ -190,7 +190,7 @@ app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], as
     }
 });
 
-app.post('/LocalGuide/deleteHike',verifyUserToken, async (req, res) => {
+app.post('/localGuide/deleteHike',verifyUserToken, async (req, res) => {
     try {
         const hikeId = req.body.hikeId;
         await dao.deleteHike(hikeId);

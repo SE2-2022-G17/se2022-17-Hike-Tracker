@@ -3,8 +3,8 @@ import Comuni from '../constants/comuni.json';
 import Form from 'react-bootstrap/Form';
 
 
-export default function CityProvince(props) {
-    const { province, setProvince, setCity } = props;
+export default function CityProvinceForModifyHike(props) {
+    const { province, setProvince, setCity, city } = props;
 
     return (
         <>
@@ -16,7 +16,7 @@ export default function CityProvince(props) {
                     setProvince(undefined);
                     setProvince(e.target.value);
                 }}
-                defaultValue={"Select province"}>
+                value={province}>
                 <option disabled>Select province</option>
                 {Object.keys(Comuni).sort().map(p => (
                     <option
@@ -30,7 +30,7 @@ export default function CityProvince(props) {
                 className="form-select"
                 aria-label="Default select city"
                 onChange={e => setCity(e.target.value)}
-                defaultValue={"Select city"}
+                value={city}
             >
                 <option disabled>Select city</option>
                 {Comuni[province] !== undefined ? Comuni[province].map(c => (

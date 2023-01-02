@@ -2,7 +2,7 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../API";
-import CityProvince from "./CityProvince";
+import CityProvinceForModifyHike from "./CityProvinceForModifyHike";
 
 function ModifyHike() {
 
@@ -149,7 +149,7 @@ function MainContent() {
                     </Form.Select>
                 </Form.Group>
                 Current: ({startCity},{startProvince})
-                <CityProvince province={province} setProvince={setProvince} city={city} setCity={setCity} />
+                <CityProvinceForModifyHike province={province} setProvince={setProvince} city={city} setCity={setCity} />
 
                 <Form.Group className="local-guide-form">
                     <Form.Label>Description:</Form.Label>

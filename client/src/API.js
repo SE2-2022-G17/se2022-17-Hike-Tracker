@@ -224,7 +224,6 @@ async function storePerformance(data, token) {
 }
 
 async function deleteHike(hikeId,token){
-    console.log(hikeId);
     const response = fetch(url + '/localGuide/deleteHike', {
         method: "POST",
         headers: {
@@ -251,12 +250,12 @@ async function updateHikeDescription(container, token) {
     const city = container.city
     const province = container.province
     const body = new FormData();
-    body.append("track", track);
     body.append("id", id);
     body.append("title", title);
     body.append("time", time);
     body.append("difficulty", difficulty);
     body.append("description", description);
+    body.append("track", track);
     body.append("city", city);
     body.append("province", province);
 
@@ -269,7 +268,7 @@ async function updateHikeDescription(container, token) {
         body: body
     })
     if (response.ok) {
-        return await response.json();
+        return "OK";
     } else {
         return undefined;
     }
