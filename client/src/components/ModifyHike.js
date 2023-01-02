@@ -34,7 +34,7 @@ function MainContent() {
 
     let { id } = useParams();
 
-    const resetChanges = useCallback( () => {
+    const resetChanges = useCallback( (e) => {
         API.getHike(id)
         .then(hike=>{
               setTitle(hike.title);  
@@ -46,6 +46,11 @@ function MainContent() {
               setStartProvince(hike.province);
               setProvince("Select province");
               setCity("Select city");
+              setTrack("");
+              setImage("");
+              e.preventDefault();
+              e.target.form.elements.GPXControl.value = "";
+              e.target.form.elements.ImageControl.value = "";
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -157,11 +162,11 @@ function MainContent() {
                 </Form.Group>
                 <Form.Group className="local-guide-form">
                     <Form.Label>Current GPX track: {trackFileName}</Form.Label>
-                    <Form.Control type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
+                    <Form.Control name="GPXControl" type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
                     <Form.Label>Image file:</Form.Label>
-                    <Form.Control type="file" size="sm" onChange={event => setImage(event.target.files[0])} />
+                    <Form.Control name="ImageControl" type="file" size="sm" onChange={event => setImage(event.target.files[0])} />
                 </Form.Group>
                 {
                     err !== "" && <>
