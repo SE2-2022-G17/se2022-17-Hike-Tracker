@@ -175,7 +175,7 @@ function MainContent() {
                     <Form.Control type="text" required={true} value={title} onChange={event => setTitle(event.target.value)} placeholder="Enter the title" />
                 </Form.Group>
                 <Form.Group className="local-guide-form">
-                    <Form.Label>Expected time (minutes):</Form.Label>
+                    <Form.Label>Expected time (hours):</Form.Label>
                     <Form.Control type="number" required={true} value={time} onChange={event => setTime(event.target.value)} placeholder="Enter the expected time in minutes" />
                 </Form.Group>
 
