@@ -11,6 +11,8 @@ const multer = require('multer');
 const HikeImage = require('./models/HikeImage');
 const dayjs = require('dayjs')
 const webSocket = require('ws');
+const fs = require('fs');
+let gpxParser = require('gpxparser');
 
 // init express
 const app = new express();
@@ -61,6 +63,26 @@ function distanceCalc(p1, p2) {
     const R = 6371e3;
     const d = Math.acos((Math.sin(ph1) * Math.sin(ph2)) + (Math.cos(ph1) * Math.cos(ph2)) * Math.cos(DL)) * R;
     return d;
+}
+
+function reverseGeocoding(longitude, latitude) {
+    const request = require('request');
+    const ACCESS_TOKEN = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
+    let url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
+            + longitude + ', ' + latitude
+            + '.json?access_token=' + ACCESS_TOKEN;
+    return new Promise ((resolve, reject)=>{
+        request({ url: url, json: true }, function (error, response) {
+            if (error) {
+                reject('Unable to connect to Geocode API');
+            } else if (response.body.features.length === 0) {
+                reject('Unable to find location. Try to'
+                            + ' search another location.');
+            } else {
+                resolve(response.body.features[0].place_name);
+            }
+        })
+    })
 }
 
 /*** APIs ***/
@@ -183,8 +205,31 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
 
 app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
-        const hikeId = await dao.updateHike(req.body, req.file, (await dao.getUserByEmail(req.user.email))._id);
-        return res.status(200).json(hikeId);
+        const track=req.file;
+        if(track){
+            fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+            const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+            let gpx = new gpxParser()
+            gpx.parse(content)
+            let startPoint = gpx.tracks[0].points[0]
+            let user = await dao.getUserByEmail(req.user.email);
+            reverseGeocoding(startPoint.lon,startPoint.lat)
+                .then(r=>{
+                    if(r.toString().toLowerCase().search(req.body.city.toLowerCase())===-1)
+                        return res.status(501).json(req.body.id);
+                    else{
+                         dao.updateHike(req.body, req.file, (user)._id)
+                        .then(result=>res.status(200).json(result))
+                    }
+                })
+                .catch(e=>console.log(e))
+        }
+        else{
+            let user = await dao.getUserByEmail(req.user.email);
+            await dao.updateHike(req.body, req.file, (user)._id);
+            return res.status(200).json(req.body.id);
+        }
+        
     } catch (err) {
         return res.status(500).json(err);
     }

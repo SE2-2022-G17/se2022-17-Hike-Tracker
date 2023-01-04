@@ -248,7 +248,6 @@ async function updateHikeDescription(container, token) {
     const description = container.description
     const track = container.track
     const city = container.city
-    const province = container.province
     const body = new FormData();
     body.append("id", id);
     body.append("title", title);
@@ -257,7 +256,6 @@ async function updateHikeDescription(container, token) {
     body.append("description", description);
     body.append("track", track);
     body.append("city", city);
-    body.append("province", province);
 
     const response = await fetch(url + '/localGuide/modifyHike', {
         method: "POST",
@@ -270,7 +268,9 @@ async function updateHikeDescription(container, token) {
     if (response.ok) {
         return await response.json();
     } else {
-        return undefined;
+        if(response.status === 501)
+            return 501;
+        else return 500;
     }
 }
 
@@ -718,7 +718,7 @@ const API = {
     addWeatherAlert,
     deleteHike,
     updateHikeDescription,
-    removeImageFromHike
+    removeImageFromHike,
 };
 
 

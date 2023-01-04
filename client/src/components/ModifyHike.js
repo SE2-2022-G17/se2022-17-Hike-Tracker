@@ -2,7 +2,6 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../API";
-import CityProvinceForModifyHike from "./CityProvinceForModifyHike";
 
 function ModifyHike() {
 
@@ -24,15 +23,13 @@ function MainContent() {
     const [description, setDescription] = useState("");
     const [track, setTrack] = useState("");
     const [trackFileName,setTrackFileName] = useState("");
-    const [city, setCity] = useState("Select city")
-    const [province, setProvince] = useState("Select province")
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
     const [image, setImage] = useState("");
-    const [startCity,setStartCity] = useState("");
-    const [startProvince,setStartProvince] = useState("");
     const [imagePresent,setImagePresent] = useState(false);
     const [removingImage,setRemovingImage] = useState(false);
+    const [city,setCity] = useState("");
+    const [GPXvalid,setGPXvalid] = useState(true);
 
     let { id } = useParams();
 
@@ -44,20 +41,17 @@ function MainContent() {
               setDifficulty(hike.difficulty);
               setDescription(hike.description);
               setTrackFileName(hike.track_file);
-              setStartCity(hike.city);
-              setStartProvince(hike.province);
-              setProvince("Select province");
-              setCity("Select city");
               setTrack("");
               setImage("");
               e.preventDefault();
               e.target.form.elements.GPXControl.value = "";
               e.target.form.elements.ImageControl.value = "";
               setRemovingImage(false);
+              setGPXvalid(true);
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[title,time,difficulty,description,trackFileName,city,province]);
+    },[title,time,difficulty,description,trackFileName]);
 
     const removeImageClick = useCallback( (e) => {
         setRemovingImage(true);
@@ -80,8 +74,7 @@ function MainContent() {
             setDifficulty(hike.difficulty);
             setDescription(hike.description);
             setTrackFileName(hike.track_file);
-            setStartCity(hike.city);
-            setStartProvince(hike.province);
+            setCity(hike.city);
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,29 +102,16 @@ function MainContent() {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
         setLoading(true);
-        let citySend;
-        let provinceSend;
 
-        if(!city || !province || city==="Select city" || province==="Select province"){
-            citySend=startCity;
-            provinceSend=startProvince;
-        }
-        else{
-            citySend=city;
-            provinceSend=province;
-            setStartCity(city);
-            setStartProvince(province);
-        }
         //if the hike is not created (an error occurred) hikeId will be undefined
         const hikeId = await API.updateHikeDescription({
             id:id,
             title:title,
             time:time,
+            city: city,
             difficulty:difficulty,
             description:description,
-            track:track,
-            city:citySend,
-            province:provinceSend}, 
+            track:track}, 
             authToken
         );
 
@@ -140,8 +120,14 @@ function MainContent() {
             setImagePresent(false);
         }
 
-        if (hikeId === undefined) {
-            setErr(hikeId);
+        if(hikeId===501){
+            setGPXvalid(false);
+        }else{
+            setGPXvalid(true);
+        }
+
+        if (hikeId === 500 || hikeId===501) {
+            setErr(false);
         } else {
             //image addition is optional
             if (image !== "") {
@@ -153,7 +139,7 @@ function MainContent() {
         setTimeout(() => setErr(""), 5000);
         setLoading(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[city, description, difficulty, image, province, time, title, track, removingImage])
+    },[ description, difficulty, image, time, title, track, removingImage])
 
     useEffect(()=>{
         if(track!=="" && track)
@@ -187,9 +173,6 @@ function MainContent() {
                         <option value="Professional hiker">Professional hiker</option>
                     </Form.Select>
                 </Form.Group>
-                Current: ({startCity},{startProvince})
-                <CityProvinceForModifyHike province={province} setProvince={setProvince} city={city} setCity={setCity} />
-
                 <Form.Group className="local-guide-form">
                     <Form.Label>Description:</Form.Label>
                     <Form.Control as="textarea" type="text" required={true} value={description} onChange={event => setDescription(event.target.value)} placeholder="Enter the description" />
@@ -198,6 +181,12 @@ function MainContent() {
                     <Form.Label>Current GPX track: {trackFileName}</Form.Label>
                     <Form.Control name="GPXControl" type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
                 </Form.Group>
+                {
+                            GPXvalid ?
+                                <></>
+                                :
+                                <Alert transition key="danger" variant="danger">GPX file not valid.</Alert>
+                }
                 <Form.Group className="local-guide-form">
                     {
                         imagePresent && !removingImage?

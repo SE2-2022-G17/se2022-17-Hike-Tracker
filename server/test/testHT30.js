@@ -97,8 +97,6 @@ describe('Test API local guide modify and delete hikes (US30)', () => {
             time: 11,
             difficulty: Difficulty.ProfessionalHiker,
             description: "NewDescription",
-            city: "NewCity",
-            province: "NewProvince",
         })
 
         expect(response.statusCode).to.equal(200);
@@ -135,8 +133,6 @@ describe('Test API local guide modify and delete hikes (US30)', () => {
             time: 11,
             difficulty: Difficulty.ProfessionalHiker,
             description: "NewDescription",
-            city: "NewCity",
-            province: "NewProvince",
         })
 
     expect(response.statusCode).to.equal(401);
