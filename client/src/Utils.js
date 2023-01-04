@@ -19,26 +19,6 @@ function distanceCalc(p1, p2) {
 
 }
 
-function reverseGeocoding(longitude, latitude) {
-    const request = require('request');
-    const ACCESS_TOKEN = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
-    let url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-            + longitude + ', ' + latitude
-            + '.json?access_token=' + ACCESS_TOKEN;
-    return new Promise ((resolve, reject)=>{
-        request({ url: url, json: true }, function (error, response) {
-            if (error) {
-                reject('Unable to connect to Geocode API');
-            } else if (response.body.features.length === 0) {
-                reject('Unable to find location. Try to'
-                            + ' search another location.');
-            } else {
-                resolve(response.body.features[0].place_name);
-            }
-        })
-    })
-}
-
-const Utils = { parseJwt, distanceCalc, reverseGeocoding };
+const Utils = { parseJwt, distanceCalc };
 
 export default Utils;
