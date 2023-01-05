@@ -516,7 +516,6 @@ async function addImageToHike(image, hikeId, token) {
 
     const body = new FormData();
     body.append("image", image);
-
     const response = await fetch(url + '/hikes/' + hikeId + '/image/', {
         method: "POST",
         headers: {
