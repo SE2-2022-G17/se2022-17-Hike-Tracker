@@ -329,6 +329,7 @@ app.get('/hutsCloseTo/:id', async (req, res) => {
     }
 });
 
+
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
 

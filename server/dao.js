@@ -18,6 +18,7 @@ const Hut = require('./models/Hut')
 const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
 const HTTPError = require('./models/HTTPError')
+const { domainToASCII } = require('url')
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
@@ -278,6 +279,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
     const description = bodyContainer.description;
     const city = bodyContainer.city;
     const province = bodyContainer.province;
+    let referenceLocToDelete = bodyContainer.referenceToDelete
     
     let startPosition = undefined
     let endPosition = undefined
@@ -358,17 +360,57 @@ exports.updateHike = async function (bodyContainer,track,userId){
             return doc.id;
         }
         else{
-            let doc;
-            doc = await Hike.findOneAndUpdate({_id:id}, {
+            if(referenceLocToDelete){
+                let newRefs=[];
+                const res = await Hike.find({_id:id});
+                const hike=res[0];
+                referenceLocToDelete=referenceLocToDelete.toString().split(',');
+                let refPointsToDelete = [];
+    
+                for(refLoc in referenceLocToDelete){
+                    const r = await Location.findOne({_id:referenceLocToDelete[refLoc]});
+                    const refPoint = await Position.findOne({_id:r.point});
+                    refPointsToDelete.push(refPoint);
+                }
+                hike.referencePoints.forEach(rp=>{
+                    if(!refPointsToDelete.find(ref=>rp.toString()===ref._id.toString())){
+                        newRefs.push(rp);
+                    }
+                });
+
+    
+                for (let rl in referenceLocToDelete) {
+                    await Location.deleteOne({_id: referenceLocToDelete[rl]});
+                }
+
+                for (let rp in refPointsToDelete) {
+                    await Position.deleteOne({_id:refPointsToDelete[rp]._id});
+                }
+
+                let doc = await Hike.findOneAndUpdate({_id:id}, {
                     title: title,
                     expectedTime: time,
                     difficulty: difficulty,
                     description: description,
                     city: city,
                     province: province,
-                    authorId: userId
-            });
-            return doc.id;
+                    authorId: userId,
+                    referencePoints: newRefs
+                });
+                return doc.id;
+            }
+            else{
+                let doc = await Hike.findOneAndUpdate({_id:id}, {
+                    title: title,
+                    expectedTime: time,
+                    difficulty: difficulty,
+                    description: description,
+                    city: city,
+                    province: province,
+                    authorId: userId,
+                 });
+                return doc.id;
+            }
         }
     } catch (e) {
         throw new TypeError(400);

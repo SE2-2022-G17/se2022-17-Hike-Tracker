@@ -248,6 +248,7 @@ async function updateHikeDescription(container, token) {
     const description = container.description
     const track = container.track
     const city = container.city
+    const referenceToDelete = container.referenceToDelete
     const body = new FormData();
     body.append("id", id);
     body.append("title", title);
@@ -256,6 +257,7 @@ async function updateHikeDescription(container, token) {
     body.append("description", description);
     body.append("track", track);
     body.append("city", city);
+    body.append("referenceToDelete", referenceToDelete);
 
     const response = await fetch(url + '/localGuide/modifyHike', {
         method: "POST",

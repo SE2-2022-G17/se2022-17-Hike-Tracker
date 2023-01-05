@@ -2,6 +2,7 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../API";
+import Table from 'react-bootstrap/Table';
 
 function ModifyHike() {
 
@@ -30,24 +31,42 @@ function MainContent() {
     const [removingImage,setRemovingImage] = useState(false);
     const [city,setCity] = useState("");
     const [GPXvalid,setGPXvalid] = useState(true);
+    const [referencePoints,setReferencePoints] = useState([]);
+    const [referenceToDelete,setReferenceToDelete] = useState([]);
 
     let { id } = useParams();
+
+    const checkBoxChange = useCallback( (e) => {
+        if(e.target.checked){
+            setReferenceToDelete(old=>[...old,e.target.name]);
+        }else{
+            let newRef=[];
+            referencePoints.forEach(ref=>{
+                if(ref._id!==e.target.name && referenceToDelete.find(rp=>rp===ref._id))
+                    newRef.push(ref._id);
+            });
+            setReferenceToDelete(newRef);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[referenceToDelete,referencePoints]);
 
     const resetChanges = useCallback( (e) => {
         API.getHike(id)
         .then(hike=>{
-              setTitle(hike.title);  
-              setTime(hike.expectedTime);
-              setDifficulty(hike.difficulty);
-              setDescription(hike.description);
-              setTrackFileName(hike.track_file);
-              setTrack("");
-              setImage("");
-              e.preventDefault();
-              e.target.form.elements.GPXControl.value = "";
-              e.target.form.elements.ImageControl.value = "";
-              setRemovingImage(false);
-              setGPXvalid(true);
+            setTitle(hike.title);  
+            setTime(hike.expectedTime);
+            setDifficulty(hike.difficulty);
+            setDescription(hike.description);
+            setTrackFileName(hike.track_file);
+            setTrack("");
+            setImage("");
+            e.preventDefault();
+            e.target.form.elements.GPXControl.value = "";
+            e.target.form.elements.ImageControl.value = "";
+            setRemovingImage(false);
+            setGPXvalid(true);
+            setReferenceToDelete([]);
+            setReferencePoints([]);
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,10 +94,42 @@ function MainContent() {
             setDescription(hike.description);
             setTrackFileName(hike.track_file);
             setCity(hike.city);
+            hike.referencePoints.forEach(rp=>{
+                API.getReferencePointByPosition(rp._id)
+                .then(res=>{     
+                    setReferencePoints(old=>[...old,res]);   
+                })
+                .catch(e=>console.log(e))
+            });
         })
         .catch(err=>console.log(err));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
+
+    useEffect(()=>{
+        if(referencePoints.length===0){
+            API.getHike(id)
+            .then(hike=>{
+            hike.referencePoints.forEach(rp=>{
+                API.getReferencePointByPosition(rp._id)
+                .then(res=>{     
+                    setReferencePoints(old=>[...old,res]);   
+                })
+                .catch(e=>console.log(e))
+            });
+        })
+        .catch(err=>console.log(err));
+        }else{
+            let uniqueRefs = [];
+            referencePoints.forEach(rp=>{
+                if(!uniqueRefs.find(r=>r._id===rp._id)){
+                    uniqueRefs.push(rp);
+                }
+            });
+            setReferencePoints(uniqueRefs);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[referencePoints.length])
 
     useEffect(()=>{
         const authToken = localStorage.getItem('token');
@@ -111,9 +162,18 @@ function MainContent() {
             city: city,
             difficulty:difficulty,
             description:description,
-            track:track}, 
+            track:track,
+            referenceToDelete:referenceToDelete}, 
             authToken
         );
+
+        let newRefs = [];
+        referencePoints.forEach(rp=>{
+            if(!referenceToDelete.find(r=>rp._id.toString()===r.toString()))
+                newRefs.push(rp);
+        });
+        setReferencePoints([]);
+        setReferenceToDelete([]);
 
         if(removingImage){
             await API.removeImageFromHike(id,authToken);
@@ -139,7 +199,7 @@ function MainContent() {
         setTimeout(() => setErr(""), 5000);
         setLoading(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[ description, difficulty, image, time, title, track, removingImage])
+    },[ description, difficulty, image, time, title, track, removingImage, referenceToDelete,referencePoints])
 
     useEffect(()=>{
         if(track!=="" && track)
@@ -177,6 +237,10 @@ function MainContent() {
                     <Form.Label>Description:</Form.Label>
                     <Form.Control as="textarea" type="text" required={true} value={description} onChange={event => setDescription(event.target.value)} placeholder="Enter the description" />
                 </Form.Group>
+                {
+                    referencePoints.length > 0 ? 
+                        <RefTable referencePoints={referencePoints} checkBoxChange={checkBoxChange}></RefTable>:<></>
+                }
                 <Form.Group className="local-guide-form">
                     <Form.Label>Current GPX track: {trackFileName}</Form.Label>
                     <Form.Control name="GPXControl" type="file" size="sm" onChange={event => setTrack(event.target.files[0])} />
@@ -242,5 +306,48 @@ function MainContent() {
         </Container>
     </>
 }
+
+function RefTable(props) {
+
+    const referencePoints=props.referencePoints;
+    const checkBoxChange=props.checkBoxChange;
+
+    return (
+      <Table striped>
+        <thead>
+          <tr>
+            <th>Reference point</th>
+            <th>Longitude</th>
+            <th>Latitude</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+            {
+                referencePoints.map((rp,index)=>{
+                    return(
+                        <tr key={index}>
+                            <td>
+                                {rp.name}
+                            </td>
+                            <td>
+                                {rp.point.location.coordinates[0]}
+                            </td>
+                            <td>
+                                {rp.point.location.coordinates[1]}
+                            </td>
+                            <td>
+                                {
+                                    <Form.Check defaultChecked={false} name={rp._id} onChange={checkBoxChange}/>
+                                }
+                            </td>
+                        </tr>
+                    )
+                })
+            }
+        </tbody>
+      </Table>
+    );
+  }
 
 export default ModifyHike;
