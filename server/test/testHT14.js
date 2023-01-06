@@ -157,7 +157,7 @@ describe('Test API for updating hike condition (US14)', () => {
     it('test update hike', async () => {
 
         const response = await request(app)
-            .put("/updateHike")
+            .put("/updateHikeCondition")
             .send({
                 hikeId: "63838b0ec591ae644e8bedc4",
                 condition: Condition.partlyBlocked,
@@ -174,7 +174,7 @@ describe('Test API for updating hike condition (US14)', () => {
     it('test update hike - Unauthorized request', async () => {
 
         const response = await request(app)
-            .put("/updateHike")
+            .put("/updateHikeCondition")
             .send({
                 hikeId: "63838b0ec591ae644e8bedc4",
                 condition: Condition.partlyBlocked,
@@ -187,7 +187,7 @@ describe('Test API for updating hike condition (US14)', () => {
     it('test update hike - wrong role', async () => {
 
         const response = await request(app)
-            .put("/updateHike")
+            .put("/updateHikeCondition")
             .send({
                 hikeId: "63838b0ec591ae644e8bedc4",
                 condition: Condition.partlyBlocked,
@@ -202,7 +202,7 @@ describe('Test API for updating hike condition (US14)', () => {
     it('test update hike - parameter missing', async () => {
 
         const response = await request(app)
-            .put("/updateHike")
+            .put("/updateHikeCondition")
             .send({
                 condition: Condition.partlyBlocked,
                 description: "Avalanche Danger"
@@ -216,7 +216,7 @@ describe('Test API for updating hike condition (US14)', () => {
     it('test update hike - wrong condition value', async () => {
 
         const response = await request(app)
-            .put("/updateHike")
+            .put("/updateHikeCondition")
             .send({
                 hikeId: "63838b0ec591ae644e8bedc4",
                 condition: "WrongCondition",

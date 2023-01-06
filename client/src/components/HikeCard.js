@@ -1,7 +1,6 @@
 import { Card, Row, Col, Button } from "react-bootstrap";
 import { ArrowUpRight, Clock, GeoAlt, Award, Trash3,PencilSquare } from 'react-bootstrap-icons';
 import DistanceIcon from '../distance.svg';
-import Button from 'react-bootstrap/Button';
 import { useState, useEffect, useCallback } from 'react';
 import Utils from "../Utils"
 import Modal from 'react-bootstrap/Modal';

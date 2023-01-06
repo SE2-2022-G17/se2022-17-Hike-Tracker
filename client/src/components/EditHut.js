@@ -111,7 +111,7 @@ function HikeConditionForm(props) {
 
     const handleSave = (hikeId) => {
         const authToken = localStorage.getItem('token');
-        API.updateHike(hikeId, condition, description, authToken)
+        API.updateHikeCondition(hikeId, condition, description, authToken)
           .then(() => {
             props.success("Hike correctly updated!");
           })

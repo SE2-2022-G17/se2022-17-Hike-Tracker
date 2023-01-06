@@ -705,8 +705,8 @@ async function getHikesLinkedToHut(hutId, token) {
     return hikes
 }
 
-async function updateHike(hikeId, condition, description, token) {
-    const response = await fetch(url + '/updateHike', {
+async function updateHikeCondition(hikeId, condition, description, token) {
+    const response = await fetch(url + '/updateHikeCondition', {
         method: "PUT",
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -762,7 +762,7 @@ const API = {
     removeImageFromHike,
     getHut,
     getHikesLinkedToHut,
-    updateHike
+    updateHikeCondition
 };
 
 

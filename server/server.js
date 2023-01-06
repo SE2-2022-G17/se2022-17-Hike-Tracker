@@ -207,25 +207,24 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
 app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], async (req, res) => {
     try {
         const track=req.file;
+        const user = await dao.getUserByEmail(req.user.email);
         if(track){
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
             const gpx = new gpxParser()
             gpx.parse(content)
             const startPoint = gpx.tracks[0].points[0]
-            const user = await dao.getUserByEmail(req.user.email);
             const geoCodeResult = await reverseGeocoding(startPoint.lon,startPoint.lat);
             if(geoCodeResult.toString().toLowerCase().search(req.body.city.toLowerCase())===-1){
                 return res.status(501).json(req.body.id);
             }
             else{
-                await dao.updateHike(req.body, req.file, (user)._id);
+                await dao.updateHike(req.body, req.file, user._id);
                 return res.status(200).json(req.body.id);
            }
         }
         else{
-            const user = await dao.getUserByEmail(req.user.email);
-            await dao.updateHike(req.body, req.file, (user)._id);
+            await dao.updateHike(req.body, req.file, user._id);
             return res.status(200).json(req.body.id);
         }
         
@@ -845,7 +844,7 @@ app.get('/hikesLinked/:id', verifyUserToken, (req, res) => {
 });
 
 //link hut to the hike
-app.put('/updateHike', verifyUserToken, async (req, res) => {
+app.put('/updateHikeCondition', verifyUserToken, async (req, res) => {
     const hikeId = req.body.hikeId;
     const condition = req.body.condition;
     const description = req.body.description;
@@ -855,7 +854,7 @@ app.put('/updateHike', verifyUserToken, async (req, res) => {
         res.sendStatus(403);
         return;
     }
-    return dao.updateHike(hikeId, condition, description)
+    return dao.updateHikeCondition(hikeId, condition, description)
         .then(() => { res.sendStatus(200); })
         .catch(() => { res.status(500).end(); })
 });

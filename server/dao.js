@@ -297,7 +297,6 @@ exports.updateHike = async function (bodyContainer,track,userId){
                 const hike = await Hike.findOne({_id:id}).exec();
                 referenceLocToDelete=referenceLocToDelete.toString().split(',');
                 let refPointsToDelete = [];
-                
                 for(let refLoc in referenceLocToDelete){
                     const r = await Location.findOne({_id:referenceLocToDelete[refLoc]});
                     const refPoint = await Position.findOne({_id:r.point}).exec();
@@ -929,7 +928,7 @@ exports.getHikesLinkedToHut = async function(id){
     }
 }
 
-exports.updateHike = async (hikeId, condition, description) => {
+exports.updateHikeCondition = async (hikeId, condition, description) => {
 
     if (hikeId === undefined || condition === undefined || description === undefined)
         throw new TypeError(400);
