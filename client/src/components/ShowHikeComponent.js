@@ -408,16 +408,15 @@ function ShowHike(props) {
 
             </Row>
             {
-                props.role === "localGuide" ?
-                    refFormVisible && (
-                        <Row>
-                            <Col>
-                                <Card>
-                                    <Card.Body>
-                                        <Row>
-                                            <Col xl={11}>
-                                            </Col>
-                                            <Col xl={1}>
+                props.role === "localGuide" && refFormVisible?
+                <Row>
+                    <Col>
+                    <Card>
+                        <Card.Body>
+                                <Row>
+                                    <Col xl={11}>
+                                    </Col>
+                                    <Col xl={1}>
                                         <CloseButton onClick={()=>{
                                                     setrefFormVisible(false);
                                             if(refMarker.length>0){
@@ -432,13 +431,17 @@ function ShowHike(props) {
                                         <Row>
                                             <Col>
                                         <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map}/>
-                                            </Col>
-                                        </Row>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        </Row>)
-                (!refFormVisible) && (<Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>)
+                                    </Col>
+                                </Row>   
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+                :<></>
+            }
+            {
+                props.role === "localGuide" && !refFormVisible ?
+                <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
                 :<></>
             }
             {
