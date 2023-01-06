@@ -213,16 +213,14 @@ app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], as
             gpx.parse(content)
             let startPoint = gpx.tracks[0].points[0]
             let user = await dao.getUserByEmail(req.user.email);
-            reverseGeocoding(startPoint.lon,startPoint.lat)
-                .then(r=>{
-                    if(r.toString().toLowerCase().search(req.body.city.toLowerCase())===-1)
-                        return res.status(501).json(req.body.id);
-                    else{
-                         dao.updateHike(req.body, req.file, (user)._id)
-                        .then(result=>res.status(200).json(result))
-                    }
-                })
-                .catch(e=>console.log(e))
+            let geoCodeResult = await reverseGeocoding(startPoint.lon,startPoint.lat);
+            if(geoCodeResult.toString().toLowerCase().search(req.body.city.toLowerCase())===-1){
+                return res.status(501).json(req.body.id);
+            }
+            else{
+                await dao.updateHike(req.body, req.file, (user)._id);
+                return res.status(200).json(req.body.id);
+           }
         }
         else{
             let user = await dao.getUserByEmail(req.user.email);
