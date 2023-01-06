@@ -98,7 +98,7 @@ function MainContent(props) {
             <br />
             <p className="pbold">Hikes linked to {props.hut.name} hut: </p>
             {
-                props.hikes.map(hike => <HikeConditionForm hike={hike} success={handleSuccess}/>)
+                props.hikes.map(hike => <HikeConditionForm hike={hike} key={hike._id} success={handleSuccess}/>)
             }
         </Container>
     </>
