@@ -32,6 +32,7 @@ import Utils from './Utils';
 import UserStatistics from './components/UserStatistics';
 import RecordedHikes from './components/RecordedHikes';
 import PlatformManager from './components/PlatformManager';
+import EditHut from './components/EditHut';
 
 let socket;
 
@@ -243,10 +244,11 @@ function MainApp() {
         <Route path="/HighLevelVerification" element={<HighVerification />} />
         <Route path="/parking/create" element={<CreateParking user={user} />} />
         <Route path="/huts/create" element={<CreateHut user={user} />} />
-        <Route path="/huts/searchHut" element={<SearchHut />} />
+        <Route path="/huts/searchHut" element={<SearchHut user={user}/>} />
         <Route path="/preferredHikes" element={<PreferredHikes />} />
         <Route path="/recordedHikes" element={<RecordedHikes />} />
         <Route path="/records/:id" element={<Record />} />
+        <Route path='/edit/:id' element={<EditHut user={user}/>}/>
         <Route path="/platformManager" element={<PlatformManager user={user}/>} />
         <Route path="/ModifyHike/:id" element={<ModifyHike></ModifyHike>}></Route>
       </Routes>

@@ -1,4 +1,4 @@
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, Button } from "react-bootstrap";
 import { ArrowUpRight, Clock, GeoAlt, Award, Trash3,PencilSquare } from 'react-bootstrap-icons';
 import DistanceIcon from '../distance.svg';
 import Button from 'react-bootstrap/Button';
@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Utils from "../Utils"
 import Modal from 'react-bootstrap/Modal';
 import API from "../API";
+import { TiInfoOutline } from "react-icons/ti";
 
 
 function HikeCard(props) {
@@ -59,7 +60,11 @@ function HikeCard(props) {
                 <Card.Body>
                     <Row>
                         <Col lg="10">
-                            <Card.Title>{hike.title}</Card.Title>
+                            <Card.Title>{hike.title}
+                            {hike !== null ? 
+                            <Button className="mx-4 mb-" size="sm" variant="outline-dark" disabled><TiInfoOutline size="1.4em" /> {hike.condition.condition}</Button>
+                            : false}
+                            </Card.Title>
                         </Col>
                         {
                             buttonsVisibile ? 
