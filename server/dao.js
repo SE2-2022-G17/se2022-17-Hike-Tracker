@@ -270,7 +270,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
-            let doc = Hike.findOneAndUpdate({_id:id}, {
+            let doc = await Hike.findOneAndUpdate({_id:id}, {
                 title: title,
                 length: length,
                 expectedTime: time,
@@ -285,7 +285,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
                 province: province,
                 track_file: track !== undefined ? track.originalname : null,
                 authorId: userId
-            });
+            }).exec();
             return doc.id;
         }
         else{
@@ -315,7 +315,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
                     await Position.deleteOne({_id:refPointsToDelete[rp]._id}).exec();
                 }
 
-                let doc = Hike.findOneAndUpdate({_id:id}, {
+                let doc = await Hike.findOneAndUpdate({_id:id}, {
                     title: title,
                     expectedTime: time,
                     difficulty: difficulty,
@@ -324,11 +324,11 @@ exports.updateHike = async function (bodyContainer,track,userId){
                     province: province,
                     authorId: userId,
                     referencePoints: newRefs
-                });
+                }).exec();
                 return doc.id;
             }
             else{
-                let doc = Hike.findOneAndUpdate({_id:id}, {
+                let doc = await Hike.findOneAndUpdate({_id:id}, {
                     title: title,
                     expectedTime: time,
                     difficulty: difficulty,
@@ -336,7 +336,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
                     city: city,
                     province: province,
                     authorId: userId,
-                 });
+                 }).exec();
                 return doc.id;
             }
         }
