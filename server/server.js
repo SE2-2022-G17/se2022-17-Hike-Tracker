@@ -13,6 +13,7 @@ const dayjs = require('dayjs')
 const webSocket = require('ws');
 const fs = require('fs');
 let gpxParser = require('gpxparser');
+const { constants } = require('buffer');
 
 // init express
 const app = new express();
@@ -209,11 +210,11 @@ app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], as
         if(track){
             fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
             const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
-            let gpx = new gpxParser()
+            const gpx = new gpxParser()
             gpx.parse(content)
-            let startPoint = gpx.tracks[0].points[0]
-            let user = await dao.getUserByEmail(req.user.email);
-            let geoCodeResult = await reverseGeocoding(startPoint.lon,startPoint.lat);
+            const startPoint = gpx.tracks[0].points[0]
+            const user = await dao.getUserByEmail(req.user.email);
+            const geoCodeResult = await reverseGeocoding(startPoint.lon,startPoint.lat);
             if(geoCodeResult.toString().toLowerCase().search(req.body.city.toLowerCase())===-1){
                 return res.status(501).json(req.body.id);
             }
@@ -223,7 +224,7 @@ app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], as
            }
         }
         else{
-            let user = await dao.getUserByEmail(req.user.email);
+            const user = await dao.getUserByEmail(req.user.email);
             await dao.updateHike(req.body, req.file, (user)._id);
             return res.status(200).json(req.body.id);
         }

@@ -26,7 +26,7 @@ describe('Test API local guide modify and delete hikes (US30)', () => {
         }
 
         const startPosition = await Position.create({
-            "location.coordinates": [-119.55979, 37.73949]
+            "location.coordinates": [14.53538, 37.89176]
         })
 
         const endPosition = await Position.create({
@@ -167,13 +167,14 @@ describe('Test API local guide modify and delete hikes (US30)', () => {
 
     it('test update GPX file', async () => {
         const token = localGuide.token;
+
         const response = await request(app)
-        .post("/localGuide/modifyHike")
-        .set('Authorization', "Bearer " + token)
-        .send({
-            id: hikeId,
-            track: "./test/mocks/Yosemite Grand Traverse.gpx"
-        })
+            .post('/localGuide/modifyHike')
+            .set('Authorization', "Bearer " + token)
+            .field("id", hikeId)
+            .field("city", "Capizzi")
+            .attach('track', "./test/mocks/Nebrodi.gpx")
+            
         expect(response.statusCode).to.equal(200);
     })
 
