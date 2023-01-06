@@ -751,6 +751,39 @@ app.post('/weatherAlert', verifyUserToken, async (req, res) => {
     }
 });
 
+//get hut by id
+app.get('/hut/:id', verifyUserToken, (req, res) => {
+    const hutId = req.params.id;
+
+    dao.getHut(hutId)
+        .then((hut) => { res.json(hut); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
+//get hikes linked to the given hut
+app.get('/hikesLinked/:id', verifyUserToken, (req, res) => {
+    const hutId = req.params.id;
+
+    dao.getHikesLinkedToHut(hutId)
+        .then((hikes) => { res.json(hikes); })
+        .catch((error) => { res.status(500).json(error); });
+});
+
+//link hut to the hike
+app.put('/updateHike', verifyUserToken, async (req, res) => {
+    const hikeId = req.body.hikeId;
+    const condition = req.body.condition;
+    const description = req.body.description;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (user.role !== Type.hutWorker) {
+        res.sendStatus(403);
+        return;
+    }
+    return dao.updateHike(hikeId, condition, description)
+        .then(() => { res.sendStatus(200); })
+        .catch(() => { res.status(500).end(); })
+});
 
 // activate the server
 server.listen(port, () => {

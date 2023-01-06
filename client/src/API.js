@@ -616,6 +616,46 @@ async function addWeatherAlert(lon,lat,radius,token){
     return response.ok;
 }
 
+async function getHut(hutId, token) {
+    const response = await fetch(url + '/hut/' + hutId, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const hut = await response.json();
+    return hut
+}
+
+async function getHikesLinkedToHut(hutId, token) {
+    const response = await fetch(url + '/hikesLinked/' + hutId, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include'
+    });
+    const hikes = await response.json();
+    return hikes
+}
+
+async function updateHike(hikeId, condition, description, token) {
+    const response = await fetch(url + '/updateHike', {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            hikeId: hikeId,
+            condition: condition,
+            description: description,
+        })
+    })
+    return response.status;
+}
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -651,7 +691,10 @@ const API = {
     getReferencePointByPosition,
     getToApprove,
     changeApprovalStatus,
-    addWeatherAlert
+    addWeatherAlert,
+    getHut,
+    getHikesLinkedToHut,
+    updateHike
 };
 
 

@@ -214,7 +214,7 @@ function SearchHut(props) {
                     hutCardShow?
                         <>
                         <br></br>
-                        <HutCard hut={selectedHut} setSelectedHut={setSelectedHut}></HutCard>
+                        <HutCard hut={selectedHut} setSelectedHut={setSelectedHut} user={props.user}></HutCard>
                         </>:
                         <></>
                 }

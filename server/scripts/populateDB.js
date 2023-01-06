@@ -11,7 +11,8 @@ const Hut = require("../models/Hut")
 const Record = require("../models/Record")
 const Image = require("../models/Image")
 const HikeImage = require("../models/HikeImage")
-
+const Condition = require("../constants/Condition")
+const HikeCondition = require("../models/HikeCondition")
 
 mongoose.connect("mongodb://localhost/hike_tracker")
 
@@ -155,6 +156,22 @@ async function run() {
     await user4.save()
     console.log(user4);
 
+    const user5 = await User.create({
+        _id: "73a1a56e31d3c6a9e5202502",
+        firstName: "Sofia",
+        lastName: "Belloni",
+        email: "hut_worker@email.com",
+        //Password = prova
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS",
+        activationCode: "123456",
+        role: UserType.hutWorker,
+        active: true,
+        approved: true
+    })
+
+    await user5.save()
+    console.log(user5);
+
     for (const h of testDataHikes) {
         try {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
@@ -174,6 +191,10 @@ async function run() {
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
 
+            const cond = await HikeCondition.create({
+                condition: Condition.open,
+                details: ""
+            })
 
             const hike = await Hike.create({
                 title: h.title,
@@ -188,7 +209,7 @@ async function run() {
                 startPoint: startPosition._id,
                 endPoint: endPosition._id,
                 authorId: user._id,
-
+                condition: cond
             })
             await hike.save()
             console.log(hike)

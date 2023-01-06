@@ -290,3 +290,11 @@
 .reference-point {
   margin: 2rem 0rem;
 }
+
+.edit:hover{
+  color: green;
+}
+
+.pbold{
+  font-weight: bold;
+}

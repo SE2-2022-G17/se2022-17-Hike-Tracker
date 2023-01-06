@@ -11,6 +11,8 @@ const RecordStatus = require("./constants/RecordStatus")
 const validationType = require('./models/ValidationType')
 const Parking = require('./models/Parking')
 const HikeImage = require('./models/HikeImage')
+const HikeCondition = require('./models/HikeCondition')
+const Condition = require('./constants/Condition');
 const ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 let gpxParser = require('gpxparser');
@@ -44,6 +46,7 @@ exports.getVisitorHikes= async function(
             .filterByPositions(queryContainer.longitude, queryContainer.latitude, nearPositions)
             .populate('startPoint') // populate is basically a join
             .populate('endPoint')
+            .populate('condition')
 
         return hikes
 
@@ -281,6 +284,7 @@ exports.getHike = async (id) => {
             // Populate across multiple level: point of huts
             populate: { path: 'point' }
         })
+        .populate('condition')
         .populate('referencePoints')
         .then(doc => {
             return doc;
@@ -743,5 +747,49 @@ exports.changeApprovalStatus = async (status,id) => {
         }
     } catch(error){
         throw new HTTPError("Server internal error",500)
+    }
+}
+
+exports.getHut = async (id) => {
+    return Hut.findById(ObjectId(id))
+        .populate('point')
+        .then(doc => {
+            return doc;
+        })
+        .catch(err => {
+            throw new HTTPError(500,err);
+        });
+}
+
+exports.getHikesLinkedToHut = async function(id){
+    try {
+        const hikes = await Hike.find(
+                { "huts": { "$in": id } }
+            )
+            .populate('condition')
+            .exec();
+
+        return hikes
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+exports.updateHike = async (hikeId, condition, description) => {
+
+    if (hikeId === undefined || condition === undefined || description === undefined)
+        throw new TypeError(400);
+
+    const cond = await HikeCondition.create({
+        condition: condition,
+        details: description
+    });
+    cond.save()
+
+    try {
+        return await Hike.findByIdAndUpdate(hikeId, { condition: cond})
+    } catch (err) {
+        throw new TypeError(500);
     }
 }
