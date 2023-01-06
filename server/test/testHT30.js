@@ -26,7 +26,7 @@ describe('Test API local guide modify and delete hikes (US30)', () => {
         }
 
         const startPosition = await Position.create({
-            "location.coordinates": [3, 5]
+            "location.coordinates": [-119.55979, 37.73949]
         })
 
         const endPosition = await Position.create({
@@ -172,9 +172,8 @@ describe('Test API local guide modify and delete hikes (US30)', () => {
         .set('Authorization', "Bearer " + token)
         .send({
             id: hikeId,
-            track: "rocciamelone.gpx",
+            track: "./test/mocks/Yosemite Grand Traverse.gpx"
         })
-
         expect(response.statusCode).to.equal(200);
     })
 
