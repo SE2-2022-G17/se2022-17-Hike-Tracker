@@ -46,7 +46,6 @@ function EditHut(props) {
         if(hut !== null && hikes !== null){
             body = <MainContent hikes={hikes} hut={hut} name={props.user.firstName} />;
         }
-        <p>Loading info...</p>
     }
 
     return <Container>

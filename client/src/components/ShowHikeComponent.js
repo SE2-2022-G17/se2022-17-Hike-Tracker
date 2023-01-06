@@ -341,7 +341,7 @@ function ShowHike(props) {
                 {hike !== null ? hike.title : ''}
                 {hike !== null ? <Button className="mx-4 mb-" variant="outline-dark" disabled><TiInfoOutline size="1.3em" />  Condition: {hike.condition.condition} {
                     (hike.condition.details !== "") ?
-                        " , " + hike.condition.details : false
+                        " - " + hike.condition.details : false
                 }</Button>
                     : false}
                 <RecordButton record={record} />
