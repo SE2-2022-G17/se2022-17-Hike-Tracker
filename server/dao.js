@@ -224,7 +224,7 @@ exports.deleteHike = async function(hikeId){
             }
         });
 
-        Hike.findById(hikeId, function (err, docs) {
+        Hike.findOne({_id:hikeId}, function (err, docs) {
             if (err){
                 console.log(err);
             }
@@ -253,7 +253,11 @@ exports.deleteHike = async function(hikeId){
                 })
             }
         });
-        Hike.findByIdAndDelete(hikeId);
+        Hike.findOneAndDelete({_id:hikeId},function (err, _) {
+            if (err){
+                console.log(err);
+            }
+        })
     }catch (e) {
         throw new TypeError(400);
     }
@@ -342,29 +346,28 @@ exports.updateHike = async function (bodyContainer,track,userId){
         else{
             if(referenceLocToDelete){
                 let newRefs=[];
-                const res = Hike.find({_id:id});
-                const hike=res[0];
+                const hike = await Hike.findOne({_id:id}).exec();
                 referenceLocToDelete=referenceLocToDelete.toString().split(',');
                 let refPointsToDelete = [];
-    
+                
                 for(let refLoc in referenceLocToDelete){
                     const r = await Location.findOne({_id:referenceLocToDelete[refLoc]});
-                    const refPoint = Position.findOne({_id:r.point});
+                    const refPoint = await Position.findOne({_id:r.point}).exec();
                     refPointsToDelete.push(refPoint);
                 }
+
                 hike.referencePoints.forEach(rp=>{
                     if(!refPointsToDelete.find(ref=>rp.toString()===ref._id.toString())){
                         newRefs.push(rp);
                     }
                 });
 
-    
                 for (let rl in referenceLocToDelete) {
                     await Location.deleteOne({_id: referenceLocToDelete[rl]});
                 }
 
                 for (let rp in refPointsToDelete) {
-                    Position.deleteOne({_id:refPointsToDelete[rp]._id});
+                    await Position.deleteOne({_id:refPointsToDelete[rp]._id}).exec();
                 }
 
                 let doc = Hike.findOneAndUpdate({_id:id}, {
