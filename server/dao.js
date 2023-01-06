@@ -209,8 +209,6 @@ exports.deleteImage = async function(hikeId){
             if (err){
                 console.log(err)
             }
-            else{
-            }
         });
 
     }catch (e) {
@@ -224,8 +222,6 @@ exports.deleteHike = async function(hikeId){
             if (err){
                 console.log(err)
             }
-            else{
-            }
         });
 
         Hike.findById(hikeId, function (err, docs) {
@@ -237,14 +233,10 @@ exports.deleteHike = async function(hikeId){
                     if (err){
                         console.log(err)
                     }
-                    else{
-                    }
                 });
                 Position.findOneAndDelete({_id:docs.endPoint}, function (err, _docs) {
                     if (err){
                         console.log(err)
-                    }
-                    else{
                     }
                 });
                 docs.referencePoints.forEach(refPoint=>{
@@ -252,20 +244,16 @@ exports.deleteHike = async function(hikeId){
                         if (err){
                             console.log(err)
                         }
-                        else{
-                        }
                     });
                     Position.findOneAndDelete({_id:refPoint},function (err, _docs) {
                         if (err){
                             console.log(err)
                         }
-                        else{
-                        }
                     });
                 })
             }
         });
-        await Hike.findByIdAndDelete(hikeId);
+        Hike.findByIdAndDelete(hikeId);
     }catch (e) {
         throw new TypeError(400);
     }
@@ -305,14 +293,10 @@ exports.updateHike = async function (bodyContainer,track,userId){
                         if (err){
                             console.log(err)
                         }
-                        else{
-                        }
                     });
                     Position.findOneAndDelete({_id:docs.endPoint}, function (err, _docs) {
                         if (err){
                             console.log(err)
-                        }
-                        else{
                         }
                     });
                     docs.referencePoints.forEach(refPoint=>{
@@ -320,14 +304,10 @@ exports.updateHike = async function (bodyContainer,track,userId){
                             if (err){
                                 console.log(err)
                             }
-                            else{
-                            }
                         });
                         Position.findOneAndDelete({_id:refPoint},function (err, _docs) {
                             if (err){
                                 console.log(err)
-                            }
-                            else{
                             }
                         });
                     })
@@ -341,7 +321,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
             endPosition = await Position.create({
                 "location.coordinates": [endPoint.lon, endPoint.lat]
             })
-            let doc = await Hike.findOneAndUpdate({_id:id}, {
+            let doc = Hike.findOneAndUpdate({_id:id}, {
                 title: title,
                 length: length,
                 expectedTime: time,
@@ -362,14 +342,14 @@ exports.updateHike = async function (bodyContainer,track,userId){
         else{
             if(referenceLocToDelete){
                 let newRefs=[];
-                const res = await Hike.find({_id:id});
+                const res = Hike.find({_id:id});
                 const hike=res[0];
                 referenceLocToDelete=referenceLocToDelete.toString().split(',');
                 let refPointsToDelete = [];
     
-                for(refLoc in referenceLocToDelete){
+                for(let refLoc in referenceLocToDelete){
                     const r = await Location.findOne({_id:referenceLocToDelete[refLoc]});
-                    const refPoint = await Position.findOne({_id:r.point});
+                    const refPoint = Position.findOne({_id:r.point});
                     refPointsToDelete.push(refPoint);
                 }
                 hike.referencePoints.forEach(rp=>{
@@ -384,10 +364,10 @@ exports.updateHike = async function (bodyContainer,track,userId){
                 }
 
                 for (let rp in refPointsToDelete) {
-                    await Position.deleteOne({_id:refPointsToDelete[rp]._id});
+                    Position.deleteOne({_id:refPointsToDelete[rp]._id});
                 }
 
-                let doc = await Hike.findOneAndUpdate({_id:id}, {
+                let doc = Hike.findOneAndUpdate({_id:id}, {
                     title: title,
                     expectedTime: time,
                     difficulty: difficulty,
@@ -400,7 +380,7 @@ exports.updateHike = async function (bodyContainer,track,userId){
                 return doc.id;
             }
             else{
-                let doc = await Hike.findOneAndUpdate({_id:id}, {
+                let doc = Hike.findOneAndUpdate({_id:id}, {
                     title: title,
                     expectedTime: time,
                     difficulty: difficulty,

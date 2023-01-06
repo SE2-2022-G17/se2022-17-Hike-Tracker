@@ -167,11 +167,6 @@ function MainContent() {
             authToken
         );
 
-        let newRefs = [];
-        referencePoints.forEach(rp=>{
-            if(!referenceToDelete.find(r=>rp._id.toString()===r.toString()))
-                newRefs.push(rp);
-        });
         setReferencePoints([]);
         setReferenceToDelete([]);
 
