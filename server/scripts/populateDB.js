@@ -14,9 +14,17 @@ const HikeImage = require("../models/HikeImage")
 const Condition = require("../constants/Condition")
 const HikeCondition = require("../models/HikeCondition")
 
-mongoose.connect("mongodb://localhost/hike_tracker")
+mongoose
+    .connect(
+        'mongodb://mongo:27017/hike-tracker', // the mongo container listening to port 27017
+        { useNewUrlParser: true }
+    )
+    .then(async () => {
+        console.log('MongoDB Connected')
+        await run();
+    })
+    .catch(err => console.log(err));
 
-run()
 
 
 function HikeDetail(title, time, difficulty, city, province, description, file) {
