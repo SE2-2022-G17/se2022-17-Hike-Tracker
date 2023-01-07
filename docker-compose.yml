@@ -8,6 +8,7 @@ services:
     image: bloomer24/se2022-17-hike-tracker:server
     ports:
       - 3001:3001
+      - 8080:8080
     depends_on:
       - "populate"
     container_name: server-hike
