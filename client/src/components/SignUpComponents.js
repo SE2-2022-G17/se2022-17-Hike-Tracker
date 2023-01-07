@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate,Link } from 'react-router-dom';
 import { VerCard } from './Verification.js'
@@ -21,7 +21,7 @@ function SignUpForm(props) {
     const [phoneNumber, setPhoneNumber] = useState('');
     const navigate = useNavigate();
 
-    const signUp = (credentials) => {
+    const signUp = useCallback((credentials) => {
         API.signUp(credentials)
           .then(user => {
             if(user !== 'Error'){
@@ -37,9 +37,10 @@ function SignUpForm(props) {
                 setRegButtonDisabled(false);
             }
           })    
-      }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        },[])
 
-    const handleSubmit = (event) => {
+    const handleSubmit = useCallback( (event) => {
         event.preventDefault();
         props.setErrorMessage('');
         setRegButtonDisabled(true);
@@ -72,7 +73,8 @@ function SignUpForm(props) {
         else{
             setRegButtonDisabled(false);
         }
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[name, surname, username, password, type, phoneNumber,confirmPassword,signUp]);
 
     let phoneNUmberBlock = '';
     if (type === 'localGuide') {

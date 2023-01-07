@@ -1,5 +1,5 @@
 import { Card,Form, Button, Container, Row, Col } from 'react-bootstrap';
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Alert from 'react-bootstrap/Alert';
 import API from '../API';
 import { useNavigate,useParams } from 'react-router-dom';
@@ -11,7 +11,7 @@ function VerifyAccount(){
     const [valid,setValid] = useState(false);
     const [messageVisible,setMessageVisible] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = useCallback( (event) => {
         event.preventDefault();
 
         console.log(email);
@@ -34,7 +34,7 @@ function VerifyAccount(){
                 };
             })
         }
-    }
+    },[code,email])
 
     return(<>
         <Card>
@@ -68,7 +68,7 @@ function VerifyAccount(){
                             </Col>
                         </Row>
                         {
-                            messageVisible ?
+                            messageVisible && (
                                 valid ?
                                     <Row>
                                         <Col>
@@ -83,7 +83,7 @@ function VerifyAccount(){
                                         <Alert variant='danger'>Uncorrect code.</Alert>
                                     </Col>
                                 </Row>
-                                :<></>
+                                )
                         }
                     </Container>
                 </Form>

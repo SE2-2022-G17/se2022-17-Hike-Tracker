@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Container, Form, Button, Alert, Row, Col } from "react-bootstrap";
 import API from '../API';
 import Type from "../models/UserType";
@@ -24,7 +24,7 @@ function CreateHut(props)
                 </Row>
     }
 
-    return <Container className="form-container">>
+    return <Container className="form-container">
                 {body}
             </Container>
 }
@@ -74,7 +74,7 @@ function CreateHutForm() {
 
     }, [name, description, beds, longitude, latitude, altitude, phone, email, website])
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = useCallback( async (event) => {
         event.preventDefault()
         const authToken = localStorage.getItem('token');
 
@@ -83,7 +83,17 @@ function CreateHutForm() {
             setMessage('Latitude or longitude values not valid.');
         }
         else {
-            const response = await API.createHut(name, description, beds, authToken, longitude, latitude, altitude, phone, email, website);
+            const response = await API.createHut({
+                name:name, 
+                description:description, 
+                beds:beds, 
+                longitude:longitude, 
+                latitude:latitude, 
+                altitude:altitude, 
+                phone:phone, 
+                email:email, 
+                website:website}, 
+                authToken);
 
             if (response === 201) {
                 //HTTP status code 201 means Created (successful)
@@ -94,7 +104,7 @@ function CreateHutForm() {
                 setMessage("An error occurred during the creation of the Hut")
             }
         }
-    }
+    },[altitude, beds, description, email, latitude, longitude, name, phone, website])
 
     return (
         <Form>

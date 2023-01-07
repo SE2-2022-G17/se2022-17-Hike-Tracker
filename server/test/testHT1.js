@@ -7,23 +7,24 @@ let expect = chai.expect;
 
 let mongoServer;
 
-before(async () => {
-  // if readyState is 0, mongoose is not connected
-  if (mongoose.connection.readyState === 0) {
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    await mongoose.connect(mongoUri);
-  }
-});
-
-after(async () => {
-  await mongoose.disconnect();
-  if (mongoServer !== undefined)
-    await mongoServer.stop();
-  app.close();
-});
-
 describe('Test API for getting hikes', () => {
+  before(async () => {
+    // if readyState is 0, mongoose is not connected
+    if (mongoose.connection.readyState === 0) {
+      mongoServer = await MongoMemoryServer.create();
+      const mongoUri = mongoServer.getUri();
+      await mongoose.connect(mongoUri);
+    }
+  });
+
+  after(async () => {
+    await mongoose.disconnect();
+    if (mongoServer !== undefined)
+      await mongoServer.stop();
+    app.close();
+  });
+
+
   it('test visitor hikes difficulty,length,ascent and time filters', async () => {
     let query = "?minAscent=1000&maxAscent=3000"
       + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50&minLength=15";
@@ -59,6 +60,93 @@ describe('Test API for getting hikes', () => {
     query = "?maxLength=15&minLength=30";
     response = await request(app).get("/visitor/hikes" + query);
     expect(response.body.length).to.equal(0);
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 2', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50&minLength=15&city=Capizzi&province=ME";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 3', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50&minLength=15&city=Capizzi";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 4', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50&minLength=15&province=ME";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 5', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10&difficulty=Tourist&maxLength=50";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 6', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10&difficulty=Tourist&minLength=50";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 7', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10&difficulty=Tourist";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 8', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1&maxTime=10";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 9', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&minTime=0.1";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 10', async () => {
+    let query = "?minAscent=1000&maxAscent=3000"
+      + "&maxTime=0.1";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 11', async () => {
+    let query = "?minAscent=1000&maxAscent=3000";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 12', async () => {
+    let query = "?minAscent=1000";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 13', async () => {
+    let query = "?maxAscent=1000";
+    const response = await request(app).get("/visitor/hikes" + query);  
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('test visitor hikes with some filters 14', async () => {
+    let query = "?";
+    const response = await request(app).get("/visitor/hikes" + query);  
     expect(response.statusCode).to.equal(200);
   });
 });

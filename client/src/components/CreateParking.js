@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {Container, Form, Button, Alert, Row, Col} from "react-bootstrap";
 import API from '../API';
 import Type from "../models/UserType";
@@ -24,7 +24,7 @@ function CreateParking(props)
                 </Row>
     }
 
-    return <Container className="form-container">>
+    return <Container className="form-container">
         {body}
     </Container>
 }
@@ -54,7 +54,7 @@ function CreateParkingForm() {
 
     }, [name, description, parkingPlaces])
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = useCallback( async (event) => {
         event.preventDefault()
         const authToken = localStorage.getItem('token');
         const response = await API.createParking(name, description, parkingPlaces, authToken, latitude, longitude);
@@ -68,7 +68,7 @@ function CreateParkingForm() {
             setMessage("An error occurred during the creation of the Parking")
         }
         console.log(response)
-    }
+    },[description, latitude, longitude, name, parkingPlaces])
 
     return (
         <>

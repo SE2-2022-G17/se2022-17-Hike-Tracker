@@ -1,5 +1,5 @@
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import API from '../API';
@@ -24,28 +24,24 @@ function VisitorHikes() {
     const [maxAscent, setMaxAscent] = useState(undefined);
     const [minTime, setMinTime] = useState(undefined);
     const [maxTime, setMaxTime] = useState(undefined);
-    const [city, setCity] = useState(undefined)
-    const [province, setProvince] = useState(undefined)
+    const [city, setCity] = useState(undefined);
+    const [province, setProvince] = useState(undefined);
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
     const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = useCallback( () => setShow(false),[]);
+    const handleShow = useCallback( () => setShow(true),[]);
 
     useEffect(() => {
-        API.getVisitorHikes()
+        API.getVisitorHikes({})
             .then(retrivedHikes => {
                 setHikes(retrivedHikes);
             })
             .catch(err => console.log(err));
     }, []);
-
-    const getVisitorHikes = async (ev) => {
-        ev.preventDefault();
-
-        // start validation
+    const partialValidation = () => {
         if (minLength !== undefined && !Number.isSafeInteger(Number(minLength))) {
             return
         }
@@ -58,6 +54,12 @@ function VisitorHikes() {
         if (maxAscent !== undefined && !Number.isSafeInteger(Number(maxAscent))) {
             return
         }
+    }
+    const getVisitorHikes = useCallback( async (ev) => {
+        ev.preventDefault();
+
+        // start validation
+        partialValidation();
         if (minTime !== undefined && Number.isNaN(Number(minTime))) {
             return
         }
@@ -71,21 +73,22 @@ function VisitorHikes() {
             return
         }
 
-        const retrivedHikes = await API.getVisitorHikes(
-            difficulty,
-            minLength,
-            maxLength,
-            minAscent,
-            maxAscent,
-            minTime,
-            maxTime,
-            city,
-            province,
-            longitude,
-            latitude
-        );
+        const retrivedHikes = await API.getVisitorHikes({
+            difficulty:difficulty,
+            minLength:minLength,
+            maxLength:maxLength,
+            minAscent:minAscent,
+            maxAscent:maxAscent,
+            minTime:minTime,
+            maxTime:maxTime,
+            city:city,
+            province:province,
+            longitude:longitude,
+            latitude:latitude
+        });
         setHikes(retrivedHikes);
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province, hikes.length])
 
     return (
         <Container className='visitor-hike'>
@@ -101,6 +104,7 @@ function VisitorHikes() {
                             province={province}
                             setProvince={setProvince}
                             setCity={setCity}
+                            city={city}
                         />
                         <SelectPointFromMap handleShow={handleShow} />
                         <Coordinates lng={longitude} lat={latitude} />
@@ -113,7 +117,7 @@ function VisitorHikes() {
                     </Container>
                 </Col>
                 <Col xl={9}>
-                    <HikesList hikes={hikes} />
+                    <HikesList hikes={hikes} setHikes={setHikes}/>
                 </Col>
             </Row>
             <Modal show={show} onHide={handleClose}>
@@ -212,9 +216,15 @@ function HikesList(props) {
 
     const navigator = useNavigate();
 
-    let goToHike = (id) => {
+    const goToHike = useCallback((id) => {
         navigator('/hiker/hikes/' + id);
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
+    const goToModify = useCallback((id) => {
+        navigator('/ModifyHike/' + id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
 
     return (
         <>
@@ -222,7 +232,7 @@ function HikesList(props) {
             {
                 props.hikes.map((hike, index) => {
                     return (
-                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} />
+                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} setHikes={props.setHikes} goToModify={goToModify}/>
                     );
                 })
             }

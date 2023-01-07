@@ -47,6 +47,10 @@ const hikeSchema = new mongoose.Schema({
     authorId: {
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    condition: {
+        type: Schema.Types.ObjectId,
+        ref: 'HikeCondition'
     }
 })
 

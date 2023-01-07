@@ -1,5 +1,5 @@
 import { Card,Form, Button, Container, Row, Col } from 'react-bootstrap';
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import API from '../API';
@@ -10,7 +10,7 @@ function VerCard(props){
     const [valid,setValid] = useState(false);
     const [messageVisible,setMessageVisible] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = useCallback((event) => {
         event.preventDefault();
 
         // validation that forms are not empty
@@ -35,7 +35,8 @@ function VerCard(props){
                 };
             })
         }
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[code])
 
     return(<>
         <Card>
@@ -63,15 +64,15 @@ function VerCard(props){
                             <Col>
                                 {
                                     props.emailSent ? 
-                                        valid ?
-                                        <></>:
-                                        <Button type='submit' onClick={handleSubmit} className='primary'>Verify</Button>:
+                                        (!valid) &&
+                                        (<Button type='submit' onClick={handleSubmit} className='primary'>Verify</Button>)
+                                    :
                                     <Spinner animation="border" variant="success" />
                                 }
                             </Col>
                         </Row>
                         {
-                            messageVisible ?
+                            messageVisible && (
                                 valid ?
                                     <Row>
                                         <Col>
@@ -83,7 +84,7 @@ function VerCard(props){
                                         <Alert variant='danger'>Uncorrect code.</Alert>
                                     </Col>
                                 </Row>
-                                :<></>
+                                )
                         }
                     </Container>
                 </Form>

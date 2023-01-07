@@ -38,30 +38,32 @@ function SearchHut(props) {
         return marker;
     }
 
-    function updateMarkers(huts) {
-        markers.forEach(marker => marker.remove());
-        huts.forEach(hut => {
-            const lng = hut.point.location.coordinates[0];
-            const lat = hut.point.location.coordinates[1];
-            if(selectedHut===null){
+    function hutsForEach (hut) {
+        const lng = hut.point.location.coordinates[0];
+        const lat = hut.point.location.coordinates[1];
+        if(selectedHut===null){
+            const marker = newMarker(lng,lat,hut,'blue');
+            if (map.current) marker.addTo(map.current);
+            setMarkers(old => [...old, marker]);
+        } 
+        else{
+            if(selectedHut.point.location.coordinates[0] === lng &&
+                selectedHut.point.location.coordinates[1] === lat){
+                const marker = newMarker(lng,lat,hut,'red');
+                if (map.current) marker.addTo(map.current);
+                setMarkers(old => [...old, marker]);
+            }
+            else{
                 const marker = newMarker(lng,lat,hut,'blue');
                 if (map.current) marker.addTo(map.current);
                 setMarkers(old => [...old, marker]);
-            } 
-            else{
-                if(selectedHut.point.location.coordinates[0] === lng &&
-                    selectedHut.point.location.coordinates[1] === lat){
-                    const marker = newMarker(lng,lat,hut,'red');
-                    if (map.current) marker.addTo(map.current);
-                    setMarkers(old => [...old, marker]);
-                }
-                else{
-                    const marker = newMarker(lng,lat,hut,'blue');
-                    if (map.current) marker.addTo(map.current);
-                    setMarkers(old => [...old, marker]);
-                }
             }
-        });
+        }
+    }
+
+    function updateMarkers(huts) {
+        markers.forEach(marker => marker.remove());
+        huts.forEach((hut)=>hutsForEach(hut));
     }
 
     useEffect(()=>{
@@ -212,7 +214,7 @@ function SearchHut(props) {
                     hutCardShow?
                         <>
                         <br></br>
-                        <HutCard hut={selectedHut} setSelectedHut={setSelectedHut}></HutCard>
+                        <HutCard hut={selectedHut} setSelectedHut={setSelectedHut} user={props.user}></HutCard>
                         </>:
                         <></>
                 }

@@ -26,6 +26,9 @@
 ### Local Guide
 - email: localguide2@email.com
 - password:password
+### Hut Worker
+- email: hut_worker@email.com
+- password:password
 
 ## Authentication and Authorization
 ### Client:

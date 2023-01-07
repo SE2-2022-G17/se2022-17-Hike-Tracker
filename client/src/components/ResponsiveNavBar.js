@@ -5,10 +5,9 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Button from 'react-bootstrap/Button';
 import UserType from '../models/UserType';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChartLine, faArrowRightFromBracket, faInfo, faLightbulb} from "@fortawesome/free-solid-svg-icons";
-import { Navigate, useNavigate } from 'react-router-dom';
-import {Card} from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartLine, faArrowRightFromBracket, faInfo, faLightbulb } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from 'react-router-dom';
 import React from "react";
 
 
@@ -16,7 +15,7 @@ function ResponsiveNavBar(props) {
 
     const expand = 'lg';
     const navigate = useNavigate();
-    
+
 
     return (
         <>
@@ -42,33 +41,41 @@ function ResponsiveNavBar(props) {
                                     </>
                                     : <></>
                                 }
+                                {props.role === UserType.hiker ?
+                                    <Nav.Link href="/recordedHikes">Record Hikes</Nav.Link>
+                                    : <></>
+                                }
+                                {props.role === UserType.platformManager ?
+                                    <Nav.Link href="/platformManager">Manager Page</Nav.Link>
+                                    : <></>
+                                }
                                 <NavDropdown
-                                            title="Huts"
-                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
-                                        >
-                                            {
-                                                props.role === UserType.localGuide ?
-                                                <>
-                                                    <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
-                                                    <NavDropdown.Divider />
-                                                </>
-                                                : <></>
-                                            }
-                                            <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>            
+                                    title="Huts"
+                                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                >
+                                    {
+                                        props.role === UserType.localGuide ?
+                                            <>
+                                                <NavDropdown.Item href="/huts/create">Add hut</NavDropdown.Item>
+                                                <NavDropdown.Divider />
+                                            </>
+                                            : <></>
+                                    }
+                                    <NavDropdown.Item href="/huts/searchHut">Search an hut</NavDropdown.Item>
                                 </NavDropdown>
                                 <NavDropdown
-                                            title="Parking Lots"
-                                            id={`offcanvasNavbarDropdown-expand-${expand}`}
-                                        >
-                                            {
-                                                props.role === UserType.localGuide ?
-                                                <>
-                                                    <NavDropdown.Item href="/parking/create">Add a parking lot</NavDropdown.Item>
-                                                    <NavDropdown.Divider />
-                                                </>
-                                                : <></>
-                                            }
-                                            <NavDropdown.Item href="">Another feature</NavDropdown.Item>
+                                    title="Parking Lots"
+                                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                                >
+                                    {
+                                        props.role === UserType.localGuide ?
+                                            <>
+                                                <NavDropdown.Item href="/parking/create">Add a parking lot</NavDropdown.Item>
+                                                <NavDropdown.Divider />
+                                            </>
+                                            : <></>
+                                    }
+                                    <NavDropdown.Item href="">Another feature</NavDropdown.Item>
                                 </NavDropdown>
                                 {
                                     props.loggedIn ?
@@ -87,13 +94,19 @@ function ResponsiveNavBar(props) {
                                                     onClick={() => props.setPerformanceModal(true)}>
                                                     <FontAwesomeIcon className={'me-1'} icon={faChartLine} />
                                                     Performance
-                                                </NavDropdown.Item> 
+                                                </NavDropdown.Item>
 
                                                 <NavDropdown.Item
                                                     onClick={() => navigate('/preferredHikes')}>
-                                                    <FontAwesomeIcon className={'me-1'} icon={faLightbulb}/>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faLightbulb} />
                                                     Suggested Hikes
-                                                </NavDropdown.Item> 
+                                                </NavDropdown.Item>
+
+                                                <NavDropdown.Item
+                                                    onClick={() => props.setUserStatistics(true)}>
+                                                    <FontAwesomeIcon className={'me-1'} icon={faChartLine} />
+                                                    User Statistics
+                                                </NavDropdown.Item>
 
                                                 <NavDropdown.Item 
                                                     href="/" 

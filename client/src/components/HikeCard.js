@@ -1,23 +1,87 @@
-import { Card, Row, Col } from "react-bootstrap";
-import { ArrowUpRight, Clock, GeoAlt, Award } from 'react-bootstrap-icons';
+import { Card, Row, Col, Button } from "react-bootstrap";
+import { ArrowUpRight, Clock, GeoAlt, Award, Trash3,PencilSquare } from 'react-bootstrap-icons';
 import DistanceIcon from '../distance.svg';
+import { useState, useEffect, useCallback } from 'react';
+import Utils from "../Utils"
+import Modal from 'react-bootstrap/Modal';
+import API from "../API";
+import { TiInfoOutline } from "react-icons/ti";
 
 
 function HikeCard(props) {
-    const { hike } = props;
-    const clickable = localStorage.getItem('token') === null ? "" : "cursor-pointer";
+    const { hike,setHikes } = props;
+    const [clickable,setClickable] = useState(localStorage.getItem('token') === null ? "" : "cursor-pointer");
+    const [user,setUser] = useState(undefined);
+    const [buttonsVisibile,setButtonsVisible]=useState(false);
+    const [show, setShow] = useState(false);
+
+    const handleClose = useCallback( () => setShow(false),[]);
+    const handleMouseEnter = useCallback( () => setClickable(""),[]);
+    const handleMouseLeave = useCallback( () => setClickable(localStorage.getItem('token') === null ? "" : "cursor-pointer"),[]);
+    const handleDelete = useCallback( () =>{
+        const token = localStorage.getItem('token');
+        API.deleteHike(hike._id,token);
+        setHikes(old=>old.filter(h=>h._id!==hike._id));
+        setShow(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
+    const showDelete = useCallback(() => setShow(true),[]);
+    const modify = useCallback(() => props.goToModify(hike._id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ,[]);
+
+    useEffect(()=>{
+        const token = localStorage.getItem('token');
+        if(token)setUser(Utils.parseJwt(token));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
+
+    useEffect(()=>{
+        if(user){
+            if(user.role==="localGuide" && user.id===hike.authorId && user.approved){
+                setButtonsVisible(true);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[user])
 
     return (
         <>
             <Card className={"hike-card " + clickable} onClick={() => {
-                const authToken = localStorage.getItem('token');
-                if (authToken !== null) {
-                    return props.goToHike(hike._id);
+                if(clickable !== ""){
+                    const authToken = localStorage.getItem('token');
+                    if (authToken !== null) {
+                        return props.goToHike(hike._id);
+                    }
+                    else return {};
                 }
-                else return {};
             }}>
                 <Card.Body>
-                    <Card.Title>{hike.title}</Card.Title>
+                    <Row>
+                        <Col lg="10">
+                            <Card.Title>{hike.title}
+                            {hike !== null ? 
+                            <Button className="mx-4 mb-" size="sm" variant="outline-dark" disabled><TiInfoOutline size="1.4em" /> {hike.condition.condition}</Button>
+                            : false}
+                            </Card.Title>
+                        </Col>
+                        {
+                            buttonsVisibile ? 
+                            <Col lg="2">
+                            <Button variant="outline-dark" 
+                                onMouseEnter={handleMouseEnter} 
+                                onMouseLeave={handleMouseLeave}
+                                onClick={modify}>
+                                <PencilSquare/></Button>
+                            {" "}
+                            <Button variant="outline-dark" 
+                                onMouseEnter={handleMouseEnter}
+                                onMouseLeave={handleMouseLeave}
+                                onClick={showDelete}>
+                                <Trash3/></Button>
+                            </Col>:<></>
+                        }
+                    </Row>
                     <Card.Text>
                         {hike.description}
                     </Card.Text>
@@ -45,7 +109,24 @@ function HikeCard(props) {
                     </Row>
                 </Card.Body>
             </Card>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Are you sure?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Do you really want to delete this hike? This process cannot be undone.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Col sm='3'>
+                        <Button variant="secondary" onClick={handleClose}>Don't delete</Button>
+                    </Col>
+                    <Col sm='3'>
+                        <Button variant="danger" className="button" onClick={handleDelete}>Delete</Button>{' '}
+                    </Col>
+                </Modal.Footer>
+            </Modal>
         </>);
 }
+
 
 export default HikeCard;
