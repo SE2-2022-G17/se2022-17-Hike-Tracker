@@ -72,9 +72,9 @@ function LinkHut(props) {
                         </Col>
                     </Row>
                     <Row>
-                    <Col sm='3'></Col>
+                        <Col sm='3'></Col>
                         <Col sm='3'>
-                        <Form.Label >Filter search by hut name: </Form.Label>
+                            <Form.Label className="mt-1">Filter search by hut name: </Form.Label>
                         </Col>
                         <Col sm="4">
                             <Form.Control
