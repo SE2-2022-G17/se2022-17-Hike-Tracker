@@ -117,8 +117,12 @@ function HikeCard(props) {
                     <p>Do you really want to delete this hike? This process cannot be undone.</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-                    <Button variant="danger" onClick={handleDelete}>Delete</Button>{' '}
+                    <Col sm='3'>
+                        <Button variant="secondary" onClick={handleClose}>Don't delete</Button>
+                    </Col>
+                    <Col sm='3'>
+                        <Button variant="danger" className="button" onClick={handleDelete}>Delete</Button>{' '}
+                    </Col>
                 </Modal.Footer>
             </Modal>
         </>);
