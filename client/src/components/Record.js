@@ -12,6 +12,7 @@ function Record(props) {
     const { id } = useParams();
     const [record, setRecord] = useState(undefined);
     const [trace, setTrace] = useState([]);
+    const [dirty, setDirty] = useState(false);
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
@@ -19,6 +20,7 @@ function Record(props) {
         API.getRecord(id, authToken)
             .then(rec => {
                 setRecord(rec);
+                setDirty(false);
                 API.getHikeTrace(rec.hikeId._id, authToken)
                     .then(t => {
                         setTrace(t);
@@ -26,13 +28,14 @@ function Record(props) {
                     .catch(e => console.log(e));
             })
             .catch(e => console.log(e));
-    }, [id]);
+    }, [id, dirty]);
 
     return (
         record !== undefined ?
             <RecordInfo
                 record={record}
                 trace={trace}
+                setDirty={setDirty}
                 disabled={disabled}
                 setDisabled={setDisabled}
             />
