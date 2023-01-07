@@ -245,7 +245,7 @@ function MainApp() {
         <Route path="/parking/create" element={<CreateParking user={user} />} />
         <Route path="/huts/create" element={<CreateHut user={user} />} />
         <Route path="/huts/searchHut" element={<SearchHut user={user}/>} />
-        <Route path="/preferredHikes" element={<PreferredHikes />} />
+        <Route path="/preferredHikes" element={<PreferredHikes setPerformanceModal={setPerformanceModal}/>} />
         <Route path="/recordedHikes" element={<RecordedHikes />} />
         <Route path="/records/:id" element={<Record />} />
         <Route path='/edit/:id' element={<EditHut user={user}/>}/>
