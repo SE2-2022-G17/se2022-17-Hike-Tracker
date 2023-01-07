@@ -42,6 +42,7 @@ async function run() {
     const difficulties = ['Tourist', 'Hiker', 'ProfessionalHiker']
     const testDataHikes = [
         new HikeDetail("Parco dei Nebrodi", 2.7, 1, "Capizzi", "ME", "Un breve ma splendido itinerario immerso nel cuore dei Nebrodi, ricadente nel territorio di Capizzi, che consente di apprezzare i principali relitti delle glaciazioni che dominano i boschi nebrodensi, come il Faggio, il Cerro e l’Agrifoglio.", "Nebrodi.gpx"),
+        new HikeDetail("Cinque Terre", 5.2, 1, "Porto Venere", "SP", "Walk the coast of the Italian Riviera while you experience absolutely breathtaking views. While Trail #2 is the most popular, there are a handful of other beautiful trails that you can pick from as well.", "Cinque Terre.gpx"),
         new HikeDetail("Arctic Circle Trail", 36.1, 1, "Kangerlussuaq", "Qeqqata Kommunia", "The only towns are at the beginning and the end of the trail, so the Arctic Circle Trail truly allows you to get away from the chaos and get in touch with nature. This backcountry hike gives you the freedom to catch trout for dinner, take pictures of foxes and reindeer, or anything else your heart desires.", "Arctic Circle Trail.gpx"),
         new HikeDetail("Bay Of Fires Walk", 1.5, 0, "Binalong Bay", "Tasmania", "This hike is highlighted by white beaches, blue waters, and orange-toned granite. The air is absolutely pristine and you’ll get a chance to experience ecology, wildlife, and rocky headlands along the way.", "Bay Of Fires Walk.gpx"),
         new HikeDetail("Berliner Hohenweg", 5.7, 2, "Mayrhofen", "Tyrol", "If you’re comfortable with high-alpine terrain, then this is the hike for you. Glaciers and mountain landscape light up the trail, and you’re bound to meet some new friends on this popular hike.", "Berliner Hohenweg.gpx"),
@@ -49,7 +50,6 @@ async function run() {
         new HikeDetail("Camino De Santiago", 209.1, 2, "Saint-Jean-Pied-de-Port", "Pyrénées-Atlantiques", "Highlighted in one of the great travel movies of our time, The Way, the Camino De Santiago hardly needs an introduction. Leading to the place where the apostle James is believed to be buried, this hike will help you get in touch with yourself and nature as you pass through classic villages and the picturesque countryside.", "Camino De Santiago.gpx"),
         new HikeDetail("Camino Inca", 16, 2, "Cusco", "Peru", "Be prepared for a lot of ascending and descending when you sign up for one of the best hikes in the world. Along the way you’ll see ruins, mountains, and rivers before ending at the iconic Machu Picchu.", "Camino Inca.gpx"),
         new HikeDetail("Chilkoot Trail", 14.2, 2, "Skagway", "Alaska", "With a history dating back to the Klondike Gold Rush, the Chilkoot Trail extends from Alaska to British Columbia and takes you past numerous historical and natural sites. There are three different climate sections on the trail so you’ll get to experience coastal rainforest as well as boreal and high alpine forest.", "Chilkoot Trail.gpx"),
-        new HikeDetail("Cinque Terre", 5.2, 1, "Porto Venere", "SP", "Walk the coast of the Italian Riviera while you experience absolutely breathtaking views. While Trail #2 is the most popular, there are a handful of other beautiful trails that you can pick from as well.", "Cinque Terre.gpx"),
         new HikeDetail("Croagh Patrick Mountain", 3.9, 1, "Croaghpatrick", "County Mayo", "Topping the list of the best day hikes in the world, Croagh Patrick is one of Ireland’s most-climbed mountains and a significant place of Christian pilgrimage. At the top you’ll be rewarded with views of Clews Bay and the surrounding scenery near the town of Westport.", "Croagh Patrick Mountain.gpx"),
         new HikeDetail("Dolomites", 4.7, 1, "Moena", "TN", "The Dolomites are a perfect playground for any hiker. There are countless trails that will guide you through a  letiety of landscapes from sky-high peaks and alpine meadows to evergreen woods and beautiful lakes.", "Dolomites.gpx"),
         new HikeDetail("Everest Base Camp Trek", 40.7, 2, "Khumjung", "Province 1", "Renowned as one of the best treks in the world, the Everest Base Camp Trek gives you a glimpse of the highest summit on Earth. Not only that, but you can also get to know the Sherpa people and visit ancient Tengboche and Thami monasteries.", "Everest Base Camp Trek.gpx"),
@@ -172,6 +172,24 @@ async function run() {
     await user5.save()
     console.log(user5);
 
+    const user6 = await User.create({
+        _id: "73a1a56e31d3c6a9e5202503",
+        firstName: "Andrea",
+        lastName: "Amato",
+        email: "hut_worker2@email.com",
+        //Password = prova
+        hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS",
+        activationCode: "123456",
+        role: UserType.hutWorker,
+        active: true,
+        approved: false
+    })
+
+    await user6.save()
+    console.log(user6)
+
+    let cinqueTerre = undefined;
+
     for (const h of testDataHikes) {
         try {
             const content = fs.readFileSync("./public/tracks/" + h.file, 'utf8')
@@ -212,6 +230,40 @@ async function run() {
                 condition: cond
             })
             await hike.save()
+
+            if (hike.title === "Cinque Terre") {
+                cinqueTerre = hike;
+                
+                const position1 = await Position.create({
+                    "location.coordinates": [9.78747,44.08238]
+                });
+        
+                cinqueTerre.referencePoints.push(position1._id);
+        
+                const refPoint1 = await Location.create({
+                    name: "Ruscello",
+                    description: "Piccolo ruscello",
+                    point: position1
+                });
+
+                const position2 = await Position.create({
+                    "location.coordinates":  [9.80121,44.07176]
+                });
+        
+                cinqueTerre.referencePoints.push(position2._id);
+        
+                const refPoint2 = await Location.create({
+                    name: "Fontana",
+                    description: "Acqua potabile",
+                    point: position2
+                });
+
+                await position1.save();
+                await refPoint1.save();
+                await position2.save();
+                await refPoint2.save();
+                await cinqueTerre.save();
+            }
             console.log(hike)
         } catch (e) {
             console.log(e.message)
@@ -293,9 +345,12 @@ async function run() {
         phone: "3453230077",
         email: "test@test.it",
         website: "www.test.it"
-    })
+    });
 
     await hut.save();
+
+    cinqueTerre.huts.push(hut._id);
+    await cinqueTerre.save();
 
     await mongoose.disconnect()
 }
