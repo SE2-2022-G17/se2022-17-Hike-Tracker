@@ -20,12 +20,14 @@ const Hut = require('./models/Hut')
 const { randomBytes } = require('node:crypto');
 const dotenv = require('dotenv');
 const HTTPError = require('./models/HTTPError')
+const { domainToASCII } = require('url')
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
     mongoose.set('strictQuery', false);
     mongoose.connect("mongodb://localhost/hike_tracker");
 }
+
 
 exports.getVisitorHikes= async function(
     queryContainer
@@ -202,6 +204,147 @@ exports.saveNewParking = async (name, description, parkingSpaces, latitude, long
         }
     });
     return parking._id;
+}
+
+exports.deleteImage = async function(hikeId){
+    try{
+        await HikeImage.deleteOne({ hikeId:hikeId });
+    }catch (e) {
+        throw new TypeError(400);
+    }
+}
+
+exports.deleteHike = async function(hikeId){
+    try{
+        await HikeImage.findOneAndDelete({ hikeId:hikeId });
+
+        Hike.findOne({_id:hikeId}, function (_, docs) {
+            Position.deleteOne({_id:docs.startPoint});
+            Position.deleteOne({_id:docs.endPoint});
+            docs.referencePoints.forEach(refPoint=>{
+                Location.deleteOne({point:refPoint});
+                Position.deleteOne({_id:refPoint});
+            })
+        });
+        await Hike.deleteOne({_id:hikeId});
+    }catch (e) {
+        throw new TypeError(400);
+    }
+}
+
+exports.updateHike = async function (bodyContainer,track,userId){
+    const id = bodyContainer.id;
+    const title = bodyContainer.title;
+    const time = bodyContainer.time;
+    const difficulty = bodyContainer.difficulty;
+    const description = bodyContainer.description;
+    const city = bodyContainer.city;
+    const province = bodyContainer.province;
+    let referenceLocToDelete = bodyContainer.referenceToDelete
+    
+    let startPosition = undefined
+    let endPosition = undefined
+
+    try {
+        if (track) {
+            fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+            const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+            let gpx = new gpxParser()
+            gpx.parse(content)
+            let length = ((gpx.tracks[0].distance.total) / 1000).toFixed(2) //length in kilometers
+            let ascent = (gpx.tracks[0].elevation.pos).toFixed(2)
+            let points = gpx.tracks[0].points
+            let startPoint = points[0]
+            let endPoint = points[points.length - 1]
+
+            Hike.findOne({_id:id}, function (_, docs) {
+                Position.deleteOne({_id:docs.startPoint});
+                Position.deleteOne({_id:docs.endPoint});
+                docs.referencePoints.forEach(refPoint=>{
+                    Location.deleteOne({point:refPoint});
+                    Position.deleteOne({_id:refPoint});
+                })
+            });
+
+            startPosition = await Position.create({
+                "location.coordinates": [startPoint.lon, startPoint.lat]
+            })
+
+            endPosition = await Position.create({
+                "location.coordinates": [endPoint.lon, endPoint.lat]
+            })
+            let doc = await Hike.findOneAndUpdate({_id:id}, {
+                title: title,
+                length: length,
+                expectedTime: time,
+                ascent: ascent,
+                startPoint: startPosition._id,
+                endPoint: endPosition._id,
+                difficulty: difficulty,
+                description: description,
+                referencePoints: [],
+                huts: [],
+                city: city,
+                province: province,
+                track_file: track !== undefined ? track.originalname : null,
+                authorId: userId
+            }).exec();
+            return doc.id;
+        }
+        else{
+            if(referenceLocToDelete){
+                let newRefs=[];
+                const hike = await Hike.findOne({_id:id}).exec();
+                referenceLocToDelete=referenceLocToDelete.toString().split(',');
+                let refPointsToDelete = [];
+                for(let refLoc in referenceLocToDelete){
+                    const r = await Location.findOne({_id:referenceLocToDelete[refLoc]});
+                    const refPoint = await Position.findOne({_id:r.point}).exec();
+                    refPointsToDelete.push(refPoint);
+                }
+
+                hike.referencePoints.forEach(rp=>{
+                    if(!refPointsToDelete.find(ref=>rp.toString()===ref._id.toString())){
+                        newRefs.push(rp);
+                    }
+                });
+
+                for (let rl in referenceLocToDelete) {
+                    await Location.deleteOne({_id: referenceLocToDelete[rl]});
+                }
+
+                for (let rp in refPointsToDelete) {
+                    await Position.deleteOne({_id:refPointsToDelete[rp]._id}).exec();
+                }
+
+                let doc = await Hike.findOneAndUpdate({_id:id}, {
+                    title: title,
+                    expectedTime: time,
+                    difficulty: difficulty,
+                    description: description,
+                    city: city,
+                    province: province,
+                    authorId: userId,
+                    referencePoints: newRefs
+                }).exec();
+                return doc.id;
+            }
+            else{
+                let doc = await Hike.findOneAndUpdate({_id:id}, {
+                    title: title,
+                    expectedTime: time,
+                    difficulty: difficulty,
+                    description: description,
+                    city: city,
+                    province: province,
+                    authorId: userId,
+                 }).exec();
+                return doc.id;
+            }
+        }
+    } catch (e) {
+        throw new TypeError(400);
+    }
 }
 
 exports.saveNewHike = async function (bodyContainer,track,userId){
@@ -538,6 +681,15 @@ exports.getHikeImage = async (hikeId) => {
 exports.addImageToHike = async (hikeId, file) => {
 
     try {
+
+        HikeImage.findOneAndDelete({ hikeId:hikeId }, function (err, _docs) {
+            if (err){
+                console.log(err)
+            }
+            else{
+            }
+        });
+
         let imageUploadObject = {
             hikeId: hikeId,
             file: {
@@ -776,7 +928,7 @@ exports.getHikesLinkedToHut = async function(id){
     }
 }
 
-exports.updateHike = async (hikeId, condition, description) => {
+exports.updateHikeCondition = async (hikeId, condition, description) => {
 
     if (hikeId === undefined || condition === undefined || description === undefined)
         throw new TypeError(400);

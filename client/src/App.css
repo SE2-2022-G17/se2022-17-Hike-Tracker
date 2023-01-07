@@ -298,3 +298,7 @@
 .pbold{
   font-weight: bold;
 }
+
+.button{
+  width: 100%;
+}

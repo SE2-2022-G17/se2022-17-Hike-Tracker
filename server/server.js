@@ -11,6 +11,9 @@ const multer = require('multer');
 const HikeImage = require('./models/HikeImage');
 const dayjs = require('dayjs')
 const webSocket = require('ws');
+const fs = require('fs');
+let gpxParser = require('gpxparser');
+const { constants } = require('buffer');
 
 // init express
 const app = new express();
@@ -63,6 +66,26 @@ function distanceCalc(p1, p2) {
     return d;
 }
 
+function reverseGeocoding(longitude, latitude) {
+    const request = require('request');
+    const ACCESS_TOKEN = 'pk.eyJ1IjoieG9zZS1ha2EiLCJhIjoiY2xhYTk1Y2FtMDV3bzNvcGVhdmVrcjBjMSJ9.RJzgFhkHn2GnC-uNPiQ4fQ';
+    let url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
+            + longitude + ', ' + latitude
+            + '.json?access_token=' + ACCESS_TOKEN;
+    return new Promise ((resolve, reject)=>{
+        request({ url: url, json: true }, function (error, response) {
+            if (error) {
+                reject('Unable to connect to Geocode API');
+            } else if (response.body.features.length === 0) {
+                reject('Unable to find location. Try to'
+                            + ' search another location.');
+            } else {
+                resolve(response.body.features[0].place_name);
+            }
+        })
+    })
+}
+
 /*** APIs ***/
 
 app.get('/visitor/hikes', (req, res) => {
@@ -73,6 +96,7 @@ app.get('/visitor/hikes', (req, res) => {
         .then((hikes) => { res.json(hikes); })
         .catch((error) => { res.status(500).json(error); });
 });
+
 
 app.get('/getHuts', verifyUserToken, (req, res) => {
     let bedsMin = req.query.bedsMin
@@ -180,6 +204,54 @@ app.post('/localGuide/addHike', [upload.single('track'), verifyUserToken], async
     }
 });
 
+app.post('/localGuide/modifyHike', [upload.single('track'), verifyUserToken], async (req, res) => {
+    try {
+        const track=req.file;
+        const user = await dao.getUserByEmail(req.user.email);
+        if(track){
+            fs.writeFileSync("./public/tracks/" + track.originalname, track.buffer);
+            const content = fs.readFileSync("./public/tracks/" + track.originalname, 'utf8')
+            const gpx = new gpxParser()
+            gpx.parse(content)
+            const startPoint = gpx.tracks[0].points[0]
+            const geoCodeResult = await reverseGeocoding(startPoint.lon,startPoint.lat);
+            if(geoCodeResult.toString().toLowerCase().search(req.body.city.toLowerCase())===-1){
+                return res.status(501).json(req.body.id);
+            }
+            else{
+                await dao.updateHike(req.body, req.file, user._id);
+                return res.status(200).json(req.body.id);
+           }
+        }
+        else{
+            await dao.updateHike(req.body, req.file, user._id);
+            return res.status(200).json(req.body.id);
+        }
+        
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+});
+
+app.post('/localGuide/removeImage', [verifyUserToken], async (req, res) => {
+    try {
+        await dao.deleteImage(req.body.hikeId);
+        return res.status(200).json(req.body.hikeId);
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+});
+
+app.post('/localGuide/deleteHike',verifyUserToken, async (req, res) => {
+    try {
+        const hikeId = req.body.hikeId;
+        await dao.deleteHike(hikeId);
+        return res.status(204).json(hikeId);
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+});
+
 app.post('/user/store-performance', verifyUserToken, (req, res) => {
     const altitude = req.body.altitude;
     const duration = req.body.duration;
@@ -254,6 +326,7 @@ app.get('/hutsCloseTo/:id', async (req, res) => {
         return res.status(500).json(err);
     }
 });
+
 
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
@@ -463,6 +536,7 @@ const imageUpload = multer({
     storage: storage,
     limits: { fileSize: 8000000 } //max file size
 });
+
 
 app.post('/hikes/:id/image', [imageUpload.single('image'), verifyUserToken], async (req, res) => {
     // req.file can be used to access all file properties
@@ -770,7 +844,7 @@ app.get('/hikesLinked/:id', verifyUserToken, (req, res) => {
 });
 
 //link hut to the hike
-app.put('/updateHike', verifyUserToken, async (req, res) => {
+app.put('/updateHikeCondition', verifyUserToken, async (req, res) => {
     const hikeId = req.body.hikeId;
     const condition = req.body.condition;
     const description = req.body.description;
@@ -780,7 +854,7 @@ app.put('/updateHike', verifyUserToken, async (req, res) => {
         res.sendStatus(403);
         return;
     }
-    return dao.updateHike(hikeId, condition, description)
+    return dao.updateHikeCondition(hikeId, condition, description)
         .then(() => { res.sendStatus(200); })
         .catch(() => { res.status(500).end(); })
 });

@@ -223,6 +223,59 @@ async function storePerformance(data, token) {
     return (await response).json();
 }
 
+async function deleteHike(hikeId,token){
+    const response = fetch(url + '/localGuide/deleteHike', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({hikeId:hikeId})
+    });
+    if (response.ok) {
+        return await response.json();
+    } else {
+        return undefined;
+    }
+}
+
+async function updateHikeDescription(container, token) {
+    const id = container.id
+    const title = container.title
+    const time = container.time
+    const difficulty = container.difficulty
+    const description = container.description
+    const track = container.track
+    const city = container.city
+    const referenceToDelete = container.referenceToDelete
+    const body = new FormData();
+    body.append("id", id);
+    body.append("title", title);
+    body.append("time", time);
+    body.append("difficulty", difficulty);
+    body.append("description", description);
+    body.append("track", track);
+    body.append("city", city);
+    body.append("referenceToDelete", referenceToDelete);
+
+    const response = await fetch(url + '/localGuide/modifyHike', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+        },
+        credentials: 'include',
+        body: body
+    })
+    if (response.ok) {
+        return await response.json();
+    } else {
+        if(response.status === 501)
+            return 501;
+        else return 500;
+    }
+}
+
 async function sendHikeDescription(container, token) {
     const title = container.title
     const time = container.time
@@ -446,11 +499,23 @@ async function getHikeImage(hikeId, token) {
     return image;
 }
 
+async function removeImageFromHike(hikeId,token){
+    const response = await fetch(url + '/localGuide/removeImage', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({hikeId:hikeId})
+    })
+    return response.status;
+}
+
 async function addImageToHike(image, hikeId, token) {
 
     const body = new FormData();
     body.append("image", image);
-
     const response = await fetch(url + '/hikes/' + hikeId + '/image/', {
         method: "POST",
         headers: {
@@ -640,8 +705,8 @@ async function getHikesLinkedToHut(hutId, token) {
     return hikes
 }
 
-async function updateHike(hikeId, condition, description, token) {
-    const response = await fetch(url + '/updateHike', {
+async function updateHikeCondition(hikeId, condition, description, token) {
+    const response = await fetch(url + '/updateHikeCondition', {
         method: "PUT",
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -692,9 +757,12 @@ const API = {
     getToApprove,
     changeApprovalStatus,
     addWeatherAlert,
+    deleteHike,
+    updateHikeDescription,
+    removeImageFromHike,
     getHut,
     getHikesLinkedToHut,
-    updateHike
+    updateHikeCondition
 };
 
 

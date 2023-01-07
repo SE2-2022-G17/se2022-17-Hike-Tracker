@@ -24,8 +24,8 @@ function VisitorHikes() {
     const [maxAscent, setMaxAscent] = useState(undefined);
     const [minTime, setMinTime] = useState(undefined);
     const [maxTime, setMaxTime] = useState(undefined);
-    const [city, setCity] = useState(undefined)
-    const [province, setProvince] = useState(undefined)
+    const [city, setCity] = useState(undefined);
+    const [province, setProvince] = useState(undefined);
     const [longitude, setLongitude] = useState(undefined);
     const [latitude, setLatitude] = useState(undefined);
     const [hikes, setHikes] = useState([]);
@@ -88,7 +88,7 @@ function VisitorHikes() {
         });
         setHikes(retrivedHikes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province])
+    },[city, difficulty, latitude, longitude, maxAscent, maxLength, maxTime, minAscent, minLength, minTime, province, hikes.length])
 
     return (
         <Container className='visitor-hike'>
@@ -104,6 +104,7 @@ function VisitorHikes() {
                             province={province}
                             setProvince={setProvince}
                             setCity={setCity}
+                            city={city}
                         />
                         <SelectPointFromMap handleShow={handleShow} />
                         <Coordinates lng={longitude} lat={latitude} />
@@ -116,7 +117,7 @@ function VisitorHikes() {
                     </Container>
                 </Col>
                 <Col xl={9}>
-                    <HikesList hikes={hikes} />
+                    <HikesList hikes={hikes} setHikes={setHikes}/>
                 </Col>
             </Row>
             <Modal show={show} onHide={handleClose}>
@@ -220,13 +221,18 @@ function HikesList(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
+    const goToModify = useCallback((id) => {
+        navigator('/ModifyHike/' + id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
     return (
         <>
             {props.hikes.length === 0 ? <h3>No hikes available</h3> : undefined}
             {
                 props.hikes.map((hike, index) => {
                     return (
-                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} />
+                        <HikeCard key={hike._id} hike={hike} goToHike={goToHike} setHikes={props.setHikes} goToModify={goToModify}/>
                     );
                 })
             }

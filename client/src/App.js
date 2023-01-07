@@ -15,6 +15,7 @@ import CreateHut from './components/CreateHut'
 import SearchHut from './components/SearchHut'
 import PreferredHikes from './components/PreferredHikes'
 import Record from './components/Record'
+import ModifyHike from './components/ModifyHike';
 
 import API from './API';
 
@@ -249,6 +250,7 @@ function MainApp() {
         <Route path="/records/:id" element={<Record />} />
         <Route path='/edit/:id' element={<EditHut user={user}/>}/>
         <Route path="/platformManager" element={<PlatformManager user={user}/>} />
+        <Route path="/ModifyHike/:id" element={<ModifyHike></ModifyHike>}></Route>
       </Routes>
 
     </>
