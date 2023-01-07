@@ -1,4 +1,4 @@
-import { Container, Alert } from 'react-bootstrap';
+import { Container, Alert, Button, Col} from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import HikesView from './VisitorHikes';
 import API from '../API';
@@ -37,9 +37,12 @@ function PreferredHikes(props) {
         <Container>
             {preferences ? <HikesView.HikesList hikes={hikes} /> :
                 <Alert variant="dark" onClose={() => navigate('/')} dismissible>
-                    <Alert.Heading>You haven't selected any preferences</Alert.Heading>
-                    <p>
-                    {`Go to   Account -> Performance
+                    <Alert.Heading className='pbold'>You haven't selected any preferences</Alert.Heading>
+                    <Col className='text-center'>
+                        <Button className='mt-3' variant="link" onClick={()=>{props.setPerformanceModal(true);}}>Click here to set your preferences!</Button>
+                    </Col>
+                    <p className='alternative text-center'>
+                    {`Otherwise go to   Account -> Performance
                      and set your favourite stats to have a personalized hikes view.`}
                     </p>
                 </Alert>}

@@ -207,10 +207,10 @@ function PerformanceModal(props) {
     if (showType === ShowType.show) {
       button = <Button onClick={Edit}>Edit</Button>
       body = <><div className="row">
-        <div className="col-sm-3">
-          <p className="mb-0">Duration</p>
+        <div className="col-sm-4">
+          <p className="mb-0">Max Duration:</p>
         </div>
-        <div className="col-sm-9">
+        <div className="col-sm-8">
           <p className="text-muted mb-0">{validateValue(props.user.preferenceDuration) ?
                                           preferenceDuration + ' min' :
                                           'Not set'}</p>
@@ -218,10 +218,10 @@ function PerformanceModal(props) {
       </div>
         <hr />
         <div className="row">
-          <div className="col-sm-3">
-            <p className="mb-0">Altitude</p>
+          <div className="col-sm-4">
+            <p className="mb-0">Max Altitude:</p>
           </div>
-          <div className="col-sm-9">
+          <div className="col-sm-8">
             <p className="text-muted mb-0">{validateValue(props.user.preferenceAltitude) ?
                 preferenceAltitude + ' m' :
                 'Not set' }</p>
@@ -232,7 +232,7 @@ function PerformanceModal(props) {
     if (showType === ShowType.create || showType === ShowType.edit) {
       body = <Form>
         <Form.Group className="mb-3">
-          <Form.Label>Duration</Form.Label>
+          <Form.Label>Insert your maximum duration: </Form.Label>
           <Form.Control value={duration} type="number" onChange={(event) =>
               event.target.value < 0 ? setDuration(0) : setDuration(event.target.value) }
                         placeholder="Duration (m)" />
@@ -241,7 +241,7 @@ function PerformanceModal(props) {
           </Form.Text>
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Altitude</Form.Label>
+          <Form.Label>Insert your maximum altitude: </Form.Label>
           <Form.Control value={altitude} type="number" onChange={(event) =>
               event.target.value < 0 ? setAltitude(0) : setAltitude(event.target.value) }
                         placeholder="Altitude (m)" />

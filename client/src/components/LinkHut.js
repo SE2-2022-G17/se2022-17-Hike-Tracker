@@ -37,19 +37,22 @@ function LinkHut(props) {
                 .then((res) => { console.log(res); setHut("") })
                 .catch(err => console.log(err))
         }
-    },[hut,props.hike])
+    }, [hut, props.hike])
 
     useEffect(() => {
         setHutsFiltered(hutsList.filter((hut) => hut.name.toLowerCase() === hutsFilter.toLowerCase()));
-    }, [hutsFilter,hutsList]);
+    }, [hutsFilter, hutsList]);
 
     return (
         <>
             <Form style={{ border: '1px solid rgba(0, 0, 0, 0.10)' }} className="block-example m-2 form-border form-padding">
-                <Form.Group as={Row} className="m-3">
+                <Form.Group className="normal-padding-form text-center">
                     <Row>
-                        <Form.Label column sm="3">Which hut do you want to link?</Form.Label>
-                        <Col sm="9">
+                        <Col sm='3'></Col>
+                        <Col sm='3'>
+                            <Form.Label className="mt-3">Which hut do you want to link?</Form.Label>
+                        </Col>
+                        <Col sm='4'>
                             <Form.Select onChange={event => setHut(event.target.value)}>
                                 <option value=""></option>
                                 {
@@ -63,13 +66,16 @@ function LinkHut(props) {
                                         <option value="" disabled>Searching huts...</option>
                                         :
                                         hutsList.length === 0 &&
-                                            (<option value="" disabled>No huts found.</option>)
+                                        (<option value="" disabled>No huts found.</option>)
                                 }
                             </Form.Select>
                         </Col>
                     </Row>
                     <Row>
-                        <Form.Label column sm="3">Filter search by hut name: </Form.Label>
+                        <Col sm='3'></Col>
+                        <Col sm='3'>
+                            <Form.Label className="mt-1">Filter search by hut name: </Form.Label>
+                        </Col>
                         <Col sm="4">
                             <Form.Control
                                 type="text"

@@ -20,17 +20,17 @@ function HutCard(props) {
 
                                 {props.user !== null && props.user.role === UserType.hutWorker ?
                                     <>
-                                        <Col xl={10}>
+                                        <Col md={10} xs={8}>
                                             {hut.name}
                                         </Col>
-                                        <Col className="text-center m-0 p-0" xl={1}>
+                                        <Col className="text-center m-0 p-0" md={1} xs={2}>
                                             <TfiPencilAlt className="edit" size="1.3em" onClick={() => navigator('/edit/' + hut._id)} />
                                         </Col>
                                     </>
-                                    : <Col xl={11}>
+                                    : <Col md={11} xs={10}>
                                         {hut.name}
                                     </Col>}
-                                <Col xl={1}>
+                                <Col md={1} xs={2}>
                                     <CloseButton onClick={()=>{
                                         setSelectedHut(null);
                                     }}/>

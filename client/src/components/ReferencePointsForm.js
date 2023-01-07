@@ -12,7 +12,7 @@ function ReferencePointsForm(props){
     const [pointOpt,setPointOpt] = useState("");
     const [referenceOpt,setReferenceOpt] = useState("huts");
     const [id,setId] = useState("");
-    const [openForm,setOpenForm] = useState(false);
+    const [openForm,setOpenForm] = useState(true);
     const [error,setError] = useState(false);
     const divRef = useRef(null);
     const errMsg = "Something went wrong!";
@@ -20,7 +20,7 @@ function ReferencePointsForm(props){
     useEffect(()=>{
         divRef.current.scrollIntoView({ behavior: 'smooth' })
     },[pointOpt,openForm,error])
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
@@ -39,46 +39,38 @@ function ReferencePointsForm(props){
     }
 
     return <>
-    {
-        //only localguide can link hut to a hike
-        openForm === false ? <>
-            <Row className="m-3">
-                <Col className="text-center">
-                    <Button variant="outline-dark" onClick={() => { setOpenForm(true); }}>Link reference to end/start</Button>
-                </Col>
-            </Row>
-        </>
-        : <>
+        {
+            //only localguide can link hut to a hike
         <Form style={{border: '2px solid rgba(0, 0, 0, 0.10)'}} className="block-example mb-0 form-border form-padding" onSubmit={handleSubmit}>
-            <Form.Group className="mb-3 normal-padding-form text-center" as={Row}>
-                <Col lg={2}></Col>
-                <Col lg={4}>
-                    <Form.Label>Do you want to link a reference point to:</Form.Label>
-                </Col>
-                <Col lg={3}>
+                <Form.Group className="mb-3 normal-padding-form text-center" as={Row}>
+                    <Col lg={2}></Col>
+                    <Col lg={4}>
+                        <Form.Label className="mt-3">Do you want to link a reference point to:</Form.Label>
+                    </Col>
+                    <Col lg={3}>
                     <Form.Select style={{textAlign:"center",fontWeight:"bolder"}} onChange={event => setPointOpt(event.target.value)} value={pointOpt}>
-                        <option value=""></option>
-                        <option value="start">Start Point</option>
-                        <option value="end">End Point</option>
-                    </Form.Select>
-                </Col>
-                <Col lg={3}></Col>
-            </Form.Group>
-            {
-                pointOpt ? <>
-                    <Form.Group className="normal-padding-form text-center" as={Row}>
-                        <Col lg={3}></Col>
-                        <Col lg={3}>
-                            <Form.Label>Do you want to insert:</Form.Label>
-                        </Col>
-                        <Col lg={3}>
+                            <option value=""></option>
+                            <option value="start">Start Point</option>
+                            <option value="end">End Point</option>
+                        </Form.Select>
+                    </Col>
+                    <Col lg={3}></Col>
+                </Form.Group>
+                {
+                    pointOpt ? <>
+                        <Form.Group className="normal-padding-form text-center" as={Row}>
+                            <Col lg={3}></Col>
+                            <Col lg={3}>
+                                <Form.Label className="mt-3">Do you want to insert:</Form.Label>
+                            </Col>
+                            <Col lg={3}>
                             <Form.Select style={{textAlign:"center",fontWeight:"bolder"}} onChange={event => setReferenceOpt(event.target.value)} value={referenceOpt}>
-                                <option value="huts">huts</option>
-                                <option value="parking">parking</option>
-                            </Form.Select>
-                        </Col>
-                        <Col lg={3}></Col>
-                    </Form.Group>
+                                    <option value="huts">huts</option>
+                                    <option value="parking">parking</option>
+                                </Form.Select>
+                            </Col>
+                            <Col lg={3}></Col>
+                        </Form.Group>
                         {
                             referenceOpt==="huts" && 
                                 <LocationForm type={"hut"} setId={setId} setOpenForm={setOpenForm} point={pointOpt} startLatitude={props.startLatitude} startLongitude={props.startLongitude} endLatitude={props.endLatitude} endLongitude={props.endLongitude}/>
@@ -87,20 +79,19 @@ function ReferencePointsForm(props){
                             referenceOpt==="parking" &&
                                 <LocationForm type={"parking"} setId={setId} setOpenForm={setOpenForm} point={pointOpt} startLatitude={props.startLatitude} startLongitude={props.startLongitude} endLatitude={props.endLatitude} endLongitude={props.endLongitude}/>
                         }
-                </>
-                :
-                <></>
-            }
-        </Form>
-        </>
-    }
-    {
+                    </>
+                        :
+                        <></>
+                }
+            </Form>
+        }
+        {
         error!==false && error === errMsg && <Alert variant={'danger'}>{error}</Alert>
-    }
-    {
+        }
+        {
         error!==false && error !== errMsg && <Alert variant={'primary'}>{error}</Alert>
-    }
-    <div ref={divRef}/>
+        }
+        <div ref={divRef}/>
     </>
 }
 
@@ -121,12 +112,12 @@ function LocationForm(props){
             if(props.type==="hut"){
                 props.point==="start" ?
                     setLocOpt(await API.getHuts(undefined,undefined,undefined,props.startLongitude.toString(),props.startLatitude.toString(),"5",authToken))
-                :
+                    :
                     setLocOpt(await API.getHuts(undefined,undefined,undefined,props.endLongitude.toString(),props.endLatitude.toString(),"5",authToken))
             }else {
                 props.point==="start" ?
                     setLocOpt(await API.getParking(undefined,undefined,undefined,props.startLongitude.toString(),props.startLatitude.toString(),"5",authToken))
-                :
+                    :
                     setLocOpt(await API.getParking(undefined,undefined,undefined,props.endLongitude.toString(),props.endLatitude.toString(),"5",authToken))
             }
         })();
@@ -146,7 +137,7 @@ function LocationForm(props){
         <Form.Group className="normal-padding-form text-center" as={Row}>
             <Col lg={3}></Col>
             <Col lg={3}>
-                <Form.Label>
+                <Form.Label className="mt-3">
                     Select the {props.type==="hut" ? "hut" : "parking"}:
                 </Form.Label>
             </Col>
@@ -157,14 +148,11 @@ function LocationForm(props){
             </Col>
             <Col lg={3}></Col>
         </Form.Group>
-        <Form.Group as={Row} className="normal-padding-form text-center">
-            <Col lg={6}>
-                <Button type="submit">Send</Button>
+        <Row className="mb-4 mt-2">
+            <Col className="text-center">
+                <Button variant="outline-dark" type="submit">Confirm</Button>
             </Col>
-            <Col lg={6}>
-                <Button variant="danger" onClick={()=>props.setOpenForm(false)}>Close</Button>
-            </Col>
-        </Form.Group>
+        </Row>
     </>
 }
 
