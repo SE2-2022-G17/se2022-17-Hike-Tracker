@@ -12,7 +12,7 @@ function ReferencePointsForm(props){
     const [pointOpt,setPointOpt] = useState("");
     const [referenceOpt,setReferenceOpt] = useState("huts");
     const [id,setId] = useState("");
-    const [openForm,setOpenForm] = useState(false);
+    const [openForm,setOpenForm] = useState(true);
     const [error,setError] = useState(false);
     const divRef = useRef(null);
     const errMsg = "Something went wrong!";
@@ -41,14 +41,6 @@ function ReferencePointsForm(props){
     return <>
     {
         //only localguide can link hut to a hike
-        openForm === false ? <>
-            <Row className="m-3">
-                <Col className="text-center">
-                    <Button variant="outline-dark" onClick={() => { setOpenForm(true); }}>Link reference to end/start</Button>
-                </Col>
-            </Row>
-        </>
-        : <>
         <Form style={{border: '2px solid rgba(0, 0, 0, 0.10)'}} className="block-example mb-0 form-border form-padding" onSubmit={handleSubmit}>
             <Form.Group className="mb-3 normal-padding-form text-center" as={Row}>
                 <Col lg={2}></Col>
@@ -92,7 +84,6 @@ function ReferencePointsForm(props){
                 <></>
             }
         </Form>
-        </>
     }
     {
         error!==false && error === errMsg && <Alert variant={'danger'}>{error}</Alert>
