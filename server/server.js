@@ -872,7 +872,7 @@ app.put('/updateHutDescription', verifyUserToken, async (req, res) => {
         return;
     }
     return dao.updateHutDescription(hut_id, beds, phone, email, description)
-        .then((hut) => { res.json(hut); })
+        .then((hut) => { res.status(200).json(hut); })
         .catch(() => { res.status(500).end(); })
 });
 
