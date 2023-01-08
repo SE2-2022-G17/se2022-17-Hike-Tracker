@@ -859,6 +859,24 @@ app.put('/updateHikeCondition', verifyUserToken, async (req, res) => {
         .catch(() => { res.status(500).end(); })
 });
 
+app.put('/updateHutDescription', verifyUserToken, async (req, res) => {
+    const hut_id = req.body.hut_id;
+    const beds = req.body.beds;
+    const phone = req.body.phone;
+    const email = req.body.email;
+    const description = req.body.description;
+    const user = req.user; // this is received from verifyUserToken middleware
+
+    if (user.role !== Type.hutWorker) {
+        res.sendStatus(403);
+        return;
+    }
+    return dao.updateHutDescription(hut_id, beds, phone, email, description)
+        .then((hut) => { res.status(200).json(hut); })
+        .catch(() => { res.status(500).end(); })
+});
+
+
 // activate the server
 server.listen(port, () => {
     console.log(`app listening at http://localhost:${port}`);
