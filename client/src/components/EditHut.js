@@ -1,5 +1,5 @@
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { useEffect, useState } from 'react';
+import { Button, Card, Col, Container, Form, Row, Modal, ModalBody, ModalFooter } from "react-bootstrap";
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../API";
 import Type from "../models/UserType";
@@ -17,6 +17,7 @@ function EditHut(props) {
 
     const [hut, setHut] = useState(null);
     const [hikes, setHikes] = useState(null);
+    const [flagRefresh, setFlagRefresh] = useState(false);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
@@ -32,9 +33,10 @@ function EditHut(props) {
             })
             .catch(err => console.log(err))
         
-    }, [id]);
+    }, [id, flagRefresh]);
 
 
+  
     let body = '';
 
     if (props.user === null || props.user.role !== Type.hutWorker) {
@@ -44,7 +46,7 @@ function EditHut(props) {
         </div>;
     } else {
         if(hut !== null && hikes !== null){
-            body = <MainContent hikes={hikes} hut={hut} name={props.user.firstName} />;
+            body = <MainContent  hut_id={id} hikes={hikes} hut={hut} name={props.user.firstName} setFlagRefresh={setFlagRefresh}  />;
         }
     }
 
@@ -61,6 +63,7 @@ function MainContent(props) {
  
     const [showSuccess, setShowSuccess] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const handleSuccess = (msg) => {
         setSuccessMessage(msg);
@@ -81,8 +84,17 @@ function MainContent(props) {
           : false}
             <h1 className="text-center">Hi {props.name}! As an hut worker, you can update the condition of a hike linked to {props.hut.name} hut </h1>
             <br />
+            
+            <ModifyHutInformation  hut_id={props.hut_id} show={showModal} setShowModal={setShowModal} onHide={() => setShowModal(false)} hut={props.hut} success={handleSuccess} setFlagRefresh={props.setFlagRefresh}/>
             <Card>
-                <Card.Header>{props.hut.name} hut</Card.Header>
+                <Card.Header>
+                    <Row>
+                        <Col>{props.hut.name} hut</Col>
+                        <Col>
+                        <Button className="modify-button" variant="warning" onClick={() => setShowModal(true)}>Modify</Button>
+                        </Col>
+                        </Row>
+                        </Card.Header>
                 <Card.Body>
 
                     <Card.Subtitle className="mb-2 text-muted">Beds: {props.hut.beds}</Card.Subtitle>
@@ -151,4 +163,62 @@ function HikeConditionForm(props) {
     )
 }
 
+function ModifyHutInformation(props) {
+
+    const [beds, setBeds] = useState(props.hut.beds);
+    const [phone, setPhone] = useState(props.hut.phone);
+    const [email, setEmail] = useState(props.hut.email);
+    const [description, setDescription] = useState(props.hut.description);
+
+    const handleSubmit = (event) => {
+
+        event.preventDefault();
+        const authToken = localStorage.getItem('token');
+        API.updateHutDescription(props.hut_id, beds, phone, email, description, authToken)
+            .then((res) => {
+                props.setShowModal(false);
+                props.setFlagRefresh((old) => !old);
+                props.success("Hut correctly updated!");
+            })
+            .catch(err => {
+                console.log(err);
+            }
+            )
+            
+    }
+
+
+    return (
+        <Modal show={props.show} onHide={props.onHide}>
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">{props.hut.name}</Modal.Title>
+            </Modal.Header>
+            <ModalBody>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group>
+                        <Form.Label>Beds</Form.Label>
+                        <Form.Control required={true} value={beds} onChange={(ev) => setBeds(ev.target.value)}></Form.Control>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Phone</Form.Label>
+                        <Form.Control required={true} value={phone} onChange={(ev) => setPhone(ev.target.value)}></Form.Control>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control value={email} onChange={(ev) => setEmail(ev.target.value)}></Form.Control>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control required={true} value={description} onChange={(ev) => setDescription(ev.target.value)}></Form.Control>
+                    </Form.Group>
+                    <ModalFooter>
+                        <Button type="submit">Save</Button>
+                    </ModalFooter>
+                </Form>
+            </ModalBody>
+        </Modal>
+    )
+}
+
 export default EditHut;
+      

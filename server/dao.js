@@ -945,3 +945,28 @@ exports.updateHikeCondition = async (hikeId, condition, description) => {
         throw new TypeError(500);
     }
 }
+
+exports.updateHutDescription = async (hut_id, beds, phone, email, description) => {
+
+    try{
+
+    const cond = await Hut.findByIdAndUpdate(hut_id, {
+        beds: beds,
+        phone: phone,
+        email: email,
+        description: description
+    });
+
+    cond.save();
+    return cond;
+
+} catch (err) {
+        throw new TypeError(500);
+    }
+
+
+
+
+    
+
+}

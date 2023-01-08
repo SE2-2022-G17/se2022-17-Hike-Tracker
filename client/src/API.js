@@ -721,6 +721,26 @@ async function updateHikeCondition(hikeId, condition, description, token) {
     return response.status;
 }
 
+async function updateHutDescription(hut_id, beds, phone, email, description, token) {
+    const response = await fetch(url + '/updateHutDescription', {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            hut_id: hut_id,
+            beds: beds,
+            phone: phone,
+            email: email,
+            description: description,
+        })
+    })
+    return response;
+}
+
+
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -762,7 +782,8 @@ const API = {
     removeImageFromHike,
     getHut,
     getHikesLinkedToHut,
-    updateHikeCondition
+    updateHikeCondition,
+    updateHutDescription
 };
 
 
