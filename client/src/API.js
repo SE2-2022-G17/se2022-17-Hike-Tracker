@@ -799,7 +799,7 @@ const API = {
     getHut,
     getHikesLinkedToHut,
     updateHikeCondition,
-    assignWorkerToHut
+    assignWorkerToHut,
     updateHutDescription
 };
 
