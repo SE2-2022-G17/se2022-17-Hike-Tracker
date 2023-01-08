@@ -174,6 +174,14 @@ exports.updateUserPreference = async (altitude, duration, email) => {
     }, { new: true });
 }
 
+exports.assignWorkerToHut = async (userId, hutId) => {
+    return Hut.findOneAndUpdate({ _id: hutId },  {
+        $push: {
+            'workers': userId
+        }
+    }, { new: true }).populate('point');
+}
+
 exports.getUserByEmail = async (email) => {
     return User.findOne({ email: email });
 }
@@ -951,4 +959,29 @@ exports.updateHikeCondition = async (hikeId, condition, description) => {
     } catch (err) {
         throw new TypeError(500);
     }
+}
+
+exports.updateHutDescription = async (hut_id, beds, phone, email, description) => {
+
+    try{
+
+    const cond = await Hut.findByIdAndUpdate(hut_id, {
+        beds: beds,
+        phone: phone,
+        email: email,
+        description: description
+    });
+
+    cond.save();
+    return cond;
+
+} catch (err) {
+        throw new TypeError(500);
+    }
+
+
+
+
+    
+
 }

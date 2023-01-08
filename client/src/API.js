@@ -190,6 +190,22 @@ async function getHuts(
     return huts
 }
 
+async function assignWorkerToHut(userId, hutId, token) {
+    const response = await fetch(url + '/hut/assign-worker', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            userId: userId,
+            hutId: hutId
+        })
+    })
+    return await response.json();
+}
+
 async function createParking(name, description, parkingSpaces, token, latitude, longitude) {
     const response = fetch(url + '/localGuide/addParking', {
         method: "POST",
@@ -721,6 +737,26 @@ async function updateHikeCondition(hikeId, condition, description, token) {
     return response.status;
 }
 
+async function updateHutDescription(hut_id, beds, phone, email, description, token) {
+    const response = await fetch(url + '/updateHutDescription', {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            hut_id: hut_id,
+            beds: beds,
+            phone: phone,
+            email: email,
+            description: description,
+        })
+    })
+    return response;
+}
+
+
+
 const API = {
     getVisitorHikes,
     sendHikeDescription,
@@ -762,7 +798,9 @@ const API = {
     removeImageFromHike,
     getHut,
     getHikesLinkedToHut,
-    updateHikeCondition
+    updateHikeCondition,
+    assignWorkerToHut,
+    updateHutDescription
 };
 
 
