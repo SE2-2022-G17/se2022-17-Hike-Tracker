@@ -327,6 +327,18 @@ app.get('/hutsCloseTo/:id', async (req, res) => {
     }
 });
 
+app.post('/hut/assign-worker', [verifyUserToken], async (req, res) => {
+    const userId = req.body.userId
+    const hutId = req.body.hutId;
+
+    try {
+        const result = await dao.assignWorkerToHut(userId, hutId);
+        return res.status(200).json(result);
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+});
+
 
 app.get('/hiker/hikes/:id', (req, res) => {
     const hikeId = req.params.id;
