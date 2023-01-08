@@ -22,7 +22,10 @@ const hutSchema = new Schema({
         type: String,
         default: ''
     },
-    website: String
+    website: String,
+    workers: [
+        { type: Schema.Types.ObjectId, ref: 'User' }
+        ],
 })
 
 

@@ -63,7 +63,7 @@ function ShowHike(props) {
         let choise = getNearestPointOnTrace(point);
         marker.setLngLat([choise.lng, choise.lat])
         return point;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[hikeTrace])
 
     useEffect(()=>{
@@ -74,7 +74,7 @@ function ShowHike(props) {
                 'properties': {},
                 'geometry': {
                     'type': 'LineString',
-                'coordinates': [[cursorPosition.lng,cursorPosition.lat],[pos.lng,pos.lat]]
+                    'coordinates': [[cursorPosition.lng,cursorPosition.lat],[pos.lng,pos.lat]]
                 }
             }
             map.current.getSource('route').setData(data);
@@ -295,7 +295,7 @@ function ShowHike(props) {
                             'paint': {
                                 'line-color': '#d91616',
                                 'line-width': 2,
-                            'line-dasharray': [2,2]
+                                'line-dasharray': [2,2]
                             }
                         });
                         mapContainer.current.addEventListener("mouseleave", e => {
@@ -339,9 +339,9 @@ function ShowHike(props) {
             <h1 className={'my-2'}>
                 {hike !== null ? hike.title : ''}
                 {hike !== null ? <Button className="mx-4 mb-" variant="outline-dark" disabled><TiInfoOutline size="1.3em" />  Condition: {hike.condition.condition} {
-                    (hike.condition.details !== "") ?
-                        " - " + hike.condition.details : false
-                }</Button>
+                        (hike.condition.details !== "") ?
+                            " - " + hike.condition.details : false
+                    }</Button>
                     : false}
                 <RecordButton record={record} />
             </h1>
@@ -407,68 +407,67 @@ function ShowHike(props) {
 
             </Row>
             {
-                props.role === "localGuide" && refFormVisible && props.user.approved ?
-                <Row>
-                    <Col>
-                    <Card>
-                        <Card.Body>
-                                <Row>
-                                    <Col xl={11}>
-                                    </Col>
-                                    <Col xl={1}>
-                                        <CloseButton onClick={()=>{
-                                                    setrefFormVisible(false);
-                                            if(refMarker.length>0){
-                                                refMarker.forEach(r=>{
-                                                            r.remove();
-                                                        })
-                                                        setRefMarker([]);
-                                                    }
-                                        }}/>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                        <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map}/>
-                                    </Col>
-                                </Row>   
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-                :<></>
+                props.role === "localGuide" && refFormVisible && props.user !== null && props.user.approved ?
+                    <Row>
+                        <Col>
+                            <Card>
+                                <Card.Body>
+                                    <Row>
+                                        <Col xl={11}>
+                                        </Col>
+                                        <Col xl={1}>
+                                            <CloseButton onClick={()=>{
+                                                setrefFormVisible(false);
+                                                if(refMarker.length>0){
+                                                    refMarker.forEach(r=>{
+                                                        r.remove();
+                                                    })
+                                                    setRefMarker([]);
+                                                }
+                                            }}/>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map}/>
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+                    :<></>
             }
             {
-                props.role === "localGuide" && !refFormVisible && props.user.approved ?
-                <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
-                :<></>
+                props.role === "localGuide" && !refFormVisible && props.user !== null && props.user.approved ?
+                    <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
+                    :<></>
             }
             {
                 //only localguide can link hut to a hike
-                props.role === "localGuide" && props.user.approved ? <>
-                    <Row>
-                        <Col>
-                            <br></br>
-                            <Accordion className="mb-3">
-                                <Accordion.Item eventKey="0">
-                                    <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
-                                    <Accordion.Body>
-                                        {hike && <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]}/>}
-                                    </Accordion.Body>
-                                </Accordion.Item>
-                                <Accordion.Item eventKey="1">
-                                    <Accordion.Header>Link hut to this hike</Accordion.Header>
-                                    <Accordion.Body>
-                                        <LinkHut hike={hike} />
-                                    </Accordion.Body>
-                                </Accordion.Item>
-                            </Accordion>
-                        </Col>
-                    </Row>
+                props.role === "localGuide" && props.user !== null &&  props.user.approved ? <>
+                        <Row>
+                            <Col>
+                                <Accordion className="mb-3">
+                                    <Accordion.Item eventKey="0">
+                                        <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
+                                        <Accordion.Body>
+                                            {hike && <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]}/>}
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                    <Accordion.Item eventKey="1">
+                                        <Accordion.Header>Link hut to this hike</Accordion.Header>
+                                        <Accordion.Body>
+                                            <LinkHut hike={hike} />
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                </Accordion>
+                            </Col>
+                        </Row>
 
-                    <br />
+                        <br />
 
-                </>
+                    </>
                     : <></>
             }
             {(props.role === "hiker" && record === undefined) ?

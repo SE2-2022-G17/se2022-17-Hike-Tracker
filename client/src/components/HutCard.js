@@ -4,12 +4,63 @@ import { useNavigate } from "react-router-dom";
 import { TfiPencilAlt } from "react-icons/tfi";
 import UserType from '../models/UserType';
 import '../App.css';
+import API from '../API';
+import {useState} from "react";
+import Spinner from "react-bootstrap/Spinner";
 
 function HutCard(props) {
-    const { hut, setSelectedHut } = props;
+    const [ hut, setSelectedHut ] = useState(props.hut);
+    const [spinner, setSpinner ] = useState('');
     const navigator = useNavigate();
 
-    console.log(props.user);
+    let hutAssignArea = '';
+
+    let assignHut = (userId, hutId) => {
+
+        const authToken = localStorage.getItem('token');
+
+        setSpinner(<Spinner animation="border" variant="primary" />)
+        API.assignWorkerToHut(userId, hutId, authToken).then((res) => {
+            setSelectedHut(res);
+        }).then(() => {
+            setSpinner('')
+        });
+    }
+
+    if ( props.user !== null && props.user.role === UserType.hutWorker && hut !== null ) {
+
+        const assignedPeopleNumber = hut.workers !== undefined ? hut.workers.length : 0;
+
+        // check if user assigned to hut
+        if (hut.workers !== undefined) {
+            if ( hut.workers.includes(props.user._id) ) {
+
+                hutAssignArea = <Row>
+                    <Col>
+                        <Button variant={'primary'} disabled={true}>You are assigned</Button>
+                        <div className={'small text-success'}>There are { assignedPeopleNumber } hut workers</div>
+                    </Col>
+                </Row>
+
+            } else {
+
+                hutAssignArea = <Row>
+                    <Col>
+                        <Button variant={'primary'} onClick={ () => assignHut(props.user._id, hut._id) }>Assign hut</Button>
+                        <div className={'small text-success'}>There are { assignedPeopleNumber } hut workers</div>
+                    </Col>
+                </Row>
+            }
+        } else {
+            hutAssignArea = <Row>
+                <Col>
+                    <Button variant={'primary'} onClick={ () => assignHut(props.user._id, hut._id) }>Assign hut</Button>
+                    <div className={'small text-success'}>There is { assignedPeopleNumber } hut workers</div>
+                </Col>
+            </Row>
+        }
+    }
+
     return (
         <>
             {
@@ -46,6 +97,7 @@ function HutCard(props) {
                             <Card.Subtitle className="mb-2 text-muted">Coordinates: ({
                                 hut.point.location.coordinates[1]},{hut.point.location.coordinates[0]})
                             </Card.Subtitle>
+                            { spinner !== '' ? spinner : hutAssignArea }
                         </Card.Body>
                     </Card>:<></>
             }

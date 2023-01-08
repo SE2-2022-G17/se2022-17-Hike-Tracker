@@ -167,6 +167,14 @@ exports.updateUserPreference = async (altitude, duration, email) => {
     }, { new: true });
 }
 
+exports.assignWorkerToHut = async (userId, hutId) => {
+    return Hut.findOneAndUpdate({ _id: hutId },  {
+        $push: {
+            'workers': userId
+        }
+    }, { new: true }).populate('point');
+}
+
 exports.getUserByEmail = async (email) => {
     return User.findOne({ email: email });
 }

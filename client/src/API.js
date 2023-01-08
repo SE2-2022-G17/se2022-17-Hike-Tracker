@@ -190,6 +190,22 @@ async function getHuts(
     return huts
 }
 
+async function assignWorkerToHut(userId, hutId, token) {
+    const response = await fetch(url + '/hut/assign-worker', {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            userId: userId,
+            hutId: hutId
+        })
+    })
+    return await response.json();
+}
+
 async function createParking(name, description, parkingSpaces, token, latitude, longitude) {
     const response = fetch(url + '/localGuide/addParking', {
         method: "POST",
@@ -762,7 +778,8 @@ const API = {
     removeImageFromHike,
     getHut,
     getHikesLinkedToHut,
-    updateHikeCondition
+    updateHikeCondition,
+    assignWorkerToHut
 };
 
 
