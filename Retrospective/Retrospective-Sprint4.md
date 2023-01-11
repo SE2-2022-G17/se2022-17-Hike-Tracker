@@ -48,30 +48,39 @@ sections:
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
 - Hours per task (average, standard deviation)
-- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent -1
+estimated hours average: 1,043
+spent hours average: 1,074
 
+estimated hours standard deviation: 1,062
+spent hours standard deviation: 1,129
+
+- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent -1
+2,81%
   
 ## QUALITY MEASURES 
 
 - Unit Testing:
-  - Total hours estimated
-  - Total hours spent
-  - Nr of automated unit test cases 
-  - Coverage (if available)
+  - Total hours estimated: 10h 20m
+  - Total hours spent: 9h 45m
+  - Nr of automated unit test cases: 182
+  - Coverage: 92.2%
 - E2E testing:
-  - Total hours estimated
-  - Total hours spent
+  - Total hours estimated: 5h 20m
+  - Total hours spent: 5h 25m
 - Code review 
-  - Total hours estimated 
-  - Total hours spent
+  - Total hours estimated: 6h 25m
+  - Total hours spent: 5h 15m
 - Technical Debt management:
-  - Total hours estimated 
-  - Total hours spent
-  - Hours estimated for remediation by SonarQube
-  - Hours estimated for remediation by SonarQube only for the selected and planned issues 
-  - Hours spent on remediation 
-  - debt ratio (as reported by SonarQube under "Measures-Maintainability")
-  - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability )
+  - Total hours estimated: 1h 20m
+  - Total hours spent: 1h 20m
+  - Hours estimated for remediation by SonarQube: 10h
+  - Hours estimated for remediation by SonarQube only for the selected and planned issues: 2h 35m
+  - Hours spent on remediation: 1h 20m
+  - debt ratio (as reported by SonarQube under "Measures-Maintainability"): 0.2%
+  - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ):
+  reliability: A
+  security: A
+  maintainability: A
   
 
 
