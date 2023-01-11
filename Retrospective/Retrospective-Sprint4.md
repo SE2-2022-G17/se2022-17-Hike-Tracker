@@ -14,7 +14,7 @@ sections:
 
 - Number of stories committed vs done: 13 vs. 13
 - Total points committed vs done: 117 vs. 117
-- Nr of hours planned vs spent (as a team): 
+- Nr of hours planned vs spent (as a team): 72h vs. 74h 5m
 
 **Remember**  a story is done ONLY if it fits the Definition of Done:
  
@@ -29,8 +29,20 @@ sections:
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| _#0_   |         |    -   |            |              |
-| n      |         |        |            |              |
+| _#0_   |      5  |    -   |  8h 20m    |  8h 35m      |
+| #17    |     5   |    21    |       2h      |      2h 30m        |
+|#18|5|13|2h|2h|
+|#34|5|3|1h 45m|2h|
+|#13|4|5|45m|45m|
+|#14|6|8|9h 50m|9h 10m|
+|#15|5|5|10h|10h 30m|
+|#12|5|5|10h 30m|12h 15m|
+|#19|5|13|2h 35m|4h 20m|
+|#27|4|13|2h 40m|2h 20m|
+|#29|4|5|1h 10m|1h 5m|
+|#30|7|13|8h 25m|8h 35m|
+|#32|4|5|4h 30m|3h 30m|
+|#35|5|8|6h 30m|5h 30m|
    
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
