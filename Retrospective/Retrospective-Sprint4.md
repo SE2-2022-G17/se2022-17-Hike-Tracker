@@ -48,14 +48,13 @@ sections:
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
 - Hours per task (average, standard deviation)
-estimated hours average: 1,043
-spent hours average: 1,074
-
-estimated hours standard deviation: 1,062
-spent hours standard deviation: 1,129
+ - estimated hours average: 1,043
+ - spent hours average: 1,074
+ - estimated hours standard deviation: 1,062
+ - spent hours standard deviation: 1,129
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent -1
-2,81%
+ - 2,81%
   
 ## QUALITY MEASURES 
 
@@ -78,24 +77,29 @@ spent hours standard deviation: 1,129
   - Hours spent on remediation: 1h 20m
   - debt ratio (as reported by SonarQube under "Measures-Maintainability"): 0.2%
   - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ):
-  reliability: A
-  security: A
-  maintainability: A
+   - reliability: A
+   - security: A
+   - maintainability: A
   
 
 
 ## ASSESSMENT
 
 - What caused your errors in estimation (if any)?
+ - Our estimation was almost perfect. The developing tasks were a little bit understimated.
 
 - What lessons did you learn (both positive and negative) in this sprint?
+ - We have learnt to do right estimation of tasks.
+ - We have learnt to write code with less code smells then before.
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
+ - We have about doubled the time spent in testing, and on SonarCloud the coverage went to 92.2%
   
 - Which ones you were not able to achieve? Why?
+ - We didn't improve code modularity, because we decided to deliver more US and let this technical debt.
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
-
-> Propose one or two
+ - Increase time spent on technical debt management
 
 - One thing you are proud of as a Team!!
+ - Everyone has done his/her part and we helped each other.
