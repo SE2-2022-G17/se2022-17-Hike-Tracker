@@ -27,7 +27,7 @@ function RecordedHikes(props) {
         API.getCompletedRecords(authToken)
             .then(recs => setRecords(recs))
             .catch(e => console.log(e));
-    },[])
+    },[records])
 
     return (
         <Container className='records'>
