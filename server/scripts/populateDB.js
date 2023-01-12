@@ -115,8 +115,8 @@ async function run() {
     const user2 = await User.create({
         _id: "63a1a48e31d3c6a9e5202501",
         firstName: "Pietro",
-        lastName: "Bertorelle",
-        email: "hiker@email.com",
+        lastName: "Berio",
+        email: "berio@email.com",
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
         activationCode: "123456",
         role: UserType.hiker,
@@ -129,7 +129,7 @@ async function run() {
 
     const user3 = await User.create({
         _id: "63a1a48e31d3c6a9e5202502",
-        firstName: "Pietro",
+        firstName: "Bruno",
         lastName: "Bertorelle",
         email: "localguide2@email.com",
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
@@ -351,6 +351,75 @@ async function run() {
 
     cinqueTerre.huts.push(hut._id);
     await cinqueTerre.save();
+
+    const qsPosition = await Position.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc1"),
+        "location.coordinates": [7.109569538622937, 44.66609573271879]
+    })
+    const qs = await Hut.create({
+        name: "Rifugio Quintino Sella",
+        description: "Bel rifugio",
+        point: qsPosition,
+        beds: "20",
+        altitude: "3369",
+        phone: "3453230078",
+        email: "qs@gmail.com",
+        website: "www.qs.it"
+    });
+    await qsPosition.save();
+    await qs.save();
+
+    const giacolettiPosition = await Position.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc2"),
+        "location.coordinates": [7.07595, 44.69672]
+    })
+    const giacoletti = await Hut.create({
+        name: "Rifugio Giacoletti",
+        description: "Bel rifugio",
+        point: giacolettiPosition,
+        beds: "15",
+        altitude: "2761",
+        phone: "3453230079",
+        email: "giacoletti@gmail.com",
+        website: "www.giacoletti.it"
+    });
+    await giacolettiPosition.save();
+    await giacoletti.save();
+
+    const visoPosition = await Position.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc3"),
+        "location.coordinates": [7.08833298, 44.667163998]
+    })
+    const viso = await Hut.create({
+        name: "Buco di Viso",
+        description: "Bel rifugio",
+        point: visoPosition,
+        beds: "26",
+        altitude: "2882",
+        phone: "3453230080",
+        email: "viso@gmail.com",
+        website: "www.viso.it"
+    });
+    await visoPosition.save();
+    await viso.save();
+
+    const vallantaPosition = await Position.create({
+        _id: new mongoose.Types.ObjectId("63838b0ec591ae644e8bedc4"),
+        "location.coordinates": [7.02743, 44.64801]
+    })
+    const vallanta = await Hut.create({
+        name: "Passo di Vallanta",
+        description: "Bel rifugio",
+        point: vallantaPosition,
+        beds: "30",
+        altitude: "2815",
+        phone: "3453230081",
+        email: "vallanta@gmail.com",
+        website: "www.vallanta.it"
+    });
+    await vallantaPosition.save();
+    await vallanta.save();
+
 
     await mongoose.disconnect()
 }

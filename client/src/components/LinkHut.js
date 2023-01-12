@@ -30,14 +30,15 @@ function LinkHut(props) {
     }, [props.hike]);
 
 
-    const handleConfirm = useCallback(() => {
+    const handleConfirm = () => {
         if (hut !== "") {
             const authToken = localStorage.getItem('token');
             API.linkHut(hut, props.hike, authToken)
-                .then((res) => { console.log(res); setHut("") })
+                .then((res) => { console.log(res); setHut("") 
+            })
                 .catch(err => console.log(err))
         }
-    }, [hut, props.hike])
+    }
 
     useEffect(() => {
         setHutsFiltered(hutsList.filter((hut) => hut.name.toLowerCase() === hutsFilter.toLowerCase()));

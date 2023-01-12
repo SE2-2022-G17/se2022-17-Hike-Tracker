@@ -7,7 +7,7 @@ import { DOMParser } from 'xmldom'
 import toGeoJson from '@mapbox/togeojson'
 import { faLayerGroup, faMountainSun, faPersonRunning } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import LinkHut from './LinkHut';
 import API from "../API";
 import ReferencePointsForm from "./ReferencePointsForm";
@@ -36,12 +36,12 @@ function ShowHike(props) {
     const [message, setMessage] = useState('')
     const [variant, setVariant] = useState('warning')
     const [record, setRecord] = useState(undefined);
-    const [refFormVisible,setrefFormVisible] = useState(false);
-    const [refMarker,setRefMarker] = useState([]);
-    const [hikeTrace,setHikeTrace] = useState(undefined);
-    const [cursorPosition,setCursorPosition] = useState(undefined);
+    const [refFormVisible, setrefFormVisible] = useState(false);
+    const [refMarker, setRefMarker] = useState([]);
+    const [hikeTrace, setHikeTrace] = useState(undefined);
+    const [cursorPosition, setCursorPosition] = useState(undefined);
 
-    const getNearestPointOnTrace = useCallback( (point) => {
+    const getNearestPointOnTrace = useCallback((point) => {
         let choise = point;
         let minDistance = -1;
         for (const p1 of hikeTrace) {
@@ -52,45 +52,45 @@ function ShowHike(props) {
             }
             let tmpDistance = Utils.distanceCalc(point, p1);
             if (minDistance === -1 || tmpDistance <= minDistance) {
-                minDistance=tmpDistance;
+                minDistance = tmpDistance;
                 choise = p1;
             }
         }
         return choise;
-    },[hikeTrace])
+    }, [hikeTrace])
 
-    const handleMarker = useCallback( (point, marker) => {
+    const handleMarker = useCallback((point, marker) => {
         let choise = getNearestPointOnTrace(point);
         marker.setLngLat([choise.lng, choise.lat])
         return point;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[hikeTrace])
+    }, [hikeTrace])
 
-    useEffect(()=>{
-        if(cursorPosition && refFormVisible){
+    useEffect(() => {
+        if (cursorPosition && refFormVisible) {
             const pos = getNearestPointOnTrace(cursorPosition);
             const data = {
                 'type': 'Feature',
                 'properties': {},
                 'geometry': {
                     'type': 'LineString',
-                    'coordinates': [[cursorPosition.lng,cursorPosition.lat],[pos.lng,pos.lat]]
+                    'coordinates': [[cursorPosition.lng, cursorPosition.lat], [pos.lng, pos.lat]]
                 }
             }
             map.current.getSource('route').setData(data);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[cursorPosition])
+    }, [cursorPosition])
 
-    useEffect(()=>{
-        if(map.current){
-            if(refFormVisible){
+    useEffect(() => {
+        if (map.current) {
+            if (refFormVisible) {
                 map.current.getCanvas().style.cursor = 'crosshair';
-            }else{
+            } else {
                 map.current.getCanvas().style.cursor = '';
             }
         }
-    },[refFormVisible])
+    }, [refFormVisible])
 
     useEffect(() => {
         // scroll to top on page load
@@ -108,20 +108,20 @@ function ShowHike(props) {
         fetchRecord();
     }, [variant, message, id]);
 
-    useEffect(()=>{
-        if (map.current && refMarker.length>0 && refFormVisible){
-            for(let i=1;i<refMarker.length;i++)
+    useEffect(() => {
+        if (map.current && refMarker.length > 0 && refFormVisible) {
+            for (let i = 1; i < refMarker.length; i++)
                 refMarker[i].remove();
             const point = refMarker[0].getLngLat();
-            handleMarker(point,refMarker[0]);
+            handleMarker(point, refMarker[0]);
             refMarker[0].addTo(map.current);
         }
-        else{
-            if(!refFormVisible)
+        else {
+            if (!refFormVisible)
                 setRefMarker([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[refMarker.length, refFormVisible])
+    }, [refMarker.length, refFormVisible])
 
     useEffect(() => {
         if (id !== null && hike === null) {
@@ -266,7 +266,7 @@ function ShowHike(props) {
                                 draggable: false
                             })
                                 .setLngLat([e.lngLat.lng.toFixed(5), e.lngLat.lat.toFixed(5)]);
-                            setRefMarker(old=>[marker,...old]);
+                            setRefMarker(old => [marker, ...old]);
                         });
 
                         map.current.on('mousemove', (e) => {
@@ -295,7 +295,7 @@ function ShowHike(props) {
                             'paint': {
                                 'line-color': '#d91616',
                                 'line-width': 2,
-                                'line-dasharray': [2,2]
+                                'line-dasharray': [2, 2]
                             }
                         });
                         mapContainer.current.addEventListener("mouseleave", e => {
@@ -316,9 +316,9 @@ function ShowHike(props) {
                 });
             });
         }
-    },[hike, id, lat, lng]);
+    }, [hike, id, lat, lng]);
 
-    const handleSubmit = useCallback( async (event) => {
+    const handleSubmit = useCallback(async (event) => {
         event.preventDefault();
         const authToken = localStorage.getItem('token');
         const response = await API.startRecordingHike(hike._id, authToken);
@@ -332,16 +332,16 @@ function ShowHike(props) {
             setMessage("An error occurred during the recording of the hike")
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[hike ? hike._id : hike])
+    }, [hike ? hike._id : hike])
 
     return (
         <Container>
             <h1 className={'my-2'}>
                 {hike !== null ? hike.title : ''}
-                {hike !== null ? <Button className="mx-4 mb-" variant="outline-dark" disabled><TiInfoOutline size="1.3em" />  Condition: {hike.condition.condition} {
-                        (hike.condition.details !== "") ?
-                            " - " + hike.condition.details : false
-                    }</Button>
+                {hike !== null ? <Button className="mx-4 mb-" variant="outline-dark" disabled><TiInfoOutline size="1.3em" />  Condition: {hike.condition ? hike.condition.condition : undefined} {
+                    (hike.condition !== undefined && hike.condition.details !== undefined) ?
+                        " - " + hike.condition.details : false
+                }</Button>
                     : false}
                 <RecordButton record={record} />
             </h1>
@@ -416,58 +416,58 @@ function ShowHike(props) {
                                         <Col xl={11}>
                                         </Col>
                                         <Col xl={1}>
-                                            <CloseButton onClick={()=>{
+                                            <CloseButton onClick={() => {
                                                 setrefFormVisible(false);
-                                                if(refMarker.length>0){
-                                                    refMarker.forEach(r=>{
+                                                if (refMarker.length > 0) {
+                                                    refMarker.forEach(r => {
                                                         r.remove();
                                                     })
                                                     setRefMarker([]);
                                                 }
-                                            }}/>
+                                            }} />
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col>
-                                            <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map}/>
+                                            <AddReferencePoint hike={hike} id={id} refMarker={refMarker} setRefMarker={setRefMarker} setrefFormVisible={setrefFormVisible} map={map} />
                                         </Col>
                                     </Row>
                                 </Card.Body>
                             </Card>
                         </Col>
                     </Row>
-                    :<></>
+                    : <></>
             }
             {
                 props.role === "localGuide" && !refFormVisible && props.user !== null && props.user.approved ?
-                    <Button variant="outline-primary" onClick={()=>setrefFormVisible(old=>!old)}>Add a reference point</Button>
-                    :<></>
+                    <Button variant="outline-primary" onClick={() => setrefFormVisible(old => !old)}>Add a reference point</Button>
+                    : <></>
             }
             {
                 //only localguide can link hut to a hike
-                props.role === "localGuide" && props.user !== null &&  props.user.approved ? <>
-                        <Row>
-                            <Col>
-                                <Accordion className="mb-3">
-                                    <Accordion.Item eventKey="0">
-                                        <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
-                                        <Accordion.Body>
-                                            {hike && <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]}/>}
-                                        </Accordion.Body>
-                                    </Accordion.Item>
-                                    <Accordion.Item eventKey="1">
-                                        <Accordion.Header>Link hut to this hike</Accordion.Header>
-                                        <Accordion.Body>
-                                            <LinkHut hike={hike} />
-                                        </Accordion.Body>
-                                    </Accordion.Item>
-                                </Accordion>
-                            </Col>
-                        </Row>
+                props.role === "localGuide" && props.user !== null && props.user.approved ? <>
+                    <Row>
+                        <Col>
+                            <Accordion className="mb-3">
+                                <Accordion.Item eventKey="0">
+                                    <Accordion.Header>Add parking lots and huts as start/arrivals points</Accordion.Header>
+                                    <Accordion.Body>
+                                        {hike && <ReferencePointsForm hikeId={id} startLatitude={hike.startPoint.location.coordinates[1]} startLongitude={hike.startPoint.location.coordinates[0]} endLatitude={hike.endPoint.location.coordinates[1]} endLongitude={hike.endPoint.location.coordinates[0]} />}
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="1">
+                                    <Accordion.Header>Link hut to this hike</Accordion.Header>
+                                    <Accordion.Body>
+                                        <LinkHut hike={hike} />
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            </Accordion>
+                        </Col>
+                    </Row>
 
-                        <br />
+                    <br />
 
-                    </>
+                </>
                     : <></>
             }
             {(props.role === "hiker" && record === undefined) ?
