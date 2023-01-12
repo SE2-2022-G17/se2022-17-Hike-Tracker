@@ -115,8 +115,8 @@ async function run() {
     const user2 = await User.create({
         _id: "63a1a48e31d3c6a9e5202501",
         firstName: "Pietro",
-        lastName: "Bertorelle",
-        email: "hiker@email.com",
+        lastName: "Berio",
+        email: "berio@email.com",
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
         activationCode: "123456",
         role: UserType.hiker,
@@ -129,7 +129,7 @@ async function run() {
 
     const user3 = await User.create({
         _id: "63a1a48e31d3c6a9e5202502",
-        firstName: "Pietro",
+        firstName: "Bruno",
         lastName: "Bertorelle",
         email: "localguide2@email.com",
         hash: "$2a$10$uKpxkByoCAWrnGpgnVJhhOtgOrQ6spPVTp88qyZbLEa2EVw0/XoQS", //password
