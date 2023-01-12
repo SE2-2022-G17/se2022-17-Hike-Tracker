@@ -60,7 +60,7 @@ describe('Test API for updating huts information (US15)', () => {
         }
 
 
-        toSave = await Hut.create(hut);
+        const toSave = await Hut.create(hut);
         await toSave.save();
 
     });
