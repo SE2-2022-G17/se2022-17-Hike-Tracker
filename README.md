@@ -18,7 +18,7 @@
 
 ## Default users 
 ### Hiker
-- email: hiker@email.com
+- email: berio@email.com
 - password: password
 ### Local Guide
 - email: localguide@email.com
